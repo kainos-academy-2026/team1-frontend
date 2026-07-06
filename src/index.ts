@@ -11,16 +11,18 @@ const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 
 // Set up Nunjucks as the template engine
-nunjucks.configure(path.join(__dirname, "views"), {
+const viewsPath = path.join(__dirname, "views");
+
+nunjucks.configure(viewsPath, {
     autoescape: true,
     express: app,
 });
 
-// Route for the PORT
+// Route for the home page
 app.get("/", (req, res) => {
     res.render("layouts/base.njk", { title: "Home" });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 }); 

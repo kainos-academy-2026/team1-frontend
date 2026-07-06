@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "copy-views": "cp -r src/views dist/views",
+    "copy-views": "cp -r src/views dist",
     "dev": "tsx watch src/index.ts",
-    "build": "tsc && npm run copy-views",
+    "build": "tsc && cp -r src/views dist/views",
     "start": "node dist/index.js"
   },
   "repository": {
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.0",
+    "@types/nunjucks": "^3.2.6",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3"
   }
