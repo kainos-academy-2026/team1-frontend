@@ -7,10 +7,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log("Current directory:", __dirname);
-
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Set up Nunjucks as the template engine
 nunjucks.configure(path.join(__dirname, "..", "src", "views"), {
