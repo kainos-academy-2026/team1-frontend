@@ -1,0 +1,36 @@
+{
+  "name": "team1-frontend",
+  "version": "1.0.0",
+  "description": "Team1 Frontend",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "copy-views": "cp -r src/views dist",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc && cp -r src/views dist/views",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kainos-academy-2026/team1-frontend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kainos-academy-2026/team1-frontend/issues"
+  },
+  "homepage": "https://github.com/kainos-academy-2026/team1-frontend#readme",
+  "dependencies": {
+    "@types/nunjucks": "^3.2.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nunjucks": "^3.2.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.0",
+    "@types/nunjucks": "^3.2.6",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.3"
+  }
+}
