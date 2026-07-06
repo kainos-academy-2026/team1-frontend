@@ -16,7 +16,7 @@ nunjucks.configure(path.join(__dirname, "views"), {
     express: app,
 });
 
-// Route for the localhost:4000 endpoint
+// Route for the PORT
 app.get("/", (req, res) => {
     res.render("layouts/base.njk", { title: "Home" });
 });
