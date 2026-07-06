@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/kainos-academy-2026/team1-frontend/issues"
   },
-  "homepage": "https://github.com/kainos-academy-2026/team1-frontend#readme"
+  "homepage": "https://github.com/kainos-academy-2026/team1-frontend#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.0",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.3"
+  }
 }
