@@ -5,14 +5,20 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "copy-views": "cp -r src/views dist",
     "dev": "tsx watch src/index.ts",
     "build": "tsc && cp -r src/views dist/views",
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "format": "biome format .",
+    "format:fix": "biome format -write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint -write .",
+    "check": "biome check .",
+    "check:fix": "biome check -write .",
+    "ci:check": "biome ci ."
   },
   "repository": {
     "type": "git",
@@ -31,6 +37,7 @@
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.2",
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.0",
     "@types/nunjucks": "^3.2.6",
