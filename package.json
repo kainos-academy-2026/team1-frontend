@@ -2,11 +2,12 @@
   "name": "team1-frontend",
   "version": "1.0.0",
   "description": "Team1 Frontend",
-  "main": "index.js",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
+    "copy-views": "cp -r src/views dist/views",
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && npm run copy-views",
     "start": "node dist/index.js"
   },
   "repository": {

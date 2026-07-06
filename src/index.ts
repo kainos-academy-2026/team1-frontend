@@ -11,12 +11,12 @@ const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 
 // Set up Nunjucks as the template engine
-nunjucks.configure(path.join(__dirname, "..", "src", "views"), {
+nunjucks.configure(path.join(__dirname, "views"), {
     autoescape: true,
     express: app,
 });
 
-// Route for the localhost:3000 endpoint
+// Route for the localhost:4000 endpoint
 app.get("/", (req, res) => {
     res.render("layouts/base.njk", { title: "Home" });
 });
