@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app';
-import type { JobRoleService } from '../src/jobRoleService';
+import type { JobRoleService } from '../src/features/job-roles/jobRoleService';
 
 describe('GET /job-roles', () => {
 	const getJobRoles = vi.fn();

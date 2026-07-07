@@ -1,10 +1,7 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
+import type { JobRoleService } from './jobRoleService';
 import type { JobRole } from './models/jobRole';
-
-export interface JobRoleService {
-	getJobRoles(): Promise<JobRole[]>;
-}
 
 export interface ApiJobRoleServiceDependencies {
 	httpClient?: AxiosInstance;
