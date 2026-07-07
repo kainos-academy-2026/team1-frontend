@@ -14,9 +14,6 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "vitest": {
-    "environment": "node"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kainos-academy-2026/team1-frontend.git"
