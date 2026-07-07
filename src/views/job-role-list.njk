@@ -7,15 +7,15 @@
 	</head>
 	<body>
 		<h1>Job Roles</h1>
-		{% if jobRoles.length %}
+		{% if jobRoles and jobRoles.length > 0 %}
 			<table>
 				<thead>
 					<tr>
-						<th>Role</th>
-						<th>Location</th>
-						<th>Capability</th>
-						<th>Band</th>
-						<th>Closing Date</th>
+						<th scope="col">Role</th>
+						<th scope="col">Location</th>
+						<th scope="col">Capability</th>
+						<th scope="col">Band</th>
+						<th scope="col">Closing Date</th>
 					</tr>
 				</thead>
 				<tbody>

@@ -1,3 +1,9 @@
+---
+name: explain
+description: "Use when the user asks for beginner-friendly, mentoring-style explanations of a codebase, pull request, file structure, or architecture in Agile context."
+argument-hint: "Codebase, file, PR, story, or ticket to explain"
+---
+
 # Codebase Explainer for Entry-Level Agile Developers
 
 ## Purpose
@@ -327,6 +333,10 @@ Potential risks when making changes.
 ## Suggested Next Learning Steps
 
 Recommended concepts to study next.
+
+## Limitations
+
+Always search for limitations or flaws in the code, explain why they are not best practice, and recommend changes.
 ```
 
 ---

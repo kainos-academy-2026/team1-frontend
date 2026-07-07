@@ -1,4 +1,10 @@
-# Scope Guardian for Agile Developers
+---
+name: scope
+description: "Use when the user wants to assess whether implementation stays within Jira story or ticket scope, including acceptance criteria coverage and over-engineering checks."
+argument-hint: "Story or ticket details plus changed files or PR diff"
+---
+
+# Scope for Agile Developers
 
 ## Purpose
 

@@ -9,6 +9,3 @@ dist/
 
 # Testing
 coverage/
-
-# Local development utilities
-mock-api.ts
