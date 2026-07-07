@@ -1,15 +1,15 @@
 import 'dotenv/config';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { Request, Response } from 'express';
 import express from 'express';
 import nunjucks from 'nunjucks';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const  PORT = Number(process.env.PORT) || 4000;
+const PORT = Number(process.env.PORT) || 4000;
 
 // Set up Nunjucks as the template engine
 const viewsPath = path.join(__dirname, 'views');
@@ -25,5 +25,5 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+	console.log(`Server is running on port ${PORT}`);
 });
