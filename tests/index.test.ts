@@ -1,10 +1,14 @@
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 
-import { app } from '../src/app';
+import { createApp } from '../src/app';
+import type { JobRoleService } from '../src/features/job-roles/jobRoleService';
 
 describe('GET /', () => {
 	it('renders the home page', async () => {
+		const jobRoleService: JobRoleService = { getJobRoles: async () => [] };
+		const app = createApp(jobRoleService);
+
 		const response = await request(app).get('/');
 
 		expect(response.status).toBe(200);
