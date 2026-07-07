@@ -13,7 +13,7 @@
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
 		"lint": "biome check .",
-		"lint:fix": "biome check -write .",
+		"lint:fix": "biome check --write .",
 		"ci:check": "biome ci ."
 	},
 	"repository": {
@@ -35,7 +35,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.2",
-		"@types/axios": "^0.9.36",
 		"@types/express": "^5.0.6",
 		"@types/node": "^26.1.0",
 		"@types/nunjucks": "^3.2.6",
