@@ -1,48 +1,48 @@
 {
-  "name": "team1-frontend",
-  "version": "1.0.0",
-  "description": "Team1 Frontend",
-  "main": "dist/index.js",
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc && cp -r src/views dist/views",
-    "start": "node dist/index.js",
-    "test": "vitest run",
-    "test:ui": "vitest --ui",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "lint": "biome check .",
-    "lint:fix": "biome check -write .",
-    "ci:check": "biome ci ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kainos-academy-2026/team1-frontend.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/kainos-academy-2026/team1-frontend/issues"
-  },
-  "homepage": "https://github.com/kainos-academy-2026/team1-frontend#readme",
-  "dependencies": {
-    "@types/nunjucks": "^3.2.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "nunjucks": "^3.2.4"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.5.2",
-    "@types/express": "^5.0.6",
-    "@types/node": "^26.1.0",
-    "@types/nunjucks": "^3.2.6",
-    "@types/supertest": "^6.0.3",
-    "@vitest/coverage-v8": "^4.1.10",
-    "@vitest/ui": "^4.1.10",
-    "supertest": "^7.2.2",
-    "tsx": "^4.23.0",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.10"
-  }
+	"name": "team1-frontend",
+	"version": "1.0.0",
+	"description": "Team1 Frontend",
+	"main": "dist/index.js",
+	"type": "module",
+	"scripts": {
+		"dev": "tsx watch src/index.ts",
+		"build": "tsc && cp -r src/views dist/views",
+		"start": "node dist/index.js",
+		"test": "vitest run",
+		"test:ui": "vitest --ui",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"ci:check": "biome ci ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kainos-academy-2026/team1-frontend.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/kainos-academy-2026/team1-frontend/issues"
+	},
+	"homepage": "https://github.com/kainos-academy-2026/team1-frontend#readme",
+	"dependencies": {
+		"@types/nunjucks": "^3.2.6",
+		"dotenv": "^17.4.2",
+		"express": "^5.2.1",
+		"nunjucks": "^3.2.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.2",
+		"@types/express": "^5.0.6",
+		"@types/node": "^26.1.0",
+		"@types/nunjucks": "^3.2.6",
+		"@types/supertest": "^6.0.3",
+		"@vitest/coverage-v8": "^4.1.10",
+		"@vitest/ui": "^4.1.10",
+		"supertest": "^7.2.2",
+		"tsx": "^4.23.0",
+		"typescript": "^6.0.3",
+		"vitest": "^4.1.10"
+	}
 }
