@@ -37,9 +37,16 @@ export class ApiJobRoleService implements JobRoleService {
 	}
 
 	private toJobRole(jobRole: ApiJobRole): JobRole {
+		const closingDate = new Date(jobRole.closingDate);
+		if (Number.isNaN(closingDate.getTime())) {
+			throw new Error(
+				`Unexpected job role closing date: ${jobRole.closingDate}`,
+			);
+		}
+
 		return {
 			...jobRole,
-			closingDate: new Date(jobRole.closingDate),
+			closingDate,
 			status: this.toStatus(jobRole.status),
 		};
 	}
