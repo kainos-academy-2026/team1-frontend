@@ -1,6 +1,7 @@
 # team1-frontend
 
-A Node.js/Express frontend UI that renders job role data from a backend API using Nunjucks templates.
+A Node.js/Express frontend UI that renders job role data from a backend API
+using Nunjucks templates.
 
 ## Prerequisites
 
@@ -11,9 +12,9 @@ A Node.js/Express frontend UI that renders job role data from a backend API usin
 
 Copy `.env.example` to `.env` and update the values for your environment:
 
-~~~bash
+```bash
 cp .env.example .env
-~~~
+```
 
 ---
 
@@ -21,9 +22,12 @@ cp .env.example .env
 
 ### Install dependencies
 
-    npm install
+```bash
+npm install
+```
 
 ### Run (development)
+
 Starts the UI with live reload via `tsx watch`:
 
 ```bash
@@ -84,7 +88,8 @@ npm run ci:check
 
 This frontend expects a backend API to be running and reachable via `API_BASE_URL`.
 
-Set `API_BASE_URL` in your `.env` to the backend URL (for example `http://localhost:3000` if your backend runs locally on port 3000).
+Set `API_BASE_URL` in your `.env` to the backend URL (for example
+`http://localhost:3000` if your backend runs locally on port 3000).
 
 If no backend is running, job-role pages will fail to load data.
 
@@ -92,5 +97,5 @@ If no backend is running, job-role pages will fail to load data.
 
 ## Database migrations
 
-Database migrations are managed in the **backend API repository**, not this frontend project. Refer to the backend API README for migration instructions.
-
+Database migrations are managed in the **backend API repository**, not this
+frontend project. Refer to the backend API README for migration instructions.
