@@ -84,10 +84,14 @@ describe('GET /job-roles', () => {
 		expect(response.text).toContain('Software Engineer');
 		expect(response.text).toContain('Workday');
 		expect(response.text).toContain('Associate');
-		expect(response.text).toContain('Build features that solve customer problems.');
+		expect(response.text).toContain(
+			'Build features that solve customer problems.',
+		);
 		expect(response.text).toContain('Deliver code, tests, and documentation.');
 		expect(response.text).toContain('View Job Specification');
-		expect(response.text).toContain('https://sharepoint.example.com/job-specs/1');
+		expect(response.text).toContain(
+			'https://sharepoint.example.com/job-specs/1',
+		);
 		expect(response.text).toContain('2');
 		expect(response.text).toContain('01-08-2026');
 		expect(response.text).not.toContain('2026-08-01');

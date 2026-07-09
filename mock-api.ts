@@ -43,7 +43,8 @@ const jobRoles: JobRole[] = [
 	{
 		jobRoleId: 3,
 		roleName: 'Data & AI Capability Lead',
-		description: 'Set direction for data and AI capability growth and delivery.',
+		description:
+			'Set direction for data and AI capability growth and delivery.',
 		responsibilities:
 			'Drive capability strategy, mentor teams, and shape solution quality.',
 		sharepointUrl: 'https://sharepoint.example.com/job-specs/3',
@@ -71,7 +72,8 @@ const jobRoles: JobRole[] = [
 	{
 		jobRoleId: 5,
 		roleName: 'Data Architect - Defence',
-		description: 'Design secure and scalable data platforms for defence clients.',
+		description:
+			'Design secure and scalable data platforms for defence clients.',
 		responsibilities:
 			'Define data architecture standards and guide engineering delivery.',
 		sharepointUrl: 'https://sharepoint.example.com/job-specs/5',
@@ -85,7 +87,8 @@ const jobRoles: JobRole[] = [
 	{
 		jobRoleId: 6,
 		roleName: 'Senior Business Analyst / Product Consultant (Healthcare)',
-		description: 'Support digital healthcare products from discovery to launch.',
+		description:
+			'Support digital healthcare products from discovery to launch.',
 		responsibilities:
 			'Gather requirements, map workflows, and enable cross-team alignment.',
 		sharepointUrl: 'https://sharepoint.example.com/job-specs/6',
@@ -113,7 +116,8 @@ const jobRoles: JobRole[] = [
 	{
 		jobRoleId: 8,
 		roleName: 'Palantir Services Director',
-		description: 'Lead Palantir service offering and strategic client accounts.',
+		description:
+			'Lead Palantir service offering and strategic client accounts.',
 		responsibilities:
 			'Own delivery quality, account growth, and team capability development.',
 		sharepointUrl: 'https://sharepoint.example.com/job-specs/8',
