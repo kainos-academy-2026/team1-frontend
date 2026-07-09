@@ -94,9 +94,7 @@ The mock API starts on port 3000 and exposes:
 
 | Endpoint | Description |
 |---|---|
-| `GET /` | Service info |
 | `GET /job-roles` | List all job roles |
-| `GET /job-roles/:id` | Get a single job role by ID |
 
 Set `API_BASE_URL=http://localhost:3000` in your `.env` to point the UI at the mock API.
 
