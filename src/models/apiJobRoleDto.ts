@@ -13,7 +13,7 @@ export interface ApiJobRoleSummaryDto {
 	closingDate: string;
 	status: string;
 	numberOfOpenPositions?: number;
-	}
+}
 
 export interface ApiJobRoleDto extends ApiJobRoleSummaryDto {
 	jobRoleId: number;

@@ -57,7 +57,8 @@ export const mapApiJobRoleSummary = (
 	sharepointUrl: jobRole.sharepointUrl ?? '',
 	location: jobRole.location,
 	capabilityId: jobRole.capabilityId,
-	capabilityName: jobRole.capabilityName ?? `Capability ${jobRole.capabilityId}`,
+	capabilityName:
+		jobRole.capabilityName ?? `Capability ${jobRole.capabilityId}`,
 	bandId: jobRole.bandId,
 	bandName: jobRole.bandName ?? `Band ${jobRole.bandId}`,
 	closingDate: toClosingDate(jobRole.closingDate),

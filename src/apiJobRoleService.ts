@@ -2,7 +2,10 @@ import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import type { JobRoleService } from './jobRoleService';
 import { mapApiJobRole, mapApiJobRoleSummary } from './mappers/jobRoleMapper';
-import type { ApiJobRoleDto, ApiJobRoleSummaryDto } from './models/apiJobRoleDto';
+import type {
+	ApiJobRoleDto,
+	ApiJobRoleSummaryDto,
+} from './models/apiJobRoleDto';
 import type { JobRole } from './models/jobRole';
 
 export interface ApiJobRoleServiceDependencies {
@@ -44,7 +47,9 @@ export class ApiJobRoleService implements JobRoleService {
 		} catch (error) {
 			if (axios.isAxiosError(error) && error.response?.status === 404) {
 				const jobRoles = await this.getJobRoles();
-				return jobRoles.find((jobRole) => jobRole.jobRoleId === jobRoleId) ?? null;
+				return (
+					jobRoles.find((jobRole) => jobRole.jobRoleId === jobRoleId) ?? null
+				);
 			}
 
 			throw error;
