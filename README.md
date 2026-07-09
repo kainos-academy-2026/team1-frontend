@@ -80,23 +80,13 @@ npm run ci:check
 
 ---
 
-## Mock API
+## Backend API connection
 
-A local mock of the backend API is included at `mock-api.ts`. Use this when you don't have a real backend running.
+This frontend expects a backend API to be running and reachable via `API_BASE_URL`.
 
-### Run
+Set `API_BASE_URL` in your `.env` to the backend URL (for example `http://localhost:3000` if your backend runs locally on port 3000).
 
-```bash
-npx tsx mock-api.ts
-```
-
-The mock API starts on port 3000 and exposes:
-
-| Endpoint | Description |
-|---|---|
-| `GET /job-roles` | List all job roles |
-
-Set `API_BASE_URL=http://localhost:3000` in your `.env` to point the UI at the mock API.
+If no backend is running, job-role pages will fail to load data.
 
 ---
 
