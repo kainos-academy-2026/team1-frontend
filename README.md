@@ -11,8 +11,9 @@ A Node.js/Express frontend UI that renders job role data from a backend API usin
 
 Copy `.env.example` to `.env` and update the values for your environment:
 
-```bash
+~~~bash
 cp .env.example .env
+~~~
 
 ---
 
