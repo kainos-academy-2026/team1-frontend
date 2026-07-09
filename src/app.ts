@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import nunjucks from 'nunjucks';
-import { JobRoleController } from './jobRoleController';
+import { JobRoleController } from './controllers/jobRoleController';
 import { jobRoleRouter } from './routers/jobRoleRouter';
 import { ApiJobRoleService } from './services/apiJobRoleService';
 import type { JobRoleService } from './services/jobRoleService';
