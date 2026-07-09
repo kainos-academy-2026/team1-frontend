@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ApiJobRoleService } from '../src/services/apiJobRoleService';
 import type { JobRole } from '../src/models/jobRole';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
+import { ApiJobRoleService } from '../src/services/apiJobRoleService';
 
 describe('ApiJobRoleService', () => {
 	it('throws when API_BASE_URL is not configured', () => {
