@@ -19,8 +19,11 @@ cp .env.example .env
 
 ## UI application
 
-### Run (development)
+### Install dependencies
 
+    npm install
+
+### Run (development)
 Starts the UI with live reload via `tsx watch`:
 
 ```bash
