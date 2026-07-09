@@ -1,12 +1,12 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import type { JobRoleService } from './jobRoleService';
-import { mapApiJobRole, mapApiJobRoleSummary } from './mappers/jobRoleMapper';
+import { mapApiJobRole, mapApiJobRoleSummary } from '../mappers/jobRoleMapper';
 import type {
 	ApiJobRoleDto,
 	ApiJobRoleSummaryDto,
-} from './models/apiJobRoleDto';
-import type { JobRole } from './models/jobRole';
+} from '../models/apiJobRoleDto';
+import type { JobRole } from '../models/jobRole';
 
 export interface ApiJobRoleServiceDependencies {
 	httpClient?: AxiosInstance;

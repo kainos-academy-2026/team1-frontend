@@ -2,10 +2,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import nunjucks from 'nunjucks';
-import { ApiJobRoleService } from './apiJobRoleService';
+import { ApiJobRoleService } from './services/apiJobRoleService';
 import { JobRoleController } from './jobRoleController';
-import { jobRoleRouter } from './jobRoleRouter';
-import type { JobRoleService } from './jobRoleService';
+import { jobRoleRouter } from './routers/jobRoleRouter';
+import type { JobRoleService } from './services/jobRoleService';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

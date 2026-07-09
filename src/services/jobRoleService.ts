@@ -1,4 +1,4 @@
-import type { JobRole } from './models/jobRole';
+import type { JobRole } from '../models/jobRole';
 
 export interface JobRoleService {
 	getJobRoles(): Promise<JobRole[]>;

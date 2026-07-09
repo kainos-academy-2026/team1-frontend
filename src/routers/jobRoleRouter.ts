@@ -5,7 +5,7 @@ import {
 	Router,
 } from 'express';
 import { z } from 'zod';
-import type { JobRoleController } from './jobRoleController';
+import type { JobRoleController } from '../controllers/jobRoleController';
 
 const jobRoleParamsSchema = z.object({
 	id: z.coerce.number().int().positive(),

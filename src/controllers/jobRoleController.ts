@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express';
-import type { JobRoleService } from './jobRoleService';
+import type { JobRoleService } from '../services/jobRoleService';
 import {
 	mapJobRoleDetailViewModel,
 	mapJobRoleListItemViewModel,
-} from './mappers/jobRoleViewMapper';
-import { JobRoleStatus } from './models/jobRoleStatus';
+} from '../mappers/jobRoleViewMapper';
+import { JobRoleStatus } from '../models/jobRoleStatus';
 
 export class JobRoleController {
 	constructor(private readonly jobRoleService: JobRoleService) {}

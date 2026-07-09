@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ApiJobRoleService } from '../src/apiJobRoleService';
+import { ApiJobRoleService } from '../src/services/apiJobRoleService';
 import type { JobRole } from '../src/models/jobRole';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 
