@@ -1,14 +1,14 @@
 import type { JobRoleStatus } from './jobRoleStatus';
 
-export interface JobRole {
+export interface JobRoleDetailed {
 	jobRoleId: number;
-	roleName: string;
+	name: string;
 	description: string;
 	responsibilities: string;
 	sharepointUrl: string;
 	location: string;
-	capabilityId: number;
-	bandId: number;
+	capability: string;
+	band: string;
 	closingDate: Date;
 	status: JobRoleStatus;
 	numberOfOpenPositions: number;

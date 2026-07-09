@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{{ jobRole.roleName }}</title>
+	</head>
+	<body>
+		<a href="/job-roles">Back to Job Roles</a>
+		<h1>{{ jobRole.roleName }}</h1>
+		<h2>Description</h2>
+		<p>{{ jobRole.description }}</p>
+
+		<h2>Responsibilities</h2>
+		<p>{{ jobRole.responsibilities }}</p>
+
+		<dl>
+			<dt>Job Specification</dt>
+			<dd>
+				<a href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
+					View Job Specification
+				</a>
+			</dd>
+
+			<dt>Location</dt>
+			<dd>{{ jobRole.location }}</dd>
+
+			<dt>Capability</dt>
+			<dd>{{ jobRole.capability }}</dd>
+
+			<dt>Band</dt>
+			<dd>{{ jobRole.band }}</dd>
+
+			<dt>Closing Date</dt>
+			<dd>{{ jobRole.closingDate }}</dd>
+
+			<dt>Status</dt>
+			<dd>{{ jobRole.status | capitalize }}</dd>
+
+			<dt>Open Positions</dt>
+			<dd>{{ jobRole.numberOfOpenPositions }}</dd>
+		</dl>
+	</body>
+</html>
