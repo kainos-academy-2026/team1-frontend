@@ -6,7 +6,10 @@ import type { JobRoleService } from '../src/features/job-roles/jobRoleService';
 
 describe('GET /', () => {
 	it('renders the home page', async () => {
-		const jobRoleService: JobRoleService = { getJobRoles: async () => [] };
+		const jobRoleService: JobRoleService = {
+			getJobRoles: async () => [],
+			getJobRole: async () => null,
+		};
 		const app = createApp(jobRoleService);
 
 		const response = await request(app).get('/');
