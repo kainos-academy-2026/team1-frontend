@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ApiJobRoleService } from '../src/features/job-roles/apiJobRoleService';
-import type { JobRole } from '../src/features/job-roles/models/jobRole';
-import { JobRoleStatus } from '../src/features/job-roles/models/jobRoleStatus';
+import { ApiJobRoleService } from '../src/apiJobRoleService';
+import type { JobRole } from '../src/models/jobRole';
+import { JobRoleStatus } from '../src/models/jobRoleStatus';
 
 describe('ApiJobRoleService', () => {
 	it('throws when API_BASE_URL is not configured', () => {
@@ -27,7 +27,9 @@ describe('ApiJobRoleService', () => {
 				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 				location: 'Belfast',
 				capabilityId: 1,
+				capabilityName: 'Workday',
 				bandId: 2,
+				bandName: 'Senior Associate',
 				closingDate: '2026-08-01',
 				status: 'open',
 				numberOfOpenPositions: 2,
@@ -43,7 +45,9 @@ describe('ApiJobRoleService', () => {
 				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 				location: 'Belfast',
 				capabilityId: 1,
+				capabilityName: 'Workday',
 				bandId: 2,
+				bandName: 'Senior Associate',
 				closingDate: new Date('2026-08-01'),
 				status: JobRoleStatus.Open,
 				numberOfOpenPositions: 2,
@@ -70,7 +74,9 @@ describe('ApiJobRoleService', () => {
 				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 				location: 'Belfast',
 				capabilityId: 1,
+				capabilityName: 'Workday',
 				bandId: 2,
+				bandName: 'Senior Associate',
 				closingDate: '2026-08-01',
 				status: 'draft',
 				numberOfOpenPositions: 2,
@@ -97,7 +103,9 @@ describe('ApiJobRoleService', () => {
 			sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 			location: 'Belfast',
 			capabilityId: 1,
+			capabilityName: 'Workday',
 			bandId: 2,
+			bandName: 'Senior Associate',
 			closingDate: '2026-08-01',
 			status: 'open',
 			numberOfOpenPositions: 2,
@@ -128,5 +136,65 @@ describe('ApiJobRoleService', () => {
 		});
 
 		await expect(service.getJobRole(999)).resolves.toBeNull();
+	});
+
+	it('throws when API returns an invalid closing date', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: 'not-a-date',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService({
+			httpClient: { get } as never,
+			apiBaseUrl: 'http://localhost:3001',
+		});
+
+		await expect(service.getJobRoles()).rejects.toThrow(
+			'Unexpected job role closing date: not-a-date',
+		);
+	});
+
+	it('throws when API returns an insecure sharepoint URL', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'javascript:alert(1)',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService({
+			httpClient: { get } as never,
+			apiBaseUrl: 'http://localhost:3001',
+		});
+
+		await expect(service.getJobRoles()).rejects.toThrow(
+			'Unexpected job role sharepointUrl: javascript:alert(1)',
+		);
 	});
 });

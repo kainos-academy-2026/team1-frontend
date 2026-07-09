@@ -2,7 +2,7 @@ import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 
 import { createApp } from '../src/app';
-import type { JobRoleService } from '../src/features/job-roles/jobRoleService';
+import type { JobRoleService } from '../src/jobRoleService';
 
 describe('GET /', () => {
 	it('renders the home page', async () => {

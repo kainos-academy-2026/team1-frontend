@@ -8,7 +8,9 @@ export interface JobRole {
 	sharepointUrl: string;
 	location: string;
 	capabilityId: number;
+	capabilityName: string;
 	bandId: number;
+	bandName: string;
 	closingDate: Date;
 	status: JobRoleStatus;
 	numberOfOpenPositions: number;
