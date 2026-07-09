@@ -14,7 +14,6 @@ describe('ApiJobRoleService', () => {
 					apiBaseUrl: undefined,
 				}),
 		).toThrow('API_BASE_URL is not configured');
-
 		expect(get).not.toHaveBeenCalled();
 	});
 
