@@ -64,6 +64,44 @@ describe('ApiJobRoleService', () => {
 		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles');
 	});
 
+	it('maps summary data from the backend list endpoint', async () => {
+		const apiRoles = [
+			{
+				id: 1,
+				roleName: 'Software Engineer',
+				location: 'New York',
+				capabilityId: 1,
+				bandId: 2,
+				closingDate: '2024-12-31T00:00:00.000Z',
+				status: 'open',
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService({
+			httpClient: { get } as never,
+			apiBaseUrl: 'http://localhost:3001',
+		});
+
+		await expect(service.getJobRoles()).resolves.toEqual([
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: '',
+				responsibilities: '',
+				sharepointUrl: '',
+				location: 'New York',
+				capabilityId: 1,
+				capabilityName: 'Capability 1',
+				bandId: 2,
+				bandName: 'Band 2',
+				closingDate: new Date('2024-12-31T00:00:00.000Z'),
+				status: JobRoleStatus.Open,
+				numberOfOpenPositions: 0,
+			},
+		]);
+	});
+
 	it('throws when API returns an unexpected status', async () => {
 		const apiRoles = [
 			{
@@ -126,16 +164,63 @@ describe('ApiJobRoleService', () => {
 	});
 
 	it('returns null when the API returns 404 for a role id', async () => {
-		const get = vi.fn().mockRejectedValue({
-			isAxiosError: true,
-			response: { status: 404 },
-		});
+		const get = vi
+			.fn()
+			.mockRejectedValueOnce({
+				isAxiosError: true,
+				response: { status: 404 },
+			})
+			.mockResolvedValueOnce({ data: [] });
 		const service = new ApiJobRoleService({
 			httpClient: { get } as never,
 			apiBaseUrl: 'http://localhost:3001',
 		});
 
 		await expect(service.getJobRole(999)).resolves.toBeNull();
+	});
+
+	it('falls back to the list endpoint when the detail endpoint returns 404', async () => {
+		const get = vi
+			.fn()
+			.mockRejectedValueOnce({
+				isAxiosError: true,
+				response: { status: 404 },
+			})
+			.mockResolvedValueOnce({
+				data: [
+					{
+						id: 1,
+						roleName: 'Software Engineer',
+						location: 'New York',
+						capabilityId: 1,
+						bandId: 2,
+						closingDate: '2024-12-31T00:00:00.000Z',
+						status: 'open',
+					},
+				],
+			});
+		const service = new ApiJobRoleService({
+			httpClient: { get } as never,
+			apiBaseUrl: 'http://localhost:3001',
+		});
+
+		await expect(service.getJobRole(1)).resolves.toEqual({
+			jobRoleId: 1,
+			roleName: 'Software Engineer',
+			description: '',
+			responsibilities: '',
+			sharepointUrl: '',
+			location: 'New York',
+			capabilityId: 1,
+			capabilityName: 'Capability 1',
+			bandId: 2,
+			bandName: 'Band 2',
+			closingDate: new Date('2024-12-31T00:00:00.000Z'),
+			status: JobRoleStatus.Open,
+			numberOfOpenPositions: 0,
+		});
+		expect(get).toHaveBeenNthCalledWith(1, 'http://localhost:3001/job-roles/1');
+		expect(get).toHaveBeenNthCalledWith(2, 'http://localhost:3001/job-roles');
 	});
 
 	it('throws when API returns an invalid closing date', async () => {
@@ -168,32 +253,30 @@ describe('ApiJobRoleService', () => {
 		);
 	});
 
-	it('throws when API returns an insecure sharepoint URL', async () => {
-		const apiRoles = [
-			{
-				jobRoleId: 1,
-				roleName: 'Software Engineer',
-				description: 'Build features that solve customer problems.',
-				responsibilities: 'Deliver code, tests, and documentation.',
-				sharepointUrl: 'javascript:alert(1)',
-				location: 'Belfast',
-				capabilityId: 1,
-				capabilityName: 'Workday',
-				bandId: 2,
-				bandName: 'Senior Associate',
-				closingDate: '2026-08-01',
-				status: 'open',
-				numberOfOpenPositions: 2,
-			},
-		];
+	it('throws when detail API returns an insecure sharepoint URL', async () => {
+		const apiRole = {
+			jobRoleId: 1,
+			roleName: 'Software Engineer',
+			description: 'Build features that solve customer problems.',
+			responsibilities: 'Deliver code, tests, and documentation.',
+			sharepointUrl: 'javascript:alert(1)',
+			location: 'Belfast',
+			capabilityId: 1,
+			capabilityName: 'Workday',
+			bandId: 2,
+			bandName: 'Senior Associate',
+			closingDate: '2026-08-01',
+			status: 'open',
+			numberOfOpenPositions: 2,
+		};
 
-		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const get = vi.fn().mockResolvedValue({ data: apiRole });
 		const service = new ApiJobRoleService({
 			httpClient: { get } as never,
 			apiBaseUrl: 'http://localhost:3001',
 		});
 
-		await expect(service.getJobRoles()).rejects.toThrow(
+		await expect(service.getJobRole(1)).rejects.toThrow(
 			'Unexpected job role sharepointUrl: javascript:alert(1)',
 		);
 	});

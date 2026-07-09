@@ -1,6 +1,21 @@
-import type { ApiJobRoleDto } from '../models/apiJobRoleDto';
+import type {
+	ApiJobRoleDto,
+	ApiJobRoleSummaryDto,
+} from '../models/apiJobRoleDto';
 import type { JobRole } from '../models/jobRole';
 import { JobRoleStatus } from '../models/jobRoleStatus';
+
+const toJobRoleId = ({ jobRoleId, id }: ApiJobRoleSummaryDto): number => {
+	if (typeof jobRoleId === 'number') {
+		return jobRoleId;
+	}
+
+	if (typeof id === 'number') {
+		return id;
+	}
+
+	throw new Error('Unexpected job role identifier: undefined');
+};
 
 const toJobRoleStatus = (status: string): JobRoleStatus => {
 	if (status === JobRoleStatus.Open) return JobRoleStatus.Open;
@@ -32,9 +47,28 @@ const toSharepointUrl = (sharepointUrl: string): string => {
 	return parsedUrl.toString();
 };
 
-export const mapApiJobRole = (jobRole: ApiJobRoleDto): JobRole => ({
-	...jobRole,
-	sharepointUrl: toSharepointUrl(jobRole.sharepointUrl),
+export const mapApiJobRoleSummary = (
+	jobRole: ApiJobRoleSummaryDto,
+): JobRole => ({
+	jobRoleId: toJobRoleId(jobRole),
+	roleName: jobRole.roleName,
+	description: jobRole.description ?? '',
+	responsibilities: jobRole.responsibilities ?? '',
+	sharepointUrl: jobRole.sharepointUrl ?? '',
+	location: jobRole.location,
+	capabilityId: jobRole.capabilityId,
+	capabilityName: jobRole.capabilityName ?? `Capability ${jobRole.capabilityId}`,
+	bandId: jobRole.bandId,
+	bandName: jobRole.bandName ?? `Band ${jobRole.bandId}`,
 	closingDate: toClosingDate(jobRole.closingDate),
 	status: toJobRoleStatus(jobRole.status),
+	numberOfOpenPositions: jobRole.numberOfOpenPositions ?? 0,
+});
+
+export const mapApiJobRole = (jobRole: ApiJobRoleDto): JobRole => ({
+	...mapApiJobRoleSummary(jobRole),
+	description: jobRole.description,
+	responsibilities: jobRole.responsibilities,
+	sharepointUrl: toSharepointUrl(jobRole.sharepointUrl),
+	numberOfOpenPositions: jobRole.numberOfOpenPositions,
 });

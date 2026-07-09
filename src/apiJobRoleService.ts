@@ -1,8 +1,8 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import type { JobRoleService } from './jobRoleService';
-import { mapApiJobRole } from './mappers/jobRoleMapper';
-import type { ApiJobRoleDto } from './models/apiJobRoleDto';
+import { mapApiJobRole, mapApiJobRoleSummary } from './mappers/jobRoleMapper';
+import type { ApiJobRoleDto, ApiJobRoleSummaryDto } from './models/apiJobRoleDto';
 import type { JobRole } from './models/jobRole';
 
 export interface ApiJobRoleServiceDependencies {
@@ -25,12 +25,13 @@ export class ApiJobRoleService implements JobRoleService {
 		this.httpClient = httpClient;
 		this.apiBaseUrl = apiBaseUrl;
 	}
+
 	async getJobRoles(): Promise<JobRole[]> {
-		const response = await this.httpClient.get<ApiJobRoleDto[]>(
+		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
 			`${this.apiBaseUrl}/job-roles`,
 		);
 
-		return response.data.map(mapApiJobRole);
+		return response.data.map(mapApiJobRoleSummary);
 	}
 
 	async getJobRole(jobRoleId: number): Promise<JobRole | null> {
@@ -42,7 +43,8 @@ export class ApiJobRoleService implements JobRoleService {
 			return mapApiJobRole(response.data);
 		} catch (error) {
 			if (axios.isAxiosError(error) && error.response?.status === 404) {
-				return null;
+				const jobRoles = await this.getJobRoles();
+				return jobRoles.find((jobRole) => jobRole.jobRoleId === jobRoleId) ?? null;
 			}
 
 			throw error;
