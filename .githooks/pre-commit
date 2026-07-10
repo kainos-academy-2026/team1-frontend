@@ -1,0 +1,11 @@
+#!/bin/sh
+
+echo "Running lint..."
+npm run lint:fix
+
+if [ $? -ne 0 ]; then
+  echo "Lint failed. Aborting commit."
+  exit 1
+fi
+
+echo "Lint passed. Proceeding with commit."
