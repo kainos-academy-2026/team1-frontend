@@ -95,12 +95,12 @@ describe('GET /job-roles', () => {
 		const response = await request(app).get('/job-roles');
 
 		expect(response.status).toBe(500);
+		expect(response.text).toContain('Back to home');
+		expect(response.text).toContain('href="/"');
 	});
 
 	it('returns 502 when the service throws a validation error', async () => {
-		getJobRoles.mockRejectedValue(
-			new ValidationError('Unexpected job role identifier: undefined'),
-		);
+		getJobRoles.mockRejectedValue(new ValidationError('Missing job role ID.'));
 
 		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles');
@@ -109,6 +109,8 @@ describe('GET /job-roles', () => {
 		expect(response.text).toContain(
 			'The job data received from the upstream API was invalid.',
 		);
+		expect(response.text).toContain('Back to home');
+		expect(response.text).toContain('href="/"');
 	});
 
 	it('renders an empty state when no job roles are returned', async () => {

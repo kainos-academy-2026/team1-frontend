@@ -4,18 +4,37 @@ import { errorMessages } from './errorMessages';
 import { renderErrorPage } from './errorPage';
 import { ValidationError } from './validationError';
 
+const getErrorRedirect = (
+	req: Request,
+): { redirectHref: string; redirectText: string } => {
+	if (req.path === '/job-roles') {
+		return {
+			redirectHref: '/',
+			redirectText: 'Back to home',
+		};
+	}
+
+	return {
+		redirectHref: '/job-roles',
+		redirectText: 'Back to open roles',
+	};
+};
+
 export const errorHandler = (
 	error: Error,
-	_req: Request,
+	req: Request,
 	res: Response,
 	_next: NextFunction,
 ): void => {
+	const redirectOptions = getErrorRedirect(req);
+
 	if (error instanceof ValidationError) {
 		const { title, message } = errorMessages.upstreamDataError;
 		renderErrorPage(res, {
 			status: 502,
 			title,
 			message,
+			...redirectOptions,
 		});
 		return;
 	}
@@ -26,6 +45,7 @@ export const errorHandler = (
 			status: 502,
 			title,
 			message,
+			...redirectOptions,
 		});
 		return;
 	}
@@ -35,5 +55,6 @@ export const errorHandler = (
 		status: 500,
 		title,
 		message,
+		...redirectOptions,
 	});
 };

@@ -5,13 +5,12 @@ import nunjucks from 'nunjucks';
 import { JobRoleController } from './controllers/jobRoleController';
 import { errorHandler } from './errors/errorHandler';
 import { jobRoleRouter } from './routers/jobRoleRouter';
-import { ApiJobRoleService } from './services/apiJobRoleService';
 import type { JobRoleService } from './services/jobRoleService';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const createApp = (jobRoleService?: JobRoleService) => {
+export const createApp = (jobRoleService: JobRoleService) => {
 	const app = express();
 
 	const viewsPath = path.join(__dirname, 'views');
@@ -25,8 +24,7 @@ export const createApp = (jobRoleService?: JobRoleService) => {
 		res.render('layouts/base.njk', { title: 'Home' });
 	});
 
-	const resolvedJobRoleService = jobRoleService ?? new ApiJobRoleService();
-	const jobRoleController = new JobRoleController(resolvedJobRoleService);
+	const jobRoleController = new JobRoleController(jobRoleService);
 	app.use('/job-roles', jobRoleRouter(jobRoleController));
 
 	app.use(errorHandler);

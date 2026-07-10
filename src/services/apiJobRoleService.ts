@@ -8,22 +8,11 @@ import type {
 import type { JobRole } from '../models/jobRole';
 import type { JobRoleService } from './jobRoleService';
 
-export interface ApiJobRoleServiceDependencies {
-	httpClient?: AxiosInstance;
-	apiBaseUrl?: string;
-}
-
 export class ApiJobRoleService implements JobRoleService {
-	private readonly httpClient: AxiosInstance;
-	private readonly apiBaseUrl: string;
-
-	constructor({
-		httpClient = axios,
-		apiBaseUrl = process.env.API_BASE_URL ?? '',
-	}: ApiJobRoleServiceDependencies = {}) {
-		this.httpClient = httpClient;
-		this.apiBaseUrl = apiBaseUrl;
-	}
+	constructor(
+		private readonly httpClient: AxiosInstance,
+		private readonly apiBaseUrl: string,
+	) {}
 
 	async getJobRoles(): Promise<JobRole[]> {
 		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(

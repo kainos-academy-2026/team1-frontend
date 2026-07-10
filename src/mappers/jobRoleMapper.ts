@@ -23,7 +23,7 @@ const toJobRoleId = ({ jobRoleId, id }: ApiJobRoleSummaryDto): number => {
 		return id;
 	}
 
-	throw new ValidationError('Unexpected job role identifier: undefined');
+	throw new ValidationError('Missing job role ID.');
 };
 
 const toJobRoleStatus = (status: string): JobRoleStatus => {
