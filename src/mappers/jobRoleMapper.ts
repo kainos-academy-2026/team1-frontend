@@ -105,7 +105,11 @@ export const mapApiJobRoleSummary = (
 		`Capability ${jobRole.capabilityId}`,
 	),
 	bandId: jobRole.bandId,
-	bandName: toSummaryText('bandName', jobRole.bandName, `Band ${jobRole.bandId}`),
+	bandName: toSummaryText(
+		'bandName',
+		jobRole.bandName,
+		`Band ${jobRole.bandId}`,
+	),
 	closingDate: toClosingDate(jobRole.closingDate),
 	status: toJobRoleStatus(jobRole.status),
 	numberOfOpenPositions: jobRole.numberOfOpenPositions ?? 0,
