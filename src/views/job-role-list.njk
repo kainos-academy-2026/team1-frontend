@@ -6,9 +6,9 @@
         <section class="job-listings">
             {% for role in jobRoles %}
                 <article class="job-card">
-                    <h2 class="job-card-title">{{ role.name }}</h2>
+                    <h2 class="job-card-title">{{ role.roleName }}</h2>
                     <div class="job-card-body">
-                        <span>{{ role.band }} - {{ role.capability }}</span>
+                        <span>{{ role.bandName }} - {{ role.capabilityName }}</span>
 						<span>{{ role.location }}</span>
                     </div>
                     <p class="job-card-closing">Closing date: {{ role.closingDate }}</p>

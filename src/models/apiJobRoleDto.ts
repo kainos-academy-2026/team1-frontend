@@ -1,6 +1,6 @@
 export interface ApiJobRoleSummaryDto {
-	jobRoleId?: number;
-	id?: number;
+	jobRoleId: number;
+	id: number;
 	roleName: string;
 	description: string;
 	responsibilities: string;

@@ -14,6 +14,26 @@ const toRequiredText = (fieldName: string, value: string): string => {
 	return value;
 };
 
+const toRequiredTextValue = (fieldName: string, value: unknown): string => {
+	if (typeof value !== 'string') {
+		throw new ValidationError(`Missing required job role field: ${fieldName}`);
+	}
+
+	return toRequiredText(fieldName, value);
+};
+
+const toSummaryText = (
+	fieldName: string,
+	value: unknown,
+	fallback: string,
+): string => {
+	if (typeof value !== 'string') {
+		return fallback;
+	}
+
+	return toRequiredText(fieldName, value);
+};
+
 const toJobRoleId = ({ jobRoleId, id }: ApiJobRoleSummaryDto): number => {
 	if (typeof jobRoleId === 'number') {
 		return jobRoleId;
@@ -63,28 +83,43 @@ export const mapApiJobRoleSummary = (
 ): JobRole => ({
 	jobRoleId: toJobRoleId(jobRole),
 	roleName: toRequiredText('roleName', jobRole.roleName),
-	description: toRequiredText('description', jobRole.description),
-	responsibilities: toRequiredText(
+	description: toSummaryText(
+		'description',
+		jobRole.description,
+		'Description not available.',
+	),
+	responsibilities: toSummaryText(
 		'responsibilities',
 		jobRole.responsibilities,
+		'Responsibilities not available.',
 	),
-	sharepointUrl: toSharepointUrl(
-		toRequiredText('sharepointUrl', jobRole.sharepointUrl),
-	),
+	sharepointUrl:
+		typeof jobRole.sharepointUrl === 'string'
+			? toSharepointUrl(toRequiredText('sharepointUrl', jobRole.sharepointUrl))
+			: 'https://example.com/job-specification',
 	location: toRequiredText('location', jobRole.location),
 	capabilityId: jobRole.capabilityId,
-	capabilityName: toRequiredText('capabilityName', jobRole.capabilityName),
+	capabilityName: toSummaryText(
+		'capabilityName',
+		jobRole.capabilityName,
+		`Capability ${jobRole.capabilityId}`,
+	),
 	bandId: jobRole.bandId,
-	bandName: toRequiredText('bandName', jobRole.bandName),
+	bandName: toSummaryText('bandName', jobRole.bandName, `Band ${jobRole.bandId}`),
 	closingDate: toClosingDate(jobRole.closingDate),
 	status: toJobRoleStatus(jobRole.status),
-	numberOfOpenPositions: jobRole.numberOfOpenPositions,
+	numberOfOpenPositions: jobRole.numberOfOpenPositions ?? 0,
 });
 
 export const mapApiJobRole = (jobRole: ApiJobRoleDto): JobRole => ({
 	...mapApiJobRoleSummary(jobRole),
-	description: jobRole.description,
-	responsibilities: jobRole.responsibilities,
-	sharepointUrl: toSharepointUrl(jobRole.sharepointUrl),
-	numberOfOpenPositions: jobRole.numberOfOpenPositions,
+	description: toRequiredTextValue('description', jobRole.description),
+	responsibilities: toRequiredTextValue(
+		'responsibilities',
+		jobRole.responsibilities,
+	),
+	sharepointUrl: toSharepointUrl(
+		toRequiredTextValue('sharepointUrl', jobRole.sharepointUrl),
+	),
+	numberOfOpenPositions: jobRole.numberOfOpenPositions ?? 0,
 });
