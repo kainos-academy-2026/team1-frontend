@@ -2,11 +2,14 @@ import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 
 import { createApp } from '../src/app';
-import type { JobRoleService } from '../src/features/job-roles/jobRoleService';
+import type { JobRoleService } from '../src/services/jobRoleService';
 
 describe('GET /', () => {
 	it('renders the home page', async () => {
-		const jobRoleService: JobRoleService = { getJobRoles: async () => [] };
+		const jobRoleService: JobRoleService = {
+			getJobRoles: async () => [],
+			getJobRole: async () => null,
+		};
 		const app = createApp(jobRoleService);
 
 		const response = await request(app).get('/');
