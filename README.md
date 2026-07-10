@@ -26,6 +26,14 @@ cp .env.example .env
 npm install
 ```
 
+### Enable Git hooks
+
+To enable the repository's pre-commit hook, point Git to `.githooks/`:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ### Run (development)
 
 Starts the UI with live reload via `tsx watch`:
