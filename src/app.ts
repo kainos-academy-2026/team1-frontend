@@ -14,14 +14,21 @@ export const createApp = (jobRoleService: JobRoleService) => {
 	const app = express();
 
 	const viewsPath = path.join(__dirname, 'views');
+	const assetsPath = path.join(__dirname, '..', 'assets');
 
 	nunjucks.configure(viewsPath, {
 		autoescape: true,
 		express: app,
 	});
 
+	app.use('/assets', express.static(assetsPath));
+
 	app.get('/', (_req, res) => {
-		res.render('layouts/base.njk', { title: 'Home' });
+		res.render('index.njk', { title: 'Home' });
+	});
+
+	app.get('/login', (_req, res) => {
+		res.render('login.njk', { title: 'Login' });
 	});
 
 	const jobRoleController = new JobRoleController(jobRoleService);

@@ -1,37 +1,21 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Job Roles</title>
-	</head>
-	<body>
-		<h1>Job Roles</h1>
-		{% if jobRoles and jobRoles.length > 0 %}
-			<table>
-				<thead>
-					<tr>
-						<th scope="col">Role</th>
-						<th scope="col">Location</th>
-						<th scope="col">Capability</th>
-						<th scope="col">Band</th>
-						<th scope="col">Closing Date</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for role in jobRoles %}
-						<tr>
-							<td><a href="/job-roles/{{ role.jobRoleId }}">{{ role.roleName }}</a></td>
-							<td>{{ role.location }}</td>
-							<td>{{ role.capabilityName }}</td>
-							<td>{{ role.bandName }}</td>
-							<td>{{ role.closingDate }}</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		{% else %}
-			<p>No job roles are currently available.</p>
-		{% endif %}
-	</body>
-</html>
+{% extends "layouts/base.njk" %}
+{% block content %}
+	<a class="back-btn" href="/"> < </a>
+    <h1 class="job-listings-title">Current opportunities...</h1>
+    {% if jobRoles and jobRoles.length > 0 %}
+        <section class="job-listings">
+            {% for role in jobRoles %}
+                <article class="job-card">
+                    <h2 class="job-card-title">{{ role.roleName }}</h2>
+                    <div class="job-card-body">
+                        <span>{{ role.bandName }} - {{ role.capabilityName }}</span>
+						<span>{{ role.location }}</span>
+                    </div>
+                    <p class="job-card-closing">Closing date: {{ role.closingDate }}</p>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <p>No job roles are currently available.</p>
+    {% endif %}
+{% endblock %}
