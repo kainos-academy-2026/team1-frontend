@@ -19,12 +19,8 @@ export class ApiJobRoleService implements JobRoleService {
 
 	constructor({
 		httpClient = axios,
-		apiBaseUrl = process.env.API_BASE_URL,
+		apiBaseUrl = process.env.API_BASE_URL ?? '',
 	}: ApiJobRoleServiceDependencies = {}) {
-		if (!apiBaseUrl) {
-			throw new Error('API_BASE_URL is not configured');
-		}
-
 		this.httpClient = httpClient;
 		this.apiBaseUrl = apiBaseUrl;
 	}

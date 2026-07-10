@@ -9,31 +9,27 @@
 		<a href="/job-roles">Back to Job Roles</a>
 		<h1>{{ jobRole.roleName }}</h1>
 		<h2>Description</h2>
-		<p>{{ jobRole.description or 'Description not yet available.' }}</p>
+		<p>{{ jobRole.description }}</p>
 
 		<h2>Responsibilities</h2>
-		<p>{{ jobRole.responsibilities or 'Responsibilities not yet available.' }}</p>
+		<p>{{ jobRole.responsibilities }}</p>
 
 		<dl>
 			<dt>Job Specification</dt>
-			{% if jobRole.sharepointUrl %}
-				<dd>
-					<a href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
-						View Job Specification (opens in a new tab)
-					</a>
-				</dd>
-			{% else %}
-				<dd>Job specification not yet available.</dd>
-			{% endif %}
+			<dd>
+				<a href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
+					View Job Specification (opens in a new tab)
+				</a>
+			</dd>
 
 			<dt>Location</dt>
 			<dd>{{ jobRole.location }}</dd>
 
 			<dt>Capability</dt>
-			<dd>{{ jobRole.capability }}</dd>
+			<dd>{{ jobRole.capabilityName }}</dd>
 
 			<dt>Band</dt>
-			<dd>{{ jobRole.band }}</dd>
+			<dd>{{ jobRole.bandName }}</dd>
 
 			<dt>Closing Date</dt>
 			<dd>{{ jobRole.closingDate }}</dd>

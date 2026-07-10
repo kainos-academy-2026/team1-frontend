@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import nunjucks from 'nunjucks';
 import { JobRoleController } from './controllers/jobRoleController';
+import { errorHandler } from './errors/errorHandler';
 import { jobRoleRouter } from './routers/jobRoleRouter';
 import { ApiJobRoleService } from './services/apiJobRoleService';
 import type { JobRoleService } from './services/jobRoleService';
@@ -27,6 +28,8 @@ export const createApp = (jobRoleService?: JobRoleService) => {
 	const resolvedJobRoleService = jobRoleService ?? new ApiJobRoleService();
 	const jobRoleController = new JobRoleController(resolvedJobRoleService);
 	app.use('/job-roles', jobRoleRouter(jobRoleController));
+
+	app.use(errorHandler);
 
 	return app;
 };

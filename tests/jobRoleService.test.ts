@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
+import { ValidationError } from '../src/errors/validationError';
 import type { JobRole } from '../src/models/jobRole';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import { ApiJobRoleService } from '../src/services/apiJobRoleService';
 
 describe('ApiJobRoleService', () => {
-	it('throws when API_BASE_URL is not configured', () => {
+	it('allows construction when API_BASE_URL is not configured', () => {
 		const get = vi.fn();
 
 		expect(
@@ -13,7 +14,7 @@ describe('ApiJobRoleService', () => {
 					httpClient: { get } as never,
 					apiBaseUrl: undefined,
 				}),
-		).toThrow('API_BASE_URL is not configured');
+		).not.toThrow();
 		expect(get).not.toHaveBeenCalled();
 	});
 
@@ -69,11 +70,17 @@ describe('ApiJobRoleService', () => {
 			{
 				id: 1,
 				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 				location: 'New York',
 				capabilityId: 1,
+				capabilityName: 'Workday',
 				bandId: 2,
+				bandName: 'Senior Associate',
 				closingDate: '2024-12-31T00:00:00.000Z',
 				status: 'open',
+				numberOfOpenPositions: 2,
 			},
 		];
 
@@ -87,17 +94,17 @@ describe('ApiJobRoleService', () => {
 			{
 				jobRoleId: 1,
 				roleName: 'Software Engineer',
-				description: '',
-				responsibilities: '',
-				sharepointUrl: '',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 				location: 'New York',
 				capabilityId: 1,
-				capabilityName: 'Capability 1',
+				capabilityName: 'Workday',
 				bandId: 2,
-				bandName: 'Band 2',
+				bandName: 'Senior Associate',
 				closingDate: new Date('2024-12-31T00:00:00.000Z'),
 				status: JobRoleStatus.Open,
-				numberOfOpenPositions: 0,
+				numberOfOpenPositions: 2,
 			},
 		]);
 	});
@@ -127,8 +134,33 @@ describe('ApiJobRoleService', () => {
 			apiBaseUrl: 'http://localhost:3001',
 		});
 
+		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
 		await expect(service.getJobRoles()).rejects.toThrow(
 			'Unexpected job role status: draft',
+		);
+	});
+
+	it('throws ValidationError when list items have no supported identifier', async () => {
+		const apiRoles = [
+			{
+				roleName: 'Software Engineer',
+				location: 'Belfast',
+				capabilityId: 1,
+				bandId: 2,
+				closingDate: '2026-08-01',
+				status: 'open',
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService({
+			httpClient: { get } as never,
+			apiBaseUrl: 'http://localhost:3001',
+		});
+
+		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
+		await expect(service.getJobRoles()).rejects.toThrow(
+			'Unexpected job role identifier: undefined',
 		);
 	});
 
@@ -163,6 +195,37 @@ describe('ApiJobRoleService', () => {
 		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles/1');
 	});
 
+	it('throws ValidationError when a required text field is blank', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: '   ',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService({
+			httpClient: { get } as never,
+			apiBaseUrl: 'http://localhost:3001',
+		});
+
+		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
+		await expect(service.getJobRoles()).rejects.toThrow(
+			'Missing required job role field: description',
+		);
+	});
+
 	it('returns null when the API returns 404 for a role id', async () => {
 		const get = vi
 			.fn()
@@ -191,11 +254,17 @@ describe('ApiJobRoleService', () => {
 					{
 						id: 1,
 						roleName: 'Software Engineer',
+						description: 'Build features that solve customer problems.',
+						responsibilities: 'Deliver code, tests, and documentation.',
+						sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 						location: 'New York',
 						capabilityId: 1,
+						capabilityName: 'Workday',
 						bandId: 2,
+						bandName: 'Senior Associate',
 						closingDate: '2024-12-31T00:00:00.000Z',
 						status: 'open',
+						numberOfOpenPositions: 2,
 					},
 				],
 			});
@@ -207,17 +276,17 @@ describe('ApiJobRoleService', () => {
 		await expect(service.getJobRole(1)).resolves.toEqual({
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
-			description: '',
-			responsibilities: '',
-			sharepointUrl: '',
+			description: 'Build features that solve customer problems.',
+			responsibilities: 'Deliver code, tests, and documentation.',
+			sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 			location: 'New York',
 			capabilityId: 1,
-			capabilityName: 'Capability 1',
+			capabilityName: 'Workday',
 			bandId: 2,
-			bandName: 'Band 2',
+			bandName: 'Senior Associate',
 			closingDate: new Date('2024-12-31T00:00:00.000Z'),
 			status: JobRoleStatus.Open,
-			numberOfOpenPositions: 0,
+			numberOfOpenPositions: 2,
 		});
 		expect(get).toHaveBeenNthCalledWith(1, 'http://localhost:3001/job-roles/1');
 		expect(get).toHaveBeenNthCalledWith(2, 'http://localhost:3001/job-roles');
@@ -248,6 +317,7 @@ describe('ApiJobRoleService', () => {
 			apiBaseUrl: 'http://localhost:3001',
 		});
 
+		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
 		await expect(service.getJobRoles()).rejects.toThrow(
 			'Unexpected job role closing date: not-a-date',
 		);
@@ -276,8 +346,9 @@ describe('ApiJobRoleService', () => {
 			apiBaseUrl: 'http://localhost:3001',
 		});
 
+		await expect(service.getJobRole(1)).rejects.toBeInstanceOf(ValidationError);
 		await expect(service.getJobRole(1)).rejects.toThrow(
-			'Unexpected job role sharepointUrl: javascript:alert(1)',
+			'sharepointUrl must use HTTPS: javascript:alert(1)',
 		);
 	});
 });

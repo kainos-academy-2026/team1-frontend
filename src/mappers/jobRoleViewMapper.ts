@@ -4,8 +4,8 @@ export interface JobRoleListItemViewModel {
 	jobRoleId: number;
 	roleName: string;
 	location: string;
-	capability: string;
-	band: string;
+	capabilityName: string;
+	bandName: string;
 	closingDate: string;
 }
 
@@ -32,8 +32,8 @@ export const mapJobRoleListItemViewModel = (
 	jobRoleId: jobRole.jobRoleId,
 	roleName: jobRole.roleName,
 	location: jobRole.location,
-	capability: jobRole.capabilityName,
-	band: jobRole.bandName,
+	capabilityName: jobRole.capabilityName,
+	bandName: jobRole.bandName,
 	closingDate: formatClosingDate(jobRole.closingDate),
 });
 

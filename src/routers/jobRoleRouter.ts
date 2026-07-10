@@ -6,6 +6,7 @@ import {
 } from 'express';
 import { z } from 'zod';
 import type { JobRoleController } from '../controllers/jobRoleController';
+import { renderInvalidJobRoleIdError } from '../errors/errorPage';
 
 const jobRoleParamsSchema = z.object({
 	id: z.coerce.number().int().positive(),
@@ -18,7 +19,7 @@ const validateJobRoleId = (
 ): void => {
 	const params = jobRoleParamsSchema.safeParse(req.params);
 	if (!params.success) {
-		res.status(400).send('Invalid job role id');
+		renderInvalidJobRoleIdError(res);
 		return;
 	}
 

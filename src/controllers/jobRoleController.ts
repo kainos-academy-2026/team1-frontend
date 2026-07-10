@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { renderJobRoleNotFoundError } from '../errors/errorPage';
 import {
 	mapJobRoleDetailViewModel,
 	mapJobRoleListItemViewModel,
@@ -20,7 +21,7 @@ export class JobRoleController {
 		const jobRoleId = res.locals.jobRoleId as number;
 		const jobRole = await this.jobRoleService.getJobRole(jobRoleId);
 		if (!jobRole) {
-			res.status(404).send('Job role not found');
+			renderJobRoleNotFoundError(res);
 			return;
 		}
 

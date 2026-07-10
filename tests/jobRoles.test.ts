@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app';
+import { ValidationError } from '../src/errors/validationError';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import type { JobRoleService } from '../src/services/jobRoleService';
 
@@ -96,6 +97,20 @@ describe('GET /job-roles', () => {
 		expect(response.status).toBe(500);
 	});
 
+	it('returns 502 when the service throws a validation error', async () => {
+		getJobRoles.mockRejectedValue(
+			new ValidationError('Unexpected job role identifier: undefined'),
+		);
+
+		const app = createApp(jobRoleService);
+		const response = await request(app).get('/job-roles');
+
+		expect(response.status).toBe(502);
+		expect(response.text).toContain(
+			'The job data received from the upstream API was invalid.',
+		);
+	});
+
 	it('renders an empty state when no job roles are returned', async () => {
 		getJobRoles.mockResolvedValue([]);
 
@@ -149,7 +164,8 @@ describe('GET /job-roles', () => {
 		const response = await request(app).get('/job-roles/not-a-number');
 
 		expect(response.status).toBe(400);
-		expect(response.text).toContain('Invalid job role id');
+		expect(response.text).toContain('Bad request');
+		expect(response.text).toContain('Invalid job role ID provided.');
 		expect(getJobRole).not.toHaveBeenCalled();
 	});
 
@@ -160,7 +176,10 @@ describe('GET /job-roles', () => {
 		const response = await request(app).get('/job-roles/999');
 
 		expect(response.status).toBe(404);
-		expect(response.text).toContain('Job role not found');
+		expect(response.text).toContain(
+			'The job role you requested could not be found.',
+		);
+		expect(response.text).toContain('Back to open roles');
 		expect(getJobRole).toHaveBeenCalledWith(999);
 	});
 });
