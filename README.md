@@ -69,6 +69,16 @@ npm run test:coverage
 npm run test:ui
 ```
 
+### Git hooks
+
+After cloning the repo, run this once to activate the pre-commit lint hook:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The hook runs `lint:fix` automatically before every commit, and aborts if there are errors that cannot be auto-fixed.
+
 ### Lint
 
 ```bash
