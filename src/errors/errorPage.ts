@@ -9,20 +9,37 @@ interface ErrorPageOptions {
 	redirectText?: string;
 }
 
+const toRedirectHref = (redirectHref?: string): string => {
+	if (typeof redirectHref !== 'string') {
+		return '/job-roles';
+	}
+
+	const trimmedHref = redirectHref.trim();
+	if (trimmedHref.length === 0) {
+		return '/job-roles';
+	}
+
+	if (trimmedHref.startsWith('/')) {
+		return trimmedHref;
+	}
+
+	return `/${trimmedHref}`;
+};
+
 export const renderErrorPage = (
 	res: Response,
 	{
 		status,
 		title,
 		message,
-		redirectHref = '/job-roles',
+		redirectHref,
 		redirectText = 'Back to open roles',
 	}: ErrorPageOptions,
 ): void => {
 	res.status(status).render('errors/error-page.njk', {
 		title,
 		message,
-		redirectHref,
+		redirectHref: toRedirectHref(redirectHref),
 		redirectText,
 	});
 };

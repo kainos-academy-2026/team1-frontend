@@ -166,6 +166,7 @@ describe('GET /job-roles', () => {
 		expect(response.status).toBe(400);
 		expect(response.text).toContain('Bad request');
 		expect(response.text).toContain('Invalid job role ID provided.');
+		expect(response.text).toContain('href="/job-roles"');
 		expect(getJobRole).not.toHaveBeenCalled();
 	});
 
@@ -180,6 +181,7 @@ describe('GET /job-roles', () => {
 			'The job role you requested could not be found.',
 		);
 		expect(response.text).toContain('Back to open roles');
+		expect(response.text).toContain('href="/job-roles"');
 		expect(getJobRole).toHaveBeenCalledWith(999);
 	});
 });
