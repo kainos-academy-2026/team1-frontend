@@ -3,14 +3,20 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import nunjucks from 'nunjucks';
 import { JobRoleController } from './controllers/jobRoleController';
+import { LoginController } from './controllers/loginController';
 import { errorHandler } from './errors/errorHandler';
 import { jobRoleRouter } from './routers/jobRoleRouter';
+import { loginRouter } from './routers/loginRouter';
 import type { JobRoleService } from './services/jobRoleService';
+import type { LoginServiceClient } from './services/loginService';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const createApp = (jobRoleService: JobRoleService) => {
+export const createApp = (
+	jobRoleService: JobRoleService,
+	loginService?: LoginServiceClient,
+) => {
 	const app = express();
 
 	const viewsPath = path.join(__dirname, 'views');
@@ -19,17 +25,19 @@ export const createApp = (jobRoleService: JobRoleService) => {
 	nunjucks.configure(viewsPath, {
 		autoescape: true,
 		express: app,
+		noCache: true,
 	});
 
 	app.use('/assets', express.static(assetsPath));
+	app.use(express.urlencoded({ extended: false }));
+	app.use(express.json());
 
 	app.get('/', (_req, res) => {
 		res.render('index.njk', { title: 'Home' });
 	});
 
-	app.get('/login', (_req, res) => {
-		res.render('login.njk', { title: 'Login' });
-	});
+	const loginController = new LoginController(loginService);
+	app.use('/login', loginRouter(loginController));
 
 	const jobRoleController = new JobRoleController(jobRoleService);
 	app.use('/job-roles', jobRoleRouter(jobRoleController));
