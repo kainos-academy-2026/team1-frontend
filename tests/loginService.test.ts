@@ -1,3 +1,4 @@
+import type { AxiosInstance } from 'axios';
 import { describe, expect, it, vi } from 'vitest';
 import { LoginService } from '../src/services/loginService';
 
@@ -7,7 +8,7 @@ describe('LoginService', () => {
 			data: { token: 'jwt-token' },
 		});
 		const service = new LoginService(
-			{ post } as never,
+			{ post } as unknown as AxiosInstance,
 			'http://localhost:3001',
 		);
 

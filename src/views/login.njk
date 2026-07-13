@@ -15,7 +15,7 @@
             {% if loginError %}
                 <p class="login-error" role="alert">{{ loginError }}</p>
                 <script>
-                    window.alert('{{ loginError | escape }}');
+                    window.alert('{{ loginError | dump | safe }}');
                 </script>
             {% endif %}
 
@@ -49,7 +49,7 @@
 
     {% if loginToken %}
         <script>
-            sessionStorage.setItem('loginToken', '{{ loginToken }}');
+            sessionStorage.setItem('loginToken', '{{ loginToken |dump | safe }}');
             window.location.href = '/';
         </script>
     {% endif %}

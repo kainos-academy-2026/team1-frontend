@@ -1,11 +1,7 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
 import type { LoginServiceClient } from '../services/loginService';
-
-interface BackendValidationError {
-	field: string;
-	message: string;
-}
+import type { BackendValidationError } from '../models/backendValidation';
 
 export class LoginController {
 	constructor(private readonly loginService?: LoginServiceClient) {}
@@ -23,7 +19,7 @@ export class LoginController {
 
 	handleLogin = async (_req: Request, res: Response): Promise<void> => {
 		if (!this.loginService) {
-			res.render('login.njk', {
+			res.status(503).render('login.njk', {
 				title: 'Login',
 				loginError: 'Login service is not available yet.',
 			});
@@ -37,7 +33,8 @@ export class LoginController {
 
 		try {
 			const { token } = await this.loginService.login({ email, password });
-
+			res.set('Cache-Control', 'no-store');
+			res.cookie('token', token, { httpOnly: true });
 			res.render('login.njk', {
 				title: 'Login',
 				loginToken: token,

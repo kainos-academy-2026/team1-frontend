@@ -21,9 +21,9 @@ const validateLoginForm = (
 
 	if (!result.success) {
 		res.status(400).render('login.njk', {
-			title: 'Login',
-			loginError: 'Enter a valid email address that includes an @ symbol.',
-		});
+ 			title: 'Login',
+ 			loginError: 'Enter a valid email address that includes an @ symbol.',
+ 		});
 		return;
 	}
 

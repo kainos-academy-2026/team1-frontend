@@ -25,7 +25,7 @@ export const createApp = (
 	nunjucks.configure(viewsPath, {
 		autoescape: true,
 		express: app,
-		noCache: true,
+		noCache: process.env.NODE_ENV !== 'production',
 	});
 
 	app.use('/assets', express.static(assetsPath));

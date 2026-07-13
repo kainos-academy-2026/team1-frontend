@@ -1,17 +1,8 @@
 import type { AxiosInstance } from 'axios';
-
-export interface LoginCredentials {
-	email: string;
-	password: string;
-}
-
-export interface LoginResponse {
-	token: string;
-}
-
-export interface LoginServiceClient {
-	login(credentials: LoginCredentials): Promise<LoginResponse>;
-}
+import type { LoginCredentials } from '../models/loginCredentials';
+import type { LoginResponse } from '../models/loginResponse';
+export type { LoginServiceClient } from '../models/loginServiceClient';
+import type { LoginServiceClient } from '../models/loginServiceClient';
 
 export class LoginService implements LoginServiceClient {
 	constructor(
