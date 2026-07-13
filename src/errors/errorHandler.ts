@@ -1,8 +1,8 @@
 import axios from 'axios';
 import type { NextFunction, Request, Response } from 'express';
-import { errorMessages } from './errorMessages';
-import { renderErrorPage } from './errorPage';
-import { ValidationError } from './validationError';
+import { errorMessages } from './errorMessages.js';
+import { renderErrorPage } from './errorPage.js';
+import { ValidationError } from './validationError.js';
 
 const getErrorRedirect = (
 	req: Request,

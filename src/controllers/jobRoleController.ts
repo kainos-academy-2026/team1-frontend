@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
-import { renderJobRoleNotFoundError } from '../errors/errorPage';
+import { renderJobRoleNotFoundError } from '../errors/errorPage.js';
 import {
 	mapJobRoleDetailViewModel,
 	mapJobRoleListItemViewModel,
-} from '../mappers/jobRoleViewMapper';
-import { JobRoleStatus } from '../models/jobRoleStatus';
-import type { JobRoleService } from '../services/jobRoleService';
+} from '../mappers/jobRoleViewMapper.js';
+import { JobRoleStatus } from '../models/jobRoleStatus.js';
+import type { JobRoleService } from '../services/jobRoleService.js';
 
 export class JobRoleController {
 	constructor(private readonly jobRoleService: JobRoleService) {}

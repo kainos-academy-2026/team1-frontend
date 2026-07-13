@@ -1,22 +1,23 @@
-{% extends "layouts/base.njk" %}
-{% block content %}
-	<a class="back-btn" href="/job-roles"> < </a>
-	<h1 class="job-listings-title">{{ jobRole.roleName }}</h1>
-	<article class="job-detail-card">
-		<section class="job-detail-section" aria-labelledby="job-description-heading">
-			<h2 id="job-description-heading" class="job-detail-heading">Description</h2>
-			<p class="job-detail-text">{{ jobRole.description }}</p>
-		</section>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{{ jobRole.roleName }}</title>
+	</head>
+	<body>
+		<a href="/job-roles">Back to Job Roles</a>
+		<h1>{{ jobRole.roleName }}</h1>
+		<h2>Description</h2>
+		<p>{{ jobRole.description }}</p>
 
-		<section class="job-detail-section" aria-labelledby="job-responsibilities-heading">
-			<h2 id="job-responsibilities-heading" class="job-detail-heading">Responsibilities</h2>
-			<p class="job-detail-text">{{ jobRole.responsibilities }}</p>
-		</section>
+		<h2>Responsibilities</h2>
+		<p>{{ jobRole.responsibilities }}</p>
 
-		<dl class="job-detail-meta">
+		<dl>
 			<dt>Job Specification</dt>
 			<dd>
-				<a class="job-detail-link" href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
+				<a href="{{ jobRole.sharepointUrl }}" target="_blank" rel="noopener noreferrer">
 					View Job Specification (opens in a new tab)
 				</a>
 			</dd>
@@ -39,5 +40,5 @@
 			<dt>Open Positions</dt>
 			<dd>{{ jobRole.numberOfOpenPositions }}</dd>
 		</dl>
-	</article>
-{% endblock %}
+	</body>
+</html>

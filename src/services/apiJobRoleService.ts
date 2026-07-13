@@ -1,12 +1,15 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
-import { mapApiJobRole, mapApiJobRoleSummary } from '../mappers/jobRoleMapper';
+import {
+	mapApiJobRole,
+	mapApiJobRoleSummary,
+} from '../mappers/jobRoleMapper.js';
 import type {
 	ApiJobRoleDto,
 	ApiJobRoleSummaryDto,
-} from '../models/apiJobRoleDto';
-import type { JobRole } from '../models/jobRole';
-import type { JobRoleService } from './jobRoleService';
+} from '../models/apiJobRoleDto.js';
+import type { JobRole } from '../models/jobRole.js';
+import type { JobRoleService } from './jobRoleService.js';
 
 export class ApiJobRoleService implements JobRoleService {
 	constructor(

@@ -5,8 +5,8 @@ import {
 	Router,
 } from 'express';
 import { z } from 'zod';
-import type { JobRoleController } from '../controllers/jobRoleController';
-import { renderInvalidJobRoleIdError } from '../errors/errorPage';
+import type { JobRoleController } from '../controllers/jobRoleController.js';
+import { renderInvalidJobRoleIdError } from '../errors/errorPage.js';
 
 const jobRoleParamsSchema = z.object({
 	id: z.coerce.number().int().positive(),

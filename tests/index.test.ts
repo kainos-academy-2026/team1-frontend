@@ -10,7 +10,10 @@ describe('GET /', () => {
 			getJobRoles: async () => [],
 			getJobRole: async () => null,
 		};
-		const app = createApp(jobRoleService);
+		const userService = {
+			createUser: async () => undefined,
+		};
+		const app = createApp(jobRoleService, userService);
 
 		const response = await request(app).get('/');
 
