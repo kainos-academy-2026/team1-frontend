@@ -95,6 +95,8 @@ router.post("/", validateBody(CreateJobRoleSchema), (req, res) => controller.cre
 export default router;
 ```
 
+- **Axios API client pattern** — Create a single Axios instance configured with `baseURL` (for example via a shared `createApiHttpClient()` function in `src/config/`) and inject that instance into API-facing services. Do not pass `apiBaseUrl` strings into services. In services, call relative paths only (for example `/auth/login`, `/auth/signup`, `/job-roles`). Keep URL composition out of service methods.
+
 - **app.ts** — Contains only `app.` statements: middleware setup, router mounting, and error handlers. No service, controller, or mapper instantiation. Import routers as plain default imports and mount them directly. Example:
 
 ```typescript

@@ -1,15 +1,14 @@
-import axios from 'axios';
 import { Router } from 'express';
-import { requireApiBaseUrl } from '../config/requireApiBaseUrl.js';
+import { createApiHttpClient } from '../config/createApiHttpClient.js';
 import { RegistrationController } from '../controllers/registrationController.js';
 import { UserRequestMapper } from '../mappers/userRequestMapper.js';
 import { validateBody } from '../middleware/validate.js';
 import { createUserRequestSchema } from '../models/userRequestDto.js';
 import { ApiUserService } from '../services/apiUserService.js';
 
-const apiBaseUrl = requireApiBaseUrl();
+const apiHttpClient = createApiHttpClient();
 const userRequestMapper = new UserRequestMapper();
-const userService = new ApiUserService(axios, apiBaseUrl, userRequestMapper);
+const userService = new ApiUserService(apiHttpClient, userRequestMapper);
 const registrationController = new RegistrationController(userService);
 
 const router = Router();

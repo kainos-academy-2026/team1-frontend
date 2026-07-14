@@ -6,13 +6,12 @@ import type { UserService } from './userService.js';
 export class ApiUserService implements UserService {
 	constructor(
 		private readonly httpClient: AxiosInstance,
-		private readonly apiBaseUrl: string,
 		private readonly userRequestMapper: UserRequestMapper,
 	) {}
 
 	async createUser(data: UserRequestDto): Promise<void> {
 		await this.httpClient.post(
-			`${this.apiBaseUrl}/auth/signup`,
+			'/auth/signup',
 			this.userRequestMapper.mapUserRequest(data),
 		);
 	}

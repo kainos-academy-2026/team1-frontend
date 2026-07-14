@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
 	type NextFunction,
 	type Request,
@@ -6,7 +5,7 @@ import {
 	Router,
 } from 'express';
 import { z } from 'zod';
-import { requireApiBaseUrl } from '../config/requireApiBaseUrl.js';
+import { createApiHttpClient } from '../config/createApiHttpClient.js';
 import { LoginController } from '../controllers/loginController.js';
 import { LoginService } from '../services/loginService.js';
 
@@ -34,8 +33,8 @@ const validateLoginForm = (
 	next();
 };
 
-const apiBaseUrl = requireApiBaseUrl();
-const loginService = new LoginService(axios, apiBaseUrl);
+const apiHttpClient = createApiHttpClient();
+const loginService = new LoginService(apiHttpClient);
 const loginController = new LoginController(loginService);
 
 const router = Router();
