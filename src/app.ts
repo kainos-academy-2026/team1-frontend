@@ -5,7 +5,10 @@ import nunjucks from 'nunjucks';
 import { JobRoleController } from './controllers/jobRoleController';
 import { LoginController } from './controllers/loginController';
 import { errorHandler } from './errors/errorHandler';
-import { attachAuthState, requireAuthenticatedUser } from './routers/authRouter';
+import {
+	attachAuthState,
+	requireAuthenticatedUser,
+} from './routers/authRouter';
 import { jobRoleRouter } from './routers/jobRoleRouter';
 import { loginRouter } from './routers/loginRouter';
 import type { JobRoleService } from './services/jobRoleService';
@@ -42,7 +45,11 @@ export const createApp = (
 	app.use('/login', loginRouter(loginController));
 
 	const jobRoleController = new JobRoleController(jobRoleService);
-	app.use('/job-roles', requireAuthenticatedUser, jobRoleRouter(jobRoleController));
+	app.use(
+		'/job-roles',
+		requireAuthenticatedUser,
+		jobRoleRouter(jobRoleController),
+	);
 
 	app.use(errorHandler);
 

@@ -96,7 +96,11 @@ export const getAuthRole = (req: Request): 'admin' | 'applicant' | null => {
 		return 'admin';
 	}
 
-	if (claims.some((value) => value.includes('applicant') || value.includes('user'))) {
+	if (
+		claims.some(
+			(value) => value.includes('applicant') || value.includes('user'),
+		)
+	) {
 		return 'applicant';
 	}
 
