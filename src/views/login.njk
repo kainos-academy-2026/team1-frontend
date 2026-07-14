@@ -49,7 +49,7 @@
 
     {% if loginToken %}
         <script>
-            sessionStorage.setItem('loginToken', '{{ loginToken |dump | safe }}');
+            sessionStorage.setItem('loginToken', '{{ loginToken | safe }}');
             window.location.href = '/';
         </script>
     {% endif %}

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
-import type { LoginServiceClient } from '../services/loginService';
 import type { BackendValidationError } from '../models/backendValidation';
+import type { LoginServiceClient } from '../services/loginService';
 
 export class LoginController {
 	constructor(private readonly loginService?: LoginServiceClient) {}

@@ -1,7 +1,9 @@
 import type { AxiosInstance } from 'axios';
 import type { LoginCredentials } from '../models/loginCredentials';
 import type { LoginResponse } from '../models/loginResponse';
+
 export type { LoginServiceClient } from '../models/loginServiceClient';
+
 import type { LoginServiceClient } from '../models/loginServiceClient';
 
 export class LoginService implements LoginServiceClient {
