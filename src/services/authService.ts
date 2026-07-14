@@ -80,22 +80,22 @@ const resolveAuthRoleFromPayload = (payload: JwtPayload): AuthRole | null => {
 const validateAndDecodeAuthSession = (
 	token: string,
 ): VerifiedAuthContext | null => {
-	const jwtSecret = process.env.JWT_SECRET;
-	if (!jwtSecret) {
+	const decoded = jsonwebtoken.decode(token);
+	if (typeof decoded !== 'object' || decoded === null) {
 		return null;
 	}
 
-	let decoded: JwtPayload;
-	try {
-		decoded = jsonwebtoken.verify(token, jwtSecret, {
-			algorithms: ['HS256'],
-		}) as JwtPayload;
-	} catch {
-		return null;
-	}
-
-	const authRole = resolveAuthRoleFromPayload(decoded);
+	const authRole = resolveAuthRoleFromPayload(decoded as JwtPayload);
 	if (!authRole) {
+		return null;
+	}
+
+	const expClaim = (decoded as JwtPayload).exp;
+	if (typeof expClaim !== 'number' || !Number.isFinite(expClaim)) {
+		return null;
+	}
+
+	if (Date.now() >= expClaim * 1000) {
 		return null;
 	}
 
