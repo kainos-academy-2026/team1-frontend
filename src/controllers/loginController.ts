@@ -40,6 +40,7 @@ export class LoginController {
 				httpOnly: true,
 				secure: isProduction,
 				sameSite: 'strict',
+				path: '/',
 			});
 			res.redirect('/job-roles');
 		} catch (error) {
