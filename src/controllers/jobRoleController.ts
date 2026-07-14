@@ -12,8 +12,9 @@ export class JobRoleController {
 
 	getJobRoles = async (_req: Request, res: Response): Promise<void> => {
 		const authToken = res.locals.authToken as string | undefined;
+		const isAdmin = res.locals.isAdmin as boolean;
 		const jobRoles = (await this.jobRoleService.getJobRoles(authToken))
-			.filter((jobRole) => jobRole.status === JobRoleStatus.Open)
+			.filter((jobRole) => isAdmin || jobRole.status === JobRoleStatus.Open)
 			.map(mapJobRoleListItemViewModel);
 		res.render('job-role-list.njk', { jobRoles });
 	};
