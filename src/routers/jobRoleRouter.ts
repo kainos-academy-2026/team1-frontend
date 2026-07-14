@@ -7,6 +7,7 @@ import {
 import { z } from 'zod';
 import type { JobRoleController } from '../controllers/jobRoleController';
 import { renderInvalidJobRoleIdError } from '../errors/errorPage';
+import { requireAuthenticatedUser } from './authRouter';
 
 const jobRoleParamsSchema = z.object({
 	id: z.coerce.number().int().positive(),
@@ -31,7 +32,7 @@ export const jobRoleRouter = (jobRoleController: JobRoleController): Router => {
 	const router = Router();
 
 	router.get('/', jobRoleController.getJobRoles);
-	router.get('/:id', validateJobRoleId, jobRoleController.getJobRole);
+	router.get('/:id', requireAuthenticatedUser, validateJobRoleId, jobRoleController.getJobRole);
 
 	return router;
 };

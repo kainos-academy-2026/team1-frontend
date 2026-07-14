@@ -6,8 +6,7 @@
 
             <div class="index-actions">
                 <a href="/job-roles">Explore current opportunities</a>
-                <!-- needs to be changed -->
-                <a href="/job-roles">View applications</a>
+                <a href="{% if isAuthenticated %}/applications{% else %}/login{% endif %}">View applications</a>
             </div>
         </div>
     </section>

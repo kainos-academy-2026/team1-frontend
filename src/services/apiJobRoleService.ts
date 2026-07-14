@@ -14,9 +14,13 @@ export class ApiJobRoleService implements JobRoleService {
 		private readonly apiBaseUrl: string,
 	) {}
 
-	private authHeaders(authToken: string): Record<string, string> {
+	private authHeaders(authToken?: string): Record<string, string> {
+		if (!authToken || authToken.trim().length === 0) {
+			return {};
+		}
+
 		return {
-			Authorization: `Bearer ${authToken}`,
+			Authorization: `Bearer ${authToken.trim()}`,
 		};
 	}
 

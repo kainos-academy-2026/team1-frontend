@@ -1,33 +1,44 @@
 import request from 'supertest';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { createApp } from '../src/app';
 import type { JobRoleService } from '../src/services/jobRoleService';
+import { createAuthToken, withTestJwtSecret } from './helpers/authToken';
 
 describe('GET /', () => {
-	it('redirects anonymous users to login', async () => {
+	let restoreJwtSecret: () => void;
+
+	beforeEach(() => {
+		restoreJwtSecret = withTestJwtSecret();
+	});
+
+	afterEach(() => {
+		restoreJwtSecret();
+	});
+
+	it('renders the home page for anonymous users', async () => {
 		const jobRoleService: JobRoleService = {
-			getJobRoles: async (_authToken: string) => [],
+			getJobRoles: async (_authToken?: string) => [],
 			getJobRole: async (_jobRoleId: number, _authToken: string) => null,
 		};
 		const app = createApp(jobRoleService);
 
 		const response = await request(app).get('/');
 
-		expect(response.status).toBe(302);
-		expect(response.headers.location).toBe('/login');
+		expect(response.status).toBe(200);
+		expect(response.text).toContain('Welcome to Kainos Careers');
 	});
 
 	it('renders the home page for authenticated users', async () => {
 		const jobRoleService: JobRoleService = {
-			getJobRoles: async (_authToken: string) => [],
+			getJobRoles: async (_authToken?: string) => [],
 			getJobRole: async (_jobRoleId: number, _authToken: string) => null,
 		};
 		const app = createApp(jobRoleService);
 
 		const response = await request(app)
 			.get('/')
-			.set('Cookie', ['authSession=token']);
+			.set('Cookie', [`authSession=${createAuthToken()}`]);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Welcome to Kainos Careers');

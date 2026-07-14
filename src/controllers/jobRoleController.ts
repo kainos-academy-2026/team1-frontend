@@ -11,7 +11,7 @@ export class JobRoleController {
 	constructor(private readonly jobRoleService: JobRoleService) {}
 
 	getJobRoles = async (_req: Request, res: Response): Promise<void> => {
-		const authToken = res.locals.authToken as string;
+		const authToken = res.locals.authToken as string | undefined;
 		const jobRoles = (await this.jobRoleService.getJobRoles(authToken))
 			.filter((jobRole) => jobRole.status === JobRoleStatus.Open)
 			.map(mapJobRoleListItemViewModel);

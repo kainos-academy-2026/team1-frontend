@@ -1,18 +1,29 @@
 import request from 'supertest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app';
 import { ValidationError } from '../src/errors/validationError';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import type { JobRoleService } from '../src/services/jobRoleService';
+import {
+	createAuthToken,
+	withTestJwtSecret,
+} from './helpers/authToken';
 
 describe('GET /job-roles', () => {
-	const authCookie = ['authSession=test-auth-token'];
+	let restoreJwtSecret: () => void;
+	let authCookie: string[];
 	const getJobRoles = vi.fn();
 	const getJobRole = vi.fn();
 	const jobRoleService: JobRoleService = { getJobRoles, getJobRole };
 
 	beforeEach(() => {
+		restoreJwtSecret = withTestJwtSecret();
+		authCookie = [`authSession=${createAuthToken()}`];
 		vi.resetAllMocks();
+	});
+
+	afterEach(() => {
+		restoreJwtSecret();
 	});
 
 	it('renders a list of open job roles', async () => {
@@ -201,14 +212,23 @@ describe('GET /job-roles', () => {
 		);
 		expect(response.text).toContain('Back to open roles');
 		expect(response.text).toContain('href="/job-roles"');
-		expect(getJobRole).toHaveBeenCalledWith(999, 'test-auth-token');
+		expect(getJobRole).toHaveBeenCalledWith(999, expect.any(String));
 	});
 
-	it('redirects anonymous users to login for protected job role routes', async () => {
+	it('redirects anonymous users to login when accessing a job role detail page', async () => {
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles');
+		const response = await request(app).get('/job-roles/1');
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe('/login');
+	});
+
+	it('allows anonymous users to view the job role list', async () => {
+		getJobRoles.mockResolvedValue([]);
+
+		const app = createApp(jobRoleService);
+		const response = await request(app).get('/job-roles');
+
+		expect(response.status).toBe(200);
 	});
 });

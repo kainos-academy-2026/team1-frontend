@@ -1,10 +1,16 @@
 import request from 'supertest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app';
 import type { JobRoleService } from '../src/services/jobRoleService';
 import type { LoginServiceClient } from '../src/services/loginService';
+import {
+	createAuthToken,
+	withTestJwtSecret,
+} from './helpers/authToken';
 
 describe('Login flow', () => {
+	let restoreJwtSecret: () => void;
+
 	const jobRoleService: JobRoleService = {
 		getJobRoles: vi.fn(),
 		getJobRole: vi.fn(),
@@ -15,7 +21,12 @@ describe('Login flow', () => {
 	};
 
 	beforeEach(() => {
+		restoreJwtSecret = withTestJwtSecret();
 		vi.resetAllMocks();
+	});
+
+	afterEach(() => {
+		restoreJwtSecret();
 	});
 
 	it('renders the login page', async () => {
@@ -63,7 +74,7 @@ describe('Login flow', () => {
 		const app = createApp(jobRoleService, loginService);
 		const response = await request(app)
 			.get('/login')
-			.set('Cookie', ['authSession=token']);
+			.set('Cookie', [`authSession=${createAuthToken()}`]);
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe('/job-roles');
@@ -134,5 +145,16 @@ describe('Login flow', () => {
 		expect(response.text).toContain(
 			'You have successfully logged out. Please log in again.',
 		);
+	});
+
+	it('clears the auth session cookie and redirects to login on logout', async () => {
+		const app = createApp(jobRoleService, loginService);
+		const response = await request(app)
+			.post('/login/logout')
+			.set('Cookie', [`authSession=${createAuthToken()}`]);
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/login?loggedOut=1');
+		expect(response.headers['set-cookie']?.join(';')).toContain('authSession=;');
 	});
 });
