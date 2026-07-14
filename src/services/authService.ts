@@ -84,7 +84,8 @@ const validateAndDecodeAuthSession = (
 	let decoded: unknown;
 	try {
 		decoded = jsonwebtoken.verify(token, secret, { algorithms: ['HS256'] });
-	} catch {
+	} catch (err) {
+		console.error('[auth] verify failed:', err instanceof Error ? err.message : err);
 		return null;
 	}
 
