@@ -1,17 +1,22 @@
+import axios from 'axios';
 import { Router } from 'express';
-import type { JobRoleController } from '../controllers/jobRoleController.js';
+import { requireApiBaseUrl } from '../config/requireApiBaseUrl.js';
+import { JobRoleController } from '../controllers/jobRoleController.js';
 import { validateParams } from '../middleware/validate.js';
 import { jobRoleParamsSchema } from '../models/jobRoleParamsDto.js';
+import { ApiJobRoleService } from '../services/apiJobRoleService.js';
 
-export const jobRoleRouter = (jobRoleController: JobRoleController): Router => {
-	const router = Router();
+const apiBaseUrl = requireApiBaseUrl();
+const jobRoleService = new ApiJobRoleService(axios, apiBaseUrl);
+const jobRoleController = new JobRoleController(jobRoleService);
 
-	router.get('/', jobRoleController.getJobRoles);
-	router.get(
-		'/:id',
-		validateParams(jobRoleParamsSchema),
-		jobRoleController.getJobRole,
-	);
+const router = Router();
 
-	return router;
-};
+router.get('/', jobRoleController.getJobRoles);
+router.get(
+	'/:id',
+	validateParams(jobRoleParamsSchema),
+	jobRoleController.getJobRole,
+);
+
+export default router;

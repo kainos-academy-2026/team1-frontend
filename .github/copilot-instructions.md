@@ -70,17 +70,22 @@ Validation belongs at the boundary (middleware layer), not in controllers or ser
 
 ## Router and App Configuration
 
-- **Router files** — Instantiate all services, controllers, and mappers in the router file. The router should be a flat list of statements (no wrapper functions) that define routes with middleware, then export the router at the end. Example:
+- **Router files** — The composition root for a route group. Instantiate all services, controllers, and mapper classes here, inject them via constructors, then declare routes as a flat list of statements. Export the router as a plain default export (no factory functions). Example:
 
 ```typescript
 // src/routers/jobRoleRouter.ts
+import axios from "axios";
 import { Router } from "express";
-import { JobRoleController } from "../controllers/jobRoleController";
-import { JobRoleService } from "../services/jobRoleService";
-import { validateBody } from "../middleware/validate";
-import { CreateJobRoleSchema } from "../models/jobRoleDto";
+import { requireApiBaseUrl } from "../config/requireApiBaseUrl.js";
+import { JobRoleController } from "../controllers/jobRoleController.js";
+import { JobRoleMapper } from "../mappers/jobRoleMapper.js";
+import { ApiJobRoleService } from "../services/apiJobRoleService.js";
+import { validateBody } from "../middleware/validate.js";
+import { CreateJobRoleSchema } from "../models/jobRoleDto.js";
 
-const service = new JobRoleService();
+const apiBaseUrl = requireApiBaseUrl();
+const mapper = new JobRoleMapper();
+const service = new ApiJobRoleService(axios, apiBaseUrl, mapper);
 const controller = new JobRoleController(service);
 const router = Router();
 
@@ -90,13 +95,13 @@ router.post("/", validateBody(CreateJobRoleSchema), (req, res) => controller.cre
 export default router;
 ```
 
-- **app.ts** — Similarly, `app.ts` should be a flat list of `app.` statements (middleware, routes, error handlers) with no wrapper functions, ending with `export default app`. Example:
+- **app.ts** — Contains only `app.` statements: middleware setup, router mounting, and error handlers. No service, controller, or mapper instantiation. Import routers as plain default imports and mount them directly. Example:
 
 ```typescript
 // src/app.ts
 import express from "express";
-import jobRoleRouter from "./routers/jobRoleRouter";
-import { errorHandler } from "./errors/errorHandler";
+import jobRoleRouter from "./routers/jobRoleRouter.js";
+import { errorHandler } from "./errors/errorHandler.js";
 
 const app = express();
 

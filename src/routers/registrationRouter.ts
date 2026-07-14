@@ -1,19 +1,24 @@
+import axios from 'axios';
 import { Router } from 'express';
-import type { RegistrationController } from '../controllers/registrationController.js';
+import { requireApiBaseUrl } from '../config/requireApiBaseUrl.js';
+import { RegistrationController } from '../controllers/registrationController.js';
+import { UserRequestMapper } from '../mappers/userRequestMapper.js';
 import { validateBody } from '../middleware/validate.js';
 import { createUserRequestSchema } from '../models/userRequestDto.js';
+import { ApiUserService } from '../services/apiUserService.js';
 
-export const registrationRouter = (
-	registrationController: RegistrationController,
-): Router => {
-	const router = Router();
+const apiBaseUrl = requireApiBaseUrl();
+const userRequestMapper = new UserRequestMapper();
+const userService = new ApiUserService(axios, apiBaseUrl, userRequestMapper);
+const registrationController = new RegistrationController(userService);
 
-	router.get('/', registrationController.getRegistrationForm);
-	router.post(
-		'/',
-		validateBody(createUserRequestSchema),
-		registrationController.register,
-	);
+const router = Router();
 
-	return router;
-};
+router.get('/', registrationController.getRegistrationForm);
+router.post(
+	'/',
+	validateBody(createUserRequestSchema),
+	registrationController.register,
+);
+
+export default router;

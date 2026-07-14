@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
 	type NextFunction,
 	type Request,
@@ -5,7 +6,9 @@ import {
 	Router,
 } from 'express';
 import { z } from 'zod';
-import type { LoginController } from '../controllers/loginController.js';
+import { requireApiBaseUrl } from '../config/requireApiBaseUrl.js';
+import { LoginController } from '../controllers/loginController.js';
+import { LoginService } from '../services/loginService.js';
 
 const loginFormSchema = z.object({
 	email: z.string().trim().email(),
@@ -31,11 +34,13 @@ const validateLoginForm = (
 	next();
 };
 
-export const loginRouter = (loginController: LoginController): Router => {
-	const router = Router();
+const apiBaseUrl = requireApiBaseUrl();
+const loginService = new LoginService(axios, apiBaseUrl);
+const loginController = new LoginController(loginService);
 
-	router.get('/', loginController.renderLoginPage);
-	router.post('/', validateLoginForm, loginController.handleLogin);
+const router = Router();
 
-	return router;
-};
+router.get('/', loginController.renderLoginPage);
+router.post('/', validateLoginForm, loginController.handleLogin);
+
+export default router;
