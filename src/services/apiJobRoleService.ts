@@ -24,7 +24,7 @@ export class ApiJobRoleService implements JobRoleService {
 		};
 	}
 
-	async getJobRoles(authToken: string): Promise<JobRole[]> {
+	async getJobRoles(authToken?: string): Promise<JobRole[]> {
 		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
 			`${this.apiBaseUrl}/job-roles`,
 			{ headers: this.authHeaders(authToken) },

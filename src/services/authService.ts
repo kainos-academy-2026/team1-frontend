@@ -80,22 +80,22 @@ const resolveAuthRoleFromPayload = (payload: JwtPayload): AuthRole | null => {
 const validateAndDecodeAuthSession = (
 	token: string,
 ): VerifiedAuthContext | null => {
-	const decoded = jsonwebtoken.decode(token);
-	if (typeof decoded !== 'object' || decoded === null) {
+	const jwtSecret = process.env.JWT_SECRET;
+	if (!jwtSecret) {
 		return null;
 	}
 
-	const authRole = resolveAuthRoleFromPayload(decoded as JwtPayload);
+	let decoded: JwtPayload;
+	try {
+		decoded = jsonwebtoken.verify(token, jwtSecret, {
+			algorithms: ['HS256'],
+		}) as JwtPayload;
+	} catch {
+		return null;
+	}
+
+	const authRole = resolveAuthRoleFromPayload(decoded);
 	if (!authRole) {
-		return null;
-	}
-
-	const expClaim = (decoded as JwtPayload).exp;
-	if (typeof expClaim !== 'number' || !Number.isFinite(expClaim)) {
-		return null;
-	}
-
-	if (Date.now() >= expClaim * 1000) {
 		return null;
 	}
 
@@ -137,7 +137,13 @@ export const getAuthRole = (req: Request): AuthRole | null => {
 };
 
 export const clearAuthSession = (res: Response): void => {
-	res.clearCookie(AUTH_SESSION_COOKIE);
+	const isProduction = process.env.NODE_ENV === 'production';
+	res.clearCookie(AUTH_SESSION_COOKIE, {
+		httpOnly: true,
+		secure: isProduction,
+		sameSite: 'strict',
+		path: '/',
+	});
 };
 
 export const getAuthCookieMaxAgeMs = (token: string): number | null => {

@@ -32,7 +32,12 @@ export const createApp = (
 	app.use('/assets', express.static(assetsPath));
 	app.use(express.urlencoded({ extended: false }));
 	app.use(express.json());
-	app.use(attachAuthState);
+	app.use((req, res, next) => {
+		if (req.path.startsWith('/assets')) {
+			return next();
+		}
+		attachAuthState(req, res, next);
+	});
 
 	app.get('/', (_req, res) => {
 		res.render('index.njk', { title: 'Home' });

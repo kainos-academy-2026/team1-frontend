@@ -1,16 +1,10 @@
 import type { NextFunction, Request, Response } from 'express';
 import {
 	clearAuthSession,
-	getAuthRole,
-	getAuthSession,
 	getVerifiedAuthContext,
 } from '../services/authService';
 
-export {
-	clearAuthSession,
-	getAuthRole,
-	getAuthSession,
-} from '../services/authService';
+export { clearAuthSession } from '../services/authService';
 
 export const attachAuthState = (
 	req: Request,
@@ -23,6 +17,7 @@ export const attachAuthState = (
 	res.locals.isAuthenticated = authContext !== null;
 	res.locals.authRole = authRole;
 	res.locals.isAdmin = authRole === 'admin';
+	res.locals.authToken = authContext?.authSession;
 	next();
 };
 
