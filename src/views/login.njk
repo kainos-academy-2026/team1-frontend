@@ -46,11 +46,4 @@
             </form>
         </div>
     </section>
-
-    {% if loginToken %}
-        <script>
-            sessionStorage.setItem('loginToken', '{{ loginToken | safe }}');
-            window.location.href = '/';
-        </script>
-    {% endif %}
 {% endblock %}

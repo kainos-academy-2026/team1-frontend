@@ -48,15 +48,23 @@ describe('Login flow', () => {
 			.post('/login')
 			.send({ email: 'test@example.com', password: 'Password123!' });
 
-		expect(response.status).toBe(200);
-		expect(response.text).toContain(
-			"sessionStorage.setItem('loginToken', 'test-token')",
-		);
-		expect(response.text).toContain("window.location.href = '/';");
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/job-roles');
+		expect(response.headers['set-cookie']?.join(';')).toContain('authSession=test-token');
 		expect(loginService.login).toHaveBeenCalledWith({
 			email: 'test@example.com',
 			password: 'Password123!',
 		});
+	});
+
+	it('redirects away from login page when already authenticated', async () => {
+		const app = createApp(jobRoleService, loginService);
+		const response = await request(app)
+			.get('/login')
+			.set('Cookie', ['authSession=token']);
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/job-roles');
 	});
 
 	it('shows a login failure message when the service rejects', async () => {

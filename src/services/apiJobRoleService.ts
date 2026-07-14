@@ -14,24 +14,32 @@ export class ApiJobRoleService implements JobRoleService {
 		private readonly apiBaseUrl: string,
 	) {}
 
-	async getJobRoles(): Promise<JobRole[]> {
+	private authHeaders(authToken: string): Record<string, string> {
+		return {
+			Authorization: `Bearer ${authToken}`,
+		};
+	}
+
+	async getJobRoles(authToken: string): Promise<JobRole[]> {
 		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
 			`${this.apiBaseUrl}/job-roles`,
+			{ headers: this.authHeaders(authToken) },
 		);
 
 		return response.data.map(mapApiJobRoleSummary);
 	}
 
-	async getJobRole(jobRoleId: number): Promise<JobRole | null> {
+	async getJobRole(jobRoleId: number, authToken: string): Promise<JobRole | null> {
 		try {
 			const response = await this.httpClient.get<ApiJobRoleDto>(
 				`${this.apiBaseUrl}/job-roles/${jobRoleId}`,
+				{ headers: this.authHeaders(authToken) },
 			);
 
 			return mapApiJobRole(response.data);
 		} catch (error) {
 			if (axios.isAxiosError(error) && error.response?.status === 404) {
-				const jobRoles = await this.getJobRoles();
+				const jobRoles = await this.getJobRoles(authToken);
 				return (
 					jobRoles.find((jobRole) => jobRole.jobRoleId === jobRoleId) ?? null
 				);

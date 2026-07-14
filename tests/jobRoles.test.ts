@@ -6,6 +6,7 @@ import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import type { JobRoleService } from '../src/services/jobRoleService';
 
 describe('GET /job-roles', () => {
+	const authCookie = ['authSession=test-auth-token'];
 	const getJobRoles = vi.fn();
 	const getJobRole = vi.fn();
 	const jobRoleService: JobRoleService = { getJobRoles, getJobRole };
@@ -34,7 +35,7 @@ describe('GET /job-roles', () => {
 		]);
 
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles');
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Software Engineer');
@@ -81,7 +82,7 @@ describe('GET /job-roles', () => {
 		]);
 
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles');
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Open Role');
@@ -92,7 +93,7 @@ describe('GET /job-roles', () => {
 		getJobRoles.mockRejectedValue(new Error('API error'));
 
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles');
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(500);
 		expect(response.text).toContain('Back to home');
@@ -103,7 +104,7 @@ describe('GET /job-roles', () => {
 		getJobRoles.mockRejectedValue(new ValidationError('Missing job role ID.'));
 
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles');
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(502);
 		expect(response.text).toContain(
@@ -117,7 +118,7 @@ describe('GET /job-roles', () => {
 		getJobRoles.mockResolvedValue([]);
 
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles');
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('No job roles are currently available.');
@@ -141,7 +142,7 @@ describe('GET /job-roles', () => {
 		});
 
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles/1');
+		const response = await request(app).get('/job-roles/1').set('Cookie', authCookie);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Software Engineer');
@@ -163,7 +164,9 @@ describe('GET /job-roles', () => {
 
 	it('returns 400 when the job role id is invalid', async () => {
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles/not-a-number');
+		const response = await request(app)
+			.get('/job-roles/not-a-number')
+			.set('Cookie', authCookie);
 
 		expect(response.status).toBe(400);
 		expect(response.text).toContain('Bad request');
@@ -176,7 +179,7 @@ describe('GET /job-roles', () => {
 		getJobRole.mockResolvedValue(null);
 
 		const app = createApp(jobRoleService);
-		const response = await request(app).get('/job-roles/999');
+		const response = await request(app).get('/job-roles/999').set('Cookie', authCookie);
 
 		expect(response.status).toBe(404);
 		expect(response.text).toContain(
@@ -184,6 +187,14 @@ describe('GET /job-roles', () => {
 		);
 		expect(response.text).toContain('Back to open roles');
 		expect(response.text).toContain('href="/job-roles"');
-		expect(getJobRole).toHaveBeenCalledWith(999);
+		expect(getJobRole).toHaveBeenCalledWith(999, 'test-auth-token');
+	});
+
+	it('redirects anonymous users to login for protected job role routes', async () => {
+		const app = createApp(jobRoleService);
+		const response = await request(app).get('/job-roles');
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/login');
 	});
 });
