@@ -31,7 +31,23 @@ const toSummaryText = (
 		return fallback;
 	}
 
-	return toRequiredText(fieldName, value);
+	if (value.trim().length === 0) {
+		return fallback;
+	}
+
+	return value;
+};
+
+const toSummarySharepointUrl = (value: unknown): string => {
+	if (typeof value !== 'string' || value.trim().length === 0) {
+		return 'https://example.com/job-specification';
+	}
+
+	try {
+		return toSharepointUrl(value);
+	} catch {
+		return 'https://example.com/job-specification';
+	}
 };
 
 const toJobRoleId = ({ jobRoleId, id }: ApiJobRoleSummaryDto): number => {
@@ -47,8 +63,10 @@ const toJobRoleId = ({ jobRoleId, id }: ApiJobRoleSummaryDto): number => {
 };
 
 const toJobRoleStatus = (status: string): JobRoleStatus => {
-	if (status === JobRoleStatus.Open) return JobRoleStatus.Open;
-	if (status === JobRoleStatus.Closed) return JobRoleStatus.Closed;
+	const normalizedStatus = status.trim().toLowerCase();
+
+	if (normalizedStatus === JobRoleStatus.Open) return JobRoleStatus.Open;
+	if (normalizedStatus === JobRoleStatus.Closed) return JobRoleStatus.Closed;
 	throw new ValidationError(`Unexpected job role status: ${status}`);
 };
 
@@ -93,10 +111,7 @@ export const mapApiJobRoleSummary = (
 		jobRole.responsibilities,
 		'Responsibilities not available.',
 	),
-	sharepointUrl:
-		typeof jobRole.sharepointUrl === 'string'
-			? toSharepointUrl(toRequiredText('sharepointUrl', jobRole.sharepointUrl))
-			: 'https://example.com/job-specification',
+	sharepointUrl: toSummarySharepointUrl(jobRole.sharepointUrl),
 	location: toRequiredText('location', jobRole.location),
 	capabilityId: jobRole.capabilityId,
 	capabilityName: toSummaryText(
@@ -117,13 +132,16 @@ export const mapApiJobRoleSummary = (
 
 export const mapApiJobRole = (jobRole: ApiJobRoleDto): JobRole => ({
 	...mapApiJobRoleSummary(jobRole),
-	description: toRequiredTextValue('description', jobRole.description),
-	responsibilities: toRequiredTextValue(
+	description: toSummaryText(
+		'description',
+		jobRole.description,
+		'Description not available.',
+	),
+	responsibilities: toSummaryText(
 		'responsibilities',
 		jobRole.responsibilities,
+		'Responsibilities not available.',
 	),
-	sharepointUrl: toSharepointUrl(
-		toRequiredTextValue('sharepointUrl', jobRole.sharepointUrl),
-	),
+	sharepointUrl: toSummarySharepointUrl(jobRole.sharepointUrl),
 	numberOfOpenPositions: jobRole.numberOfOpenPositions ?? 0,
 });

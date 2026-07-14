@@ -144,6 +144,50 @@ describe('ApiJobRoleService', () => {
 		);
 	});
 
+	it('maps status case-insensitively for summary data', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'OPEN',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService(
+			{ get } as never,
+			'http://localhost:3001',
+		);
+
+		await expect(service.getJobRoles(authToken)).resolves.toEqual([
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: new Date('2026-08-01'),
+				status: JobRoleStatus.Open,
+				numberOfOpenPositions: 2,
+			},
+		]);
+	});
+
 	it('throws ValidationError when list items have no supported identifier', async () => {
 		const apiRoles = [
 			{
@@ -203,19 +247,19 @@ describe('ApiJobRoleService', () => {
 		});
 	});
 
-	it('throws ValidationError when a required text field is blank', async () => {
+	it('uses fallback text when optional summary fields are blank', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
 				roleName: 'Software Engineer',
 				description: '   ',
-				responsibilities: 'Deliver code, tests, and documentation.',
-				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				responsibilities: ' ',
+				sharepointUrl: 'not-a-url',
 				location: 'Belfast',
 				capabilityId: 1,
-				capabilityName: 'Workday',
+				capabilityName: ' ',
 				bandId: 2,
-				bandName: 'Senior Associate',
+				bandName: ' ',
 				closingDate: '2026-08-01',
 				status: 'open',
 				numberOfOpenPositions: 2,
@@ -228,12 +272,23 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
-			'Missing required job role field: description',
-		);
+		await expect(service.getJobRoles(authToken)).resolves.toEqual([
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Description not available.',
+				responsibilities: 'Responsibilities not available.',
+				sharepointUrl: 'https://example.com/job-specification',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Capability 1',
+				bandId: 2,
+				bandName: 'Band 2',
+				closingDate: new Date('2026-08-01'),
+				status: JobRoleStatus.Open,
+				numberOfOpenPositions: 2,
+			},
+		]);
 	});
 
 	it('returns null when the API returns 404 for a role id', async () => {
@@ -343,7 +398,7 @@ describe('ApiJobRoleService', () => {
 		);
 	});
 
-	it('throws when detail API returns an insecure sharepoint URL', async () => {
+	it('falls back when detail API returns an insecure sharepoint URL', async () => {
 		const apiRole = {
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
@@ -366,11 +421,60 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRole(1, authToken)).rejects.toBeInstanceOf(
-			ValidationError,
+		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
+			jobRoleId: 1,
+			roleName: 'Software Engineer',
+			description: 'Build features that solve customer problems.',
+			responsibilities: 'Deliver code, tests, and documentation.',
+			sharepointUrl: 'https://example.com/job-specification',
+			location: 'Belfast',
+			capabilityId: 1,
+			capabilityName: 'Workday',
+			bandId: 2,
+			bandName: 'Senior Associate',
+			closingDate: new Date('2026-08-01'),
+			status: JobRoleStatus.Open,
+			numberOfOpenPositions: 2,
+		});
+	});
+
+	it('uses fallback values when detail optional fields are blank', async () => {
+		const apiRole = {
+			jobRoleId: 1,
+			roleName: 'Software Engineer',
+			description: ' ',
+			responsibilities: ' ',
+			sharepointUrl: ' ',
+			location: 'Belfast',
+			capabilityId: 1,
+			capabilityName: 'Workday',
+			bandId: 2,
+			bandName: 'Senior Associate',
+			closingDate: '2026-08-01',
+			status: 'open',
+			numberOfOpenPositions: 2,
+		};
+
+		const get = vi.fn().mockResolvedValue({ data: apiRole });
+		const service = new ApiJobRoleService(
+			{ get } as never,
+			'http://localhost:3001',
 		);
-		await expect(service.getJobRole(1, authToken)).rejects.toThrow(
-			'sharepointUrl must use HTTPS: javascript:alert(1)',
-		);
+
+		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
+			jobRoleId: 1,
+			roleName: 'Software Engineer',
+			description: 'Description not available.',
+			responsibilities: 'Responsibilities not available.',
+			sharepointUrl: 'https://example.com/job-specification',
+			location: 'Belfast',
+			capabilityId: 1,
+			capabilityName: 'Workday',
+			bandId: 2,
+			bandName: 'Senior Associate',
+			closingDate: new Date('2026-08-01'),
+			status: JobRoleStatus.Open,
+			numberOfOpenPositions: 2,
+		});
 	});
 });

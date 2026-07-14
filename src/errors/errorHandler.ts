@@ -29,6 +29,7 @@ export const errorHandler = (
 	const redirectOptions = getErrorRedirect(req);
 
 	if (error instanceof ValidationError) {
+		console.warn(`ValidationError on ${req.method} ${req.path}: ${error.message}`);
 		const { title, message } = errorMessages.upstreamDataError;
 		renderErrorPage(res, {
 			status: 502,
