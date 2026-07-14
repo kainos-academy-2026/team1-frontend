@@ -41,6 +41,15 @@ export class LoginController {
 			});
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
+				if (!error.response) {
+					res.status(502).render('login.njk', {
+						title: 'Login',
+						loginError:
+							'We could not reach the authentication service. Please try again shortly.',
+					});
+					return;
+				}
+
 				if (error.response?.status === 400) {
 					const errors = error.response.data?.errors as
 						| BackendValidationError[]

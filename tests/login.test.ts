@@ -79,6 +79,23 @@ describe('Login flow', () => {
 		);
 	});
 
+	it('shows an upstream service error when authentication service is unreachable', async () => {
+		vi.mocked(loginService.login).mockRejectedValue({
+			isAxiosError: true,
+			request: {},
+		});
+
+		const app = createApp(jobRoleService, loginService);
+		const response = await request(app)
+			.post('/login')
+			.send({ email: 'test@example.com', password: 'Password123!' });
+
+		expect(response.status).toBe(502);
+		expect(response.text).toContain(
+			'We could not reach the authentication service. Please try again shortly.',
+		);
+	});
+
 	it('shows backend validation feedback when the service returns a 400 error', async () => {
 		vi.mocked(loginService.login).mockRejectedValue({
 			isAxiosError: true,
