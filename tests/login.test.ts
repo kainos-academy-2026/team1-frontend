@@ -59,7 +59,7 @@ describe('Login flow', () => {
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe('/job-roles');
-		expect(response.headers['set-cookie']?.join(';')).toContain(
+		expect((response.headers['set-cookie'] as unknown as string[])?.join(';')).toContain(
 			`authSession=${token}`,
 		);
 		expect(loginService.login).toHaveBeenCalledWith({
@@ -153,7 +153,7 @@ describe('Login flow', () => {
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe('/login?loggedOut=1');
-		expect(response.headers['set-cookie']?.join(';')).toContain(
+		expect((response.headers['set-cookie'] as unknown as string[])?.join(';')).toContain(
 			'authSession=;',
 		);
 	});

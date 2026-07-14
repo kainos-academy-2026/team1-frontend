@@ -39,7 +39,12 @@ export class LoginController {
 			const { token } = await this.loginService.login({ email, password });
 			const maxAge = getAuthCookieMaxAgeMs(token);
 			if (!maxAge) {
-				throw new Error('Auth session token did not include a valid exp claim');
+				res.status(502).render('login.njk', {
+					title: 'Login',
+					loginError:
+						'Authentication service returned an invalid session token. Please try again shortly.',
+				});
+				return;
 			}
 			res.set('Cache-Control', 'no-store');
 			const isProduction = process.env.NODE_ENV === 'production';

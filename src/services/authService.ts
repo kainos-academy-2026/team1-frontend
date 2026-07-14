@@ -76,22 +76,24 @@ const resolveAuthRoleFromPayload = (payload: JwtPayload): AuthRole | null => {
 const validateAndDecodeAuthSession = (
 	token: string,
 ): VerifiedAuthContext | null => {
-	const decoded = jsonwebtoken.decode(token);
+	const secret = process.env.JWT_SECRET;
+	if (!secret) {
+		return null;
+	}
+
+	let decoded: unknown;
+	try {
+		decoded = jsonwebtoken.verify(token, secret, { algorithms: ['HS256'] });
+	} catch {
+		return null;
+	}
+
 	if (typeof decoded !== 'object' || decoded === null) {
 		return null;
 	}
 
 	const authRole = resolveAuthRoleFromPayload(decoded as JwtPayload);
 	if (!authRole) {
-		return null;
-	}
-
-	const expClaim = (decoded as JwtPayload).exp;
-	if (typeof expClaim !== 'number' || !Number.isFinite(expClaim)) {
-		return null;
-	}
-
-	if (Date.now() >= expClaim * 1000) {
 		return null;
 	}
 
