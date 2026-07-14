@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
 import type { BackendValidationError } from '../models/backendValidation';
-import { clearAuthSession } from '../routers/authRouter';
+import { clearAuthSession } from '../services/authService';
 import type { LoginServiceClient } from '../services/loginService';
 
 export class LoginController {
