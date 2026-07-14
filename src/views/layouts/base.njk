@@ -17,8 +17,18 @@
             <span class="brand-name">Kainos Careers</span>
             <nav class="site-nav" aria-label="Main navigation">
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/registration">Register</a></li>
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    <li id="login-nav-item">
+                        <a href="/login">Login</a>
+                    </li>
+                    <li id="registration-nav-item">
+                        <a href="/registration">Register</a>
+                    </li>
+                    <li id="logout-nav-item" hidden>
+                        <a href="/login?loggedOut=1" onclick="sessionStorage.removeItem('loginToken');">Logout</a>
+                    </li>
                 </ul>
             </nav>
         </header>
