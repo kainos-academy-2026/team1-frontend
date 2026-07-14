@@ -66,11 +66,7 @@ const resolveAuthRoleFromPayload = (payload: JwtPayload): AuthRole | null => {
 		return 'admin';
 	}
 
-	if (
-		claims.some(
-			(value) => value === 'applicant' || value === 'user',
-		)
-	) {
+	if (claims.some((value) => value === 'applicant' || value === 'user')) {
 		return 'applicant';
 	}
 
