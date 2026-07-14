@@ -3,10 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app';
 import type { JobRoleService } from '../src/services/jobRoleService';
 import type { LoginServiceClient } from '../src/services/loginService';
-import {
-	createAuthToken,
-	withTestJwtSecret,
-} from './helpers/authToken';
+import { createAuthToken, withTestJwtSecret } from './helpers/authToken';
 
 describe('Login flow', () => {
 	let restoreJwtSecret: () => void;
@@ -155,6 +152,8 @@ describe('Login flow', () => {
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe('/login?loggedOut=1');
-		expect(response.headers['set-cookie']?.join(';')).toContain('authSession=;');
+		expect(response.headers['set-cookie']?.join(';')).toContain(
+			'authSession=;',
+		);
 	});
 });

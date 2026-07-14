@@ -6,7 +6,11 @@ import {
 	getVerifiedAuthContext,
 } from '../services/authService';
 
-export { clearAuthSession, getAuthRole, getAuthSession } from '../services/authService';
+export {
+	clearAuthSession,
+	getAuthRole,
+	getAuthSession,
+} from '../services/authService';
 
 export const attachAuthState = (
 	req: Request,

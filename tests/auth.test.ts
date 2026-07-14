@@ -1,14 +1,14 @@
+import jsonwebtoken from 'jsonwebtoken';
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app';
 import type { JobRoleService } from '../src/services/jobRoleService';
 import type { LoginServiceClient } from '../src/services/loginService';
 import {
-	TEST_JWT_SECRET,
 	createAuthToken,
+	TEST_JWT_SECRET,
 	withTestJwtSecret,
 } from './helpers/authToken';
-import jsonwebtoken from 'jsonwebtoken';
 
 describe('Authentication and authorisation', () => {
 	let restoreJwtSecret: () => void;

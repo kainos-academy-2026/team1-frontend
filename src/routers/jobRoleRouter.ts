@@ -32,7 +32,12 @@ export const jobRoleRouter = (jobRoleController: JobRoleController): Router => {
 	const router = Router();
 
 	router.get('/', jobRoleController.getJobRoles);
-	router.get('/:id', requireAuthenticatedUser, validateJobRoleId, jobRoleController.getJobRole);
+	router.get(
+		'/:id',
+		requireAuthenticatedUser,
+		validateJobRoleId,
+		jobRoleController.getJobRole,
+	);
 
 	return router;
 };

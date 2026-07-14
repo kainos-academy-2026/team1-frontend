@@ -4,10 +4,7 @@ import { createApp } from '../src/app';
 import { ValidationError } from '../src/errors/validationError';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import type { JobRoleService } from '../src/services/jobRoleService';
-import {
-	createAuthToken,
-	withTestJwtSecret,
-} from './helpers/authToken';
+import { createAuthToken, withTestJwtSecret } from './helpers/authToken';
 
 describe('GET /job-roles', () => {
 	let restoreJwtSecret: () => void;
