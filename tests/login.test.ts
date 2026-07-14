@@ -49,7 +49,8 @@ describe('Login flow', () => {
 	});
 
 	it('stores the login token in the rendered page after a successful login', async () => {
-		vi.mocked(loginService.login).mockResolvedValue({ token: 'test-token' });
+		const token = createAuthToken();
+		vi.mocked(loginService.login).mockResolvedValue({ token });
 
 		const app = createApp(jobRoleService, loginService);
 		const response = await request(app)
@@ -59,7 +60,7 @@ describe('Login flow', () => {
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe('/job-roles');
 		expect(response.headers['set-cookie']?.join(';')).toContain(
-			'authSession=test-token',
+			`authSession=${token}`,
 		);
 		expect(loginService.login).toHaveBeenCalledWith({
 			email: 'test@example.com',

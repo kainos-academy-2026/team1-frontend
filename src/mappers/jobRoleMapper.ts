@@ -117,7 +117,9 @@ export const mapApiJobRoleSummary = (
 	capabilityName: toSummaryText(
 		'capabilityName',
 		jobRole.capabilityName,
-		`Capability ${jobRole.capabilityId}`,
+		typeof jobRole.capabilityId === 'number'
+			? `Capability ${jobRole.capabilityId}`
+			: 'Capability not available.',
 	),
 	bandId: jobRole.bandId,
 	bandName: toSummaryText(

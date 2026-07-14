@@ -1,7 +1,10 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
 import type { BackendValidationError } from '../models/backendValidation';
-import { clearAuthSession } from '../services/authService';
+import {
+	clearAuthSession,
+	getAuthCookieMaxAgeMs,
+} from '../services/authService';
 import type { LoginServiceClient } from '../services/loginService';
 
 export class LoginController {
@@ -34,6 +37,10 @@ export class LoginController {
 
 		try {
 			const { token } = await this.loginService.login({ email, password });
+			const maxAge = getAuthCookieMaxAgeMs(token);
+			if (!maxAge) {
+				throw new Error('Auth session token did not include a valid exp claim');
+			}
 			res.set('Cache-Control', 'no-store');
 			const isProduction = process.env.NODE_ENV === 'production';
 			res.cookie('authSession', token, {
@@ -41,6 +48,7 @@ export class LoginController {
 				secure: isProduction,
 				sameSite: 'strict',
 				path: '/',
+				maxAge,
 			});
 			res.redirect('/job-roles');
 		} catch (error) {
