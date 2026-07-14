@@ -1,41 +1,16 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ title }}</title>
-    </head>
-    <body>
-        <main>
-            <h1>Create an account</h1>
-            <p>Use your email address and a strong password to register.</p>
-            <form method="post" action="/registration">
-                <div>
-                    <label for="email">Email</label>
-                    <input id="email" name="email" type="email" required value="{{ formData.email or '' }}" autocomplete="email" aria-describedby="email-hint">
-                    <p id="email-hint">Enter a valid email address, for example name@example.com.</p>
-                    {% if errors and errors.email %}
-                        <p>{{ errors.email }}</p>
-                    {% endif %}
-                </div>
-                <div>
-                    <label for="password">Password</label>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        required
-                        minlength="9"
-                        pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{9,}"
-                        autocomplete="new-password"
-                        aria-describedby="password-hint">
-                    <p id="password-hint">Use at least 9 characters with uppercase, lowercase, and a special character.</p>
-                    {% if errors and errors.password %}
-                        <p>{{ errors.password }}</p>
-                    {% endif %}
-                </div>
-                <button type="submit">Register</button>
-            </form>
-        </main>
-    </body>
-</html>
+{% extends "layouts/base.njk" %}
+{% from "macros/field-macro.njk" import field %}
+{% block content %}
+    <main>
+        <h1>Create an account</h1>
+        <p>Use your email address and a strong password to register.</p>
+
+        <form method="post" action="/registration">
+            {{ field('email', 'Email', 'email', 'name@example.com', formData.email or '', errors, 'email') }}
+
+            {{ field('password', 'Password', 'password', '', '', errors, 'new-password') }}
+
+            <button type="submit">Register</button>
+        </form>
+    </main>
+{% endblock %}

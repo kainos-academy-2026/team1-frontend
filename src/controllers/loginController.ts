@@ -1,5 +1,9 @@
 import axios from 'axios';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import {
+	type FieldErrors,
+	mapBackendFieldErrors,
+} from '../errors/mapBackendFieldErrors.js';
 import type { BackendValidationError } from '../models/backendValidation.js';
 import type { LoginServiceClient } from '../services/loginService.js';
 
@@ -17,7 +21,11 @@ export class LoginController {
 		});
 	};
 
-	handleLogin = async (_req: Request, res: Response): Promise<void> => {
+	handleLogin = async (
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> => {
 		if (!this.loginService) {
 			res.status(503).render('login.njk', {
 				title: 'Login',
@@ -26,7 +34,23 @@ export class LoginController {
 			return;
 		}
 
-		const { email, password } = res.locals.loginForm as {
+		const validationErrors = res.locals.errors as
+			| FieldErrors
+			| null
+			| undefined;
+
+		if (validationErrors && Object.keys(validationErrors).length > 0) {
+			res.status(400).render('login.njk', {
+				title: 'Login',
+				errors: validationErrors,
+				formData: {
+					email: typeof req.body?.email === 'string' ? req.body.email : '',
+				},
+			});
+			return;
+		}
+
+		const { email, password } = req.body as {
 			email: string;
 			password: string;
 		};
@@ -45,12 +69,15 @@ export class LoginController {
 					const errors = error.response.data?.errors as
 						| BackendValidationError[]
 						| undefined;
-					const loginError =
-						errors?.[0]?.message ?? 'Enter a valid email and password.';
+					const mappedFieldErrors = mapBackendFieldErrors(errors);
 
 					res.status(400).render('login.njk', {
 						title: 'Login',
-						loginError,
+						errors: mappedFieldErrors,
+						loginError: 'Enter a valid email and password.',
+						formData: {
+							email,
+						},
 					});
 					return;
 				}
@@ -64,10 +91,7 @@ export class LoginController {
 				}
 			}
 
-			res.status(500).render('login.njk', {
-				title: 'Login',
-				loginError: 'Internal server error. Please try again.',
-			});
+			next(error as Error);
 		}
 	};
 }

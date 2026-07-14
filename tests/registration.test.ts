@@ -65,20 +65,12 @@ describe('Registration', () => {
 			});
 
 		expect(response.status).toBe(400);
-		expect(response.body).toEqual({
-			errors: [
-				{
-					field: 'email',
-					message:
-						'Please enter a valid email address (for example, name@example.com).',
-				},
-				{
-					field: 'password',
-					message:
-						'Password must be more than 8 characters and include at least one uppercase letter, one lowercase letter, and one special character.',
-				},
-			],
-		});
+		expect(response.text).toContain(
+			'Please enter a valid email address (for example, name@example.com).',
+		);
+		expect(response.text).toContain(
+			'Password must be more than 8 characters and include at least one uppercase letter, one lowercase letter, and one special character.',
+		);
 		expect(createUser).not.toHaveBeenCalled();
 	});
 

@@ -1,4 +1,5 @@
 {% extends "layouts/base.njk" %}
+{% from "macros/field-macro.njk" import field %}
 {% block content %}
     <section class="login-page">
         <div class="login-card">
@@ -14,33 +15,12 @@
 
             {% if loginError %}
                 <p class="login-error" role="alert">{{ loginError }}</p>
-                <script>
-                    window.alert('{{ loginError | dump | safe }}');
-                </script>
             {% endif %}
 
             <form class="login-form" method="post" action="/login">
-                <div class="login-field">
-                    <label for="email">Email</label>
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autocomplete="email"
-                        required
-                    >
-                </div>
+                {{ field('email', 'Email', 'email', 'name@example.com', formData.email or '', errors, 'email') }}
 
-                <div class="login-field">
-                    <label for="password">Password</label>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        autocomplete="current-password"
-                        required
-                    >
-                </div>
+                {{ field('password', 'Password', 'password', '', '', errors, 'current-password') }}
 
                 <button class="login-submit" type="submit">Log in</button>
             </form>

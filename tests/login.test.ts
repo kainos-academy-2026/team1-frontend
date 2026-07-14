@@ -39,10 +39,7 @@ describe('Login flow', () => {
 			.send({ email: 'invalid-email', password: 'Password123!' });
 
 		expect(response.status).toBe(400);
-		expect(response.text).toContain(
-			'Enter a valid email address that includes an @ symbol.',
-		);
-		expect(response.text).toContain('window.alert');
+		expect(response.text).toContain('Invalid email address');
 	});
 
 	it('stores the login token in the rendered page after a successful login', async () => {
