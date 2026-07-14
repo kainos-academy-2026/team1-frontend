@@ -62,13 +62,13 @@ const resolveAuthRoleFromPayload = (payload: JwtPayload): AuthRole | null => {
 		...toStringArray(payload.scopes),
 	].map((value) => value.trim().toLowerCase());
 
-	if (claims.some((value) => value.includes('admin'))) {
+	if (claims.some((value) => value === 'admin')) {
 		return 'admin';
 	}
 
 	if (
 		claims.some(
-			(value) => value.includes('applicant') || value.includes('user'),
+			(value) => value === 'applicant' || value === 'user',
 		)
 	) {
 		return 'applicant';
