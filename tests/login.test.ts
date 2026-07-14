@@ -50,9 +50,7 @@ describe('Login flow', () => {
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe('/job-roles');
-		expect(response.headers['set-cookie']?.join(';')).toContain(
-			'authSession=test-token',
-		);
+		expect(response.headers['set-cookie']?.join(';')).toContain('authSession=test-token');
 		expect(loginService.login).toHaveBeenCalledWith({
 			email: 'test@example.com',
 			password: 'Password123!',

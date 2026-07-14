@@ -29,10 +29,7 @@ export class ApiJobRoleService implements JobRoleService {
 		return response.data.map(mapApiJobRoleSummary);
 	}
 
-	async getJobRole(
-		jobRoleId: number,
-		authToken: string,
-	): Promise<JobRole | null> {
+	async getJobRole(jobRoleId: number, authToken: string): Promise<JobRole | null> {
 		try {
 			const response = await this.httpClient.get<ApiJobRoleDto>(
 				`${this.apiBaseUrl}/job-roles/${jobRoleId}`,

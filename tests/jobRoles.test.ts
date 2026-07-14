@@ -35,9 +35,7 @@ describe('GET /job-roles', () => {
 		]);
 
 		const app = createApp(jobRoleService);
-		const response = await request(app)
-			.get('/job-roles')
-			.set('Cookie', authCookie);
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Software Engineer');
@@ -84,9 +82,7 @@ describe('GET /job-roles', () => {
 		]);
 
 		const app = createApp(jobRoleService);
-		const response = await request(app)
-			.get('/job-roles')
-			.set('Cookie', authCookie);
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Open Role');
@@ -97,9 +93,7 @@ describe('GET /job-roles', () => {
 		getJobRoles.mockRejectedValue(new Error('API error'));
 
 		const app = createApp(jobRoleService);
-		const response = await request(app)
-			.get('/job-roles')
-			.set('Cookie', authCookie);
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(500);
 		expect(response.text).toContain('Back to home');
@@ -110,9 +104,7 @@ describe('GET /job-roles', () => {
 		getJobRoles.mockRejectedValue(new ValidationError('Missing job role ID.'));
 
 		const app = createApp(jobRoleService);
-		const response = await request(app)
-			.get('/job-roles')
-			.set('Cookie', authCookie);
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(502);
 		expect(response.text).toContain(
@@ -126,9 +118,7 @@ describe('GET /job-roles', () => {
 		getJobRoles.mockResolvedValue([]);
 
 		const app = createApp(jobRoleService);
-		const response = await request(app)
-			.get('/job-roles')
-			.set('Cookie', authCookie);
+		const response = await request(app).get('/job-roles').set('Cookie', authCookie);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('No job roles are currently available.');
@@ -152,9 +142,7 @@ describe('GET /job-roles', () => {
 		});
 
 		const app = createApp(jobRoleService);
-		const response = await request(app)
-			.get('/job-roles/1')
-			.set('Cookie', authCookie);
+		const response = await request(app).get('/job-roles/1').set('Cookie', authCookie);
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Software Engineer');
@@ -191,9 +179,7 @@ describe('GET /job-roles', () => {
 		getJobRole.mockResolvedValue(null);
 
 		const app = createApp(jobRoleService);
-		const response = await request(app)
-			.get('/job-roles/999')
-			.set('Cookie', authCookie);
+		const response = await request(app).get('/job-roles/999').set('Cookie', authCookie);
 
 		expect(response.status).toBe(404);
 		expect(response.text).toContain(
