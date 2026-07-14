@@ -20,21 +20,13 @@
             <nav class="site-nav" aria-label="Main navigation">
                 <ul>
                     <li><a href="/">Home</a></li>
-                    {% if isAuthenticated %}
-                        <li><a href="/job-roles">Job Roles</a></li>
-                        {% if isAdmin %}
-                            <li><span class="auth-role-badge">Admin</span></li>
-                        {% else %}
-                            <li><span class="auth-role-badge">Applicant</span></li>
-                        {% endif %}
-                        <li>
-                            <form action="/login/logout" method="post">
-                                <button type="submit">Logout</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li><a href="/login">Login</a></li>
-                    {% endif %}
+                    <li id="login-nav-item"><a href="/login">Login</a></li>
+                    <li id="logout-nav-item" hidden>
+                        <a
+                            href="/login?loggedOut=1"
+                            onclick="sessionStorage.removeItem('loginToken');"
+                        >Logout</a>
+                    </li>
                 </ul>
             </nav>
         </header>
@@ -43,6 +35,23 @@
             {% block content %}{% endblock %}
 
         </main>
+
+        <script>
+            const loginToken = sessionStorage.getItem('loginToken');
+            const loginNavItem = document.getElementById('login-nav-item');
+            const logoutNavItem = document.getElementById('logout-nav-item');
+
+            if (loginNavItem && logoutNavItem) {
+                if (loginToken) {
+                    loginNavItem.hidden = true;
+                    logoutNavItem.hidden = false;
+                } else {
+                    loginNavItem.hidden = false;
+                    logoutNavItem.hidden = true;
+                }
+            }
+        </script>
+
         <footer class="site-footer">
             <img src="/assets/images/kainos_logo.svg" alt="Kainos logo" class="footer-logo">
             <p>Contact us at info@kainos.com </p>

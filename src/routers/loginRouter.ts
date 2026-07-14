@@ -6,7 +6,6 @@ import {
 } from 'express';
 import { z } from 'zod';
 import type { LoginController } from '../controllers/loginController';
-import { redirectAuthenticatedUser } from './authRouter';
 
 const loginFormSchema = z.object({
 	email: z.string().trim().email(),
@@ -35,9 +34,8 @@ const validateLoginForm = (
 export const loginRouter = (loginController: LoginController): Router => {
 	const router = Router();
 
-	router.get('/', redirectAuthenticatedUser, loginController.renderLoginPage);
+	router.get('/', loginController.renderLoginPage);
 	router.post('/', validateLoginForm, loginController.handleLogin);
-	router.post('/logout', loginController.handleLogout);
 
 	return router;
 };

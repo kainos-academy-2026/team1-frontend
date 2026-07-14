@@ -11,8 +11,7 @@ export class JobRoleController {
 	constructor(private readonly jobRoleService: JobRoleService) {}
 
 	getJobRoles = async (_req: Request, res: Response): Promise<void> => {
-		const authToken = res.locals.authToken as string;
-		const jobRoles = (await this.jobRoleService.getJobRoles(authToken))
+		const jobRoles = (await this.jobRoleService.getJobRoles())
 			.filter((jobRole) => jobRole.status === JobRoleStatus.Open)
 			.map(mapJobRoleListItemViewModel);
 		res.render('job-role-list.njk', { jobRoles });
@@ -20,8 +19,7 @@ export class JobRoleController {
 
 	getJobRole = async (_req: Request, res: Response): Promise<void> => {
 		const jobRoleId = res.locals.jobRoleId as number;
-		const authToken = res.locals.authToken as string;
-		const jobRole = await this.jobRoleService.getJobRole(jobRoleId, authToken);
+		const jobRole = await this.jobRoleService.getJobRole(jobRoleId);
 		if (!jobRole) {
 			renderJobRoleNotFoundError(res);
 			return;

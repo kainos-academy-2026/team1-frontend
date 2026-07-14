@@ -5,8 +5,6 @@ import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import { ApiJobRoleService } from '../src/services/apiJobRoleService';
 
 describe('ApiJobRoleService', () => {
-	const authToken = 'test-auth-token';
-
 	it('allows construction when an API base URL is injected', () => {
 		const get = vi.fn();
 
@@ -59,10 +57,8 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRoles(authToken)).resolves.toEqual(expectedRoles);
-		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles', {
-			headers: { Authorization: `Bearer ${authToken}` },
-		});
+		await expect(service.getJobRoles()).resolves.toEqual(expectedRoles);
+		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles');
 	});
 
 	it('maps summary data from the backend list endpoint', async () => {
@@ -90,7 +86,7 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRoles(authToken)).resolves.toEqual([
+		await expect(service.getJobRoles()).resolves.toEqual([
 			{
 				jobRoleId: 1,
 				roleName: 'Software Engineer',
@@ -134,8 +130,8 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(ValidationError);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
+		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
+		await expect(service.getJobRoles()).rejects.toThrow(
 			'Unexpected job role status: draft',
 		);
 	});
@@ -158,8 +154,8 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(ValidationError);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow('Missing job role ID.');
+		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
+		await expect(service.getJobRoles()).rejects.toThrow('Missing job role ID.');
 	});
 
 	it('returns a detailed job role by id using the injected client', async () => {
@@ -185,14 +181,12 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
+		await expect(service.getJobRole(1)).resolves.toEqual({
 			...apiRole,
 			closingDate: new Date('2026-08-01'),
 			status: JobRoleStatus.Open,
 		});
-		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles/1', {
-			headers: { Authorization: `Bearer ${authToken}` },
-		});
+		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles/1');
 	});
 
 	it('throws ValidationError when a required text field is blank', async () => {
@@ -220,8 +214,8 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(ValidationError);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
+		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
+		await expect(service.getJobRoles()).rejects.toThrow(
 			'Missing required job role field: description',
 		);
 	});
@@ -239,7 +233,7 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRole(999, authToken)).resolves.toBeNull();
+		await expect(service.getJobRole(999)).resolves.toBeNull();
 	});
 
 	it('falls back to the list endpoint when the detail endpoint returns 404', async () => {
@@ -273,7 +267,7 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
+		await expect(service.getJobRole(1)).resolves.toEqual({
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
 			description: 'Build features that solve customer problems.',
@@ -288,12 +282,8 @@ describe('ApiJobRoleService', () => {
 			status: JobRoleStatus.Open,
 			numberOfOpenPositions: 2,
 		});
-		expect(get).toHaveBeenNthCalledWith(1, 'http://localhost:3001/job-roles/1', {
-			headers: { Authorization: `Bearer ${authToken}` },
-		});
-		expect(get).toHaveBeenNthCalledWith(2, 'http://localhost:3001/job-roles', {
-			headers: { Authorization: `Bearer ${authToken}` },
-		});
+		expect(get).toHaveBeenNthCalledWith(1, 'http://localhost:3001/job-roles/1');
+		expect(get).toHaveBeenNthCalledWith(2, 'http://localhost:3001/job-roles');
 	});
 
 	it('throws when API returns an invalid closing date', async () => {
@@ -321,8 +311,8 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(ValidationError);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
+		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
+		await expect(service.getJobRoles()).rejects.toThrow(
 			'Unexpected job role closing date: not-a-date',
 		);
 	});
@@ -350,8 +340,8 @@ describe('ApiJobRoleService', () => {
 			'http://localhost:3001',
 		);
 
-		await expect(service.getJobRole(1, authToken)).rejects.toBeInstanceOf(ValidationError);
-		await expect(service.getJobRole(1, authToken)).rejects.toThrow(
+		await expect(service.getJobRole(1)).rejects.toBeInstanceOf(ValidationError);
+		await expect(service.getJobRole(1)).rejects.toThrow(
 			'sharepointUrl must use HTTPS: javascript:alert(1)',
 		);
 	});

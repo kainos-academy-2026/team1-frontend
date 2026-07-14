@@ -1,7 +1,6 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
 import type { BackendValidationError } from '../models/backendValidation';
-import { clearAuthSession } from '../routers/authRouter';
 import type { LoginServiceClient } from '../services/loginService';
 
 export class LoginController {
@@ -35,13 +34,11 @@ export class LoginController {
 		try {
 			const { token } = await this.loginService.login({ email, password });
 			res.set('Cache-Control', 'no-store');
-			const isProduction = process.env.NODE_ENV === 'production';
-			res.cookie('authSession', token, {
-				httpOnly: true,
-				secure: isProduction,
-				sameSite: 'strict',
+			res.cookie('token', token, { httpOnly: true });
+			res.render('login.njk', {
+				title: 'Login',
+				loginToken: token,
 			});
-			res.redirect('/job-roles');
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
 				if (!error.response) {
@@ -81,10 +78,5 @@ export class LoginController {
 				loginError: 'Internal server error. Please try again.',
 			});
 		}
-	};
-
-	handleLogout = (_req: Request, res: Response): void => {
-		clearAuthSession(res);
-		res.redirect('/login?loggedOut=1');
 	};
 }
