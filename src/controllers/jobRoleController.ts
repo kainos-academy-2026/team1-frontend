@@ -17,8 +17,11 @@ export class JobRoleController {
 		res.render('job-role-list.njk', { jobRoles });
 	};
 
-	getJobRole = async (_req: Request, res: Response): Promise<void> => {
-		const jobRoleId = res.locals.jobRoleId as number;
+	getJobRole = async (
+		req: Request<{ id: string }>,
+		res: Response,
+	): Promise<void> => {
+		const jobRoleId = Number(req.params.id);
 		const jobRole = await this.jobRoleService.getJobRole(jobRoleId);
 		if (!jobRole) {
 			renderJobRoleNotFoundError(res);

@@ -1,15 +1,22 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createApp } from '../src/app';
+import app from '../src/app';
 import { ValidationError } from '../src/errors/validationError';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
-import type { JobRoleService } from '../src/services/jobRoleService';
+
+const { getJobRoles, getJobRole } = vi.hoisted(() => ({
+	getJobRoles: vi.fn(),
+	getJobRole: vi.fn(),
+}));
+
+vi.mock('../src/services/apiJobRoleService.js', () => ({
+	ApiJobRoleService: class {
+		getJobRoles = getJobRoles;
+		getJobRole = getJobRole;
+	},
+}));
 
 describe('GET /job-roles', () => {
-	const getJobRoles = vi.fn();
-	const getJobRole = vi.fn();
-	const jobRoleService: JobRoleService = { getJobRoles, getJobRole };
-
 	beforeEach(() => {
 		vi.resetAllMocks();
 	});
@@ -33,7 +40,6 @@ describe('GET /job-roles', () => {
 			},
 		]);
 
-		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles');
 
 		expect(response.status).toBe(200);
@@ -80,7 +86,6 @@ describe('GET /job-roles', () => {
 			},
 		]);
 
-		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles');
 
 		expect(response.status).toBe(200);
@@ -91,7 +96,6 @@ describe('GET /job-roles', () => {
 	it('returns 500 when the service throws an error', async () => {
 		getJobRoles.mockRejectedValue(new Error('API error'));
 
-		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles');
 
 		expect(response.status).toBe(500);
@@ -102,7 +106,6 @@ describe('GET /job-roles', () => {
 	it('returns 502 when the service throws a validation error', async () => {
 		getJobRoles.mockRejectedValue(new ValidationError('Missing job role ID.'));
 
-		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles');
 
 		expect(response.status).toBe(502);
@@ -116,7 +119,6 @@ describe('GET /job-roles', () => {
 	it('renders an empty state when no job roles are returned', async () => {
 		getJobRoles.mockResolvedValue([]);
 
-		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles');
 
 		expect(response.status).toBe(200);
@@ -140,7 +142,6 @@ describe('GET /job-roles', () => {
 			numberOfOpenPositions: 2,
 		});
 
-		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles/1');
 
 		expect(response.status).toBe(200);
@@ -162,20 +163,18 @@ describe('GET /job-roles', () => {
 	});
 
 	it('returns 400 when the job role id is invalid', async () => {
-		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles/not-a-number');
 
 		expect(response.status).toBe(400);
-		expect(response.text).toContain('Bad request');
-		expect(response.text).toContain('Invalid job role ID provided.');
-		expect(response.text).toContain('href="/job-roles"');
+		expect(response.body.errors).toHaveLength(1);
+		expect(response.body.errors[0].field).toBe('id');
+		expect(response.body.errors[0].message).toEqual(expect.any(String));
 		expect(getJobRole).not.toHaveBeenCalled();
 	});
 
 	it('returns 404 when the job role id does not exist', async () => {
 		getJobRole.mockResolvedValue(null);
 
-		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles/999');
 
 		expect(response.status).toBe(404);

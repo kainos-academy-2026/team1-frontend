@@ -9,25 +9,14 @@
         <main>
             <h1>Create an account</h1>
             <p>Use your email address and a strong password to register.</p>
-            {% if errors and (errors.email or errors.password) %}
-                <div aria-live="polite">
-                    {% if errors.email %}
-                        <p>{{ errors.email }}</p>
-                    {% endif %}
-                    {% if errors.password %}
-                        <p>{{ errors.password }}</p>
-                    {% endif %}
-                </div>
-            {% endif %}
             <form method="post" action="/registration">
                 <div>
                     <label for="email">Email</label>
-                    <input id="email" name="email" type="email" required value="{{ formData.email or '' }}" autocomplete="email" aria-describedby="email-hint email-feedback">
+                    <input id="email" name="email" type="email" required value="{{ formData.email or '' }}" autocomplete="email" aria-describedby="email-hint">
                     <p id="email-hint">Enter a valid email address, for example name@example.com.</p>
                     {% if errors and errors.email %}
                         <p>{{ errors.email }}</p>
                     {% endif %}
-                    <p id="email-feedback" aria-live="polite"></p>
                 </div>
                 <div>
                     <label for="password">Password</label>
@@ -39,42 +28,14 @@
                         minlength="9"
                         pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{9,}"
                         autocomplete="new-password"
-                        aria-describedby="password-hint password-feedback">
-                    <p id="password-hint">Password must be more than 8 characters and include at least one uppercase letter, one lowercase
-                        letter, and one special character.</p>
+                        aria-describedby="password-hint">
+                    <p id="password-hint">Use at least 9 characters with uppercase, lowercase, and a special character.</p>
                     {% if errors and errors.password %}
                         <p>{{ errors.password }}</p>
                     {% endif %}
-                    <p id="password-feedback" aria-live="polite"></p>
                 </div>
-                <p>For security, your password is salted and hashed securely on the server.</p>
                 <button type="submit">Register</button>
             </form>
         </main>
-        <script>
-            const emailInput = document.getElementById("email");
-            const emailFeedback = document.getElementById("email-feedback");
-            const passwordInput = document.getElementById("password");
-            const passwordFeedback = document.getElementById("password-feedback");
-            const emailMessage = "Please enter a valid email address (for example, name@example.com).";
-            const passwordMessage = "Password must be more than 8 characters and include at least one uppercase letter, one lowercase letter, and one special" +
-                    " character.";
-            emailInput.addEventListener("invalid", () => {
-                emailFeedback.textContent = emailMessage;
-            });
-            emailInput.addEventListener("input", () => {
-                emailFeedback.textContent = emailInput.validity.valid
-                    ? ""
-                    : emailMessage;
-            });
-            passwordInput.addEventListener("invalid", () => {
-                passwordFeedback.textContent = passwordMessage;
-            });
-            passwordInput.addEventListener("input", () => {
-                passwordFeedback.textContent = passwordInput.validity.valid
-                    ? ""
-                    : passwordMessage;
-            });
-        </script>
     </body>
 </html>

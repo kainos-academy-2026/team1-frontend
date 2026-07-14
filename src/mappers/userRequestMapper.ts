@@ -7,22 +7,24 @@ import type {
 import type { UserRequestDto } from '../models/userRequestDto.js';
 import { UserRole } from '../models/userRole.js';
 
-export const mapUserRequest = (
-	userRequestDto: UserRequestDto,
-): CreateUserApiRequestDto => ({
-	email: userRequestDto.email,
-	password: userRequestDto.password,
-});
-
-export const mapApiUser = (apiUser: CreateUserApiResponseDto): User => {
-	const userId = apiUser.userId;
-	if (!userId || userId <= 0) {
-		throw new ValidationError('Missing user ID.');
+export class UserRequestMapper {
+	mapUserRequest(userRequestDto: UserRequestDto): CreateUserApiRequestDto {
+		return {
+			email: userRequestDto.email,
+			password: userRequestDto.password,
+		};
 	}
 
-	return {
-		userId,
-		email: apiUser.email,
-		role: UserRole.User,
-	};
-};
+	mapApiUser(apiUser: CreateUserApiResponseDto): User {
+		const userId = apiUser.userId;
+		if (!userId || userId <= 0) {
+			throw new ValidationError('Missing user ID.');
+		}
+
+		return {
+			userId,
+			email: apiUser.email,
+			role: UserRole.User,
+		};
+	}
+}

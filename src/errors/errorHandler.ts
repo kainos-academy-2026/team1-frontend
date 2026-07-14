@@ -7,6 +7,13 @@ import { ValidationError } from './validationError.js';
 const getErrorRedirect = (
 	req: Request,
 ): { redirectHref: string; redirectText: string } => {
+	if (req.path.startsWith('/registration') || req.baseUrl === '/registration') {
+		return {
+			redirectHref: '/registration',
+			redirectText: 'Back to registration',
+		};
+	}
+
 	if (req.path === '/job-roles') {
 		return {
 			redirectHref: '/',

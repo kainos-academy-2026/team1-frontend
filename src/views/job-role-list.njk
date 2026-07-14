@@ -1,21 +1,22 @@
 {% extends "layouts/base.njk" %}
 {% block content %}
-	<a class="back-btn" href="/"> < </a>
-    <h1 class="job-listings-title">Current opportunities...</h1>
-    {% if jobRoles and jobRoles.length > 0 %}
-        <section class="job-listings">
-            {% for role in jobRoles %}
-                <article class="job-card">
-                    <h2 class="job-card-title">{{ role.roleName }}</h2>
-                    <div class="job-card-body">
-                        <span>{{ role.bandName }} - {{ role.capabilityName }}</span>
-						<span>{{ role.location }}</span>
-                    </div>
-                    <p class="job-card-closing">Closing date: {{ role.closingDate }}</p>
-                </article>
-            {% endfor %}
-        </section>
-    {% else %}
-        <p>No job roles are currently available.</p>
-    {% endif %}
-{% endblock %}
+    <a class="back-btn" href="/">
+        <</a>
+            <h1 class="job-listings-title">Current opportunities...</h1>
+            {% if jobRoles and jobRoles.length > 0 %}
+                <section class="job-listings">
+                    {% for role in jobRoles %}
+                        <article class="job-card">
+                            <h2 class="job-card-title">{{ role.roleName }}</h2>
+                            <div class="job-card-body">
+                                <span>{{ role.bandName }} - {{ role.capabilityName }}</span>
+                                <span>{{ role.location }}</span>
+                            </div>
+                            <p class="job-card-closing">Closing date: {{ role.closingDate }}</p>
+                        </article>
+                    {% endfor %}
+                </section>
+            {% else %}
+                <p>No job roles are currently available.</p>
+            {% endif %}
+        {% endblock %}
