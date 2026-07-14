@@ -1,5 +1,5 @@
-import type { LoginCredentials } from './loginCredentials';
-import type { LoginResponse } from './loginResponse';
+import type { LoginCredentials } from './loginCredentials.js';
+import type { LoginResponse } from './loginResponse.js';
 
 export interface LoginServiceClient {
 	login(credentials: LoginCredentials): Promise<LoginResponse>;
