@@ -5,7 +5,7 @@ import nunjucks from 'nunjucks';
 import { JobRoleController } from './controllers/jobRoleController.js';
 import { LoginController } from './controllers/loginController.js';
 import { errorHandler } from './errors/errorHandler.js';
-import { attachAuthState } from './routers/authRouter.js';
+import { attachAuthState } from './middleware/auth.js';
 import { jobRoleRouter } from './routers/jobRoleRouter.js';
 import { loginRouter } from './routers/loginRouter.js';
 import registrationRouter from './routers/registrationRouter.js';

@@ -55,7 +55,7 @@ export class LoginController {
 				res.status(502).render('login.njk', {
 					title: 'Login',
 					loginError:
-						'Authentication token could not be verified. Check JWT secret configuration and try again.',
+						'Authentication could not be completed. Please try again shortly.',
 				});
 				return;
 			}

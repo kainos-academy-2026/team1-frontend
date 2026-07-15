@@ -1,28 +1,7 @@
-import {
-	type NextFunction,
-	type Request,
-	type Response,
-	Router,
-} from 'express';
+import { Router } from 'express';
 import type { JobRoleController } from '../controllers/jobRoleController.js';
-import { renderInvalidJobRoleIdError } from '../errors/errorPage.js';
-import { jobRoleParamsSchema } from '../models/jobRoleParamsDto.js';
-import { requireAuthenticatedUser } from './authRouter.js';
-
-const validateJobRoleId = (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-): void => {
-	const params = jobRoleParamsSchema.safeParse(req.params);
-	if (!params.success) {
-		renderInvalidJobRoleIdError(res);
-		return;
-	}
-
-	res.locals.jobRoleId = params.data.id;
-	next();
-};
+import { requireAuthenticatedUser } from '../middleware/auth.js';
+import { validateJobRoleId } from '../middleware/validateJobRoleId.js';
 
 export const jobRoleRouter = (jobRoleController: JobRoleController): Router => {
 	const router = Router();
