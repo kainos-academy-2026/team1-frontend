@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
-import { renderJobRoleNotFoundError } from '../errors/errorPage';
+import { renderJobRoleNotFoundError } from '../errors/errorPage.js';
 import {
 	mapJobRoleDetailViewModel,
 	mapJobRoleListItemViewModel,
-} from '../mappers/jobRoleViewMapper';
-import { JobRoleStatus } from '../models/jobRoleStatus';
-import type { JobRoleService } from '../services/jobRoleService';
+} from '../mappers/jobRoleViewMapper.js';
+import { JobRoleStatus } from '../models/jobRoleStatus.js';
+import type { JobRoleService } from '../services/jobRoleService.js';
 
 export class JobRoleController {
 	constructor(private readonly jobRoleService: JobRoleService) {}
@@ -17,8 +17,11 @@ export class JobRoleController {
 		res.render('job-role-list.njk', { jobRoles });
 	};
 
-	getJobRole = async (_req: Request, res: Response): Promise<void> => {
-		const jobRoleId = res.locals.jobRoleId as number;
+	getJobRole = async (
+		req: Request<{ id: string }>,
+		res: Response,
+	): Promise<void> => {
+		const jobRoleId = Number(req.params.id);
 		const jobRole = await this.jobRoleService.getJobRole(jobRoleId);
 		if (!jobRole) {
 			renderJobRoleNotFoundError(res);

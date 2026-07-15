@@ -8,9 +8,7 @@ describe('ApiJobRoleService', () => {
 	it('allows construction when an API base URL is injected', () => {
 		const get = vi.fn();
 
-		expect(
-			() => new ApiJobRoleService({ get } as never, 'http://localhost:3001'),
-		).not.toThrow();
+		expect(() => new ApiJobRoleService({ get } as never)).not.toThrow();
 		expect(get).not.toHaveBeenCalled();
 	});
 
@@ -52,13 +50,10 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles()).resolves.toEqual(expectedRoles);
-		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles');
+		expect(get).toHaveBeenCalledWith('/job-roles');
 	});
 
 	it('maps summary data from the backend list endpoint', async () => {
@@ -81,10 +76,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles()).resolves.toEqual([
 			{
@@ -125,10 +117,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
 		await expect(service.getJobRoles()).rejects.toThrow(
@@ -149,10 +138,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
 		await expect(service.getJobRoles()).rejects.toThrow('Missing job role ID.');
@@ -176,17 +162,14 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(1)).resolves.toEqual({
 			...apiRole,
 			closingDate: new Date('2026-08-01'),
 			status: JobRoleStatus.Open,
 		});
-		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles/1');
+		expect(get).toHaveBeenCalledWith('/job-roles/1');
 	});
 
 	it('throws ValidationError when a required text field is blank', async () => {
@@ -209,10 +192,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
 		await expect(service.getJobRoles()).rejects.toThrow(
@@ -228,10 +208,7 @@ describe('ApiJobRoleService', () => {
 				response: { status: 404 },
 			})
 			.mockResolvedValueOnce({ data: [] });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(999)).resolves.toBeNull();
 	});
@@ -262,10 +239,7 @@ describe('ApiJobRoleService', () => {
 					},
 				],
 			});
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(1)).resolves.toEqual({
 			jobRoleId: 1,
@@ -282,8 +256,8 @@ describe('ApiJobRoleService', () => {
 			status: JobRoleStatus.Open,
 			numberOfOpenPositions: 2,
 		});
-		expect(get).toHaveBeenNthCalledWith(1, 'http://localhost:3001/job-roles/1');
-		expect(get).toHaveBeenNthCalledWith(2, 'http://localhost:3001/job-roles');
+		expect(get).toHaveBeenNthCalledWith(1, '/job-roles/1');
+		expect(get).toHaveBeenNthCalledWith(2, '/job-roles');
 	});
 
 	it('throws when API returns an invalid closing date', async () => {
@@ -306,10 +280,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles()).rejects.toBeInstanceOf(ValidationError);
 		await expect(service.getJobRoles()).rejects.toThrow(
@@ -335,10 +306,7 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(1)).rejects.toBeInstanceOf(ValidationError);
 		await expect(service.getJobRole(1)).rejects.toThrow(

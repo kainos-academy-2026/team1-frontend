@@ -1,10 +1,10 @@
-import { ValidationError } from '../errors/validationError';
+import { ValidationError } from '../errors/validationError.js';
 import type {
 	ApiJobRoleDto,
 	ApiJobRoleSummaryDto,
-} from '../models/apiJobRoleDto';
-import type { JobRole } from '../models/jobRole';
-import { JobRoleStatus } from '../models/jobRoleStatus';
+} from '../models/apiJobRoleDto.js';
+import type { JobRole } from '../models/jobRole.js';
+import { JobRoleStatus } from '../models/jobRoleStatus.js';
 
 const toRequiredText = (fieldName: string, value: string): string => {
 	if (value.trim().length === 0) {
@@ -14,7 +14,10 @@ const toRequiredText = (fieldName: string, value: string): string => {
 	return value;
 };
 
-const toRequiredTextValue = (fieldName: string, value: unknown): string => {
+const toRequiredTextValue = (
+	fieldName: string,
+	value: string | null | undefined,
+): string => {
 	if (typeof value !== 'string') {
 		throw new ValidationError(`Missing required job role field: ${fieldName}`);
 	}
@@ -24,7 +27,7 @@ const toRequiredTextValue = (fieldName: string, value: unknown): string => {
 
 const toSummaryText = (
 	fieldName: string,
-	value: unknown,
+	value: string | null | undefined,
 	fallback: string,
 ): string => {
 	if (typeof value !== 'string') {

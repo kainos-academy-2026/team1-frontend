@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import { errorMessages } from './errorMessages';
+import { errorMessages } from './errorMessages.js';
 
 interface ErrorPageOptions {
 	status: number;

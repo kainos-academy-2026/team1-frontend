@@ -1,37 +1,24 @@
-import {
-	type NextFunction,
-	type Request,
-	type Response,
-	Router,
-} from 'express';
-import { z } from 'zod';
-import type { JobRoleController } from '../controllers/jobRoleController';
-import { renderInvalidJobRoleIdError } from '../errors/errorPage';
+import { Router } from 'express';
+import { createApiHttpClient } from '../config/createApiHttpClient.js';
+import { JobRoleController } from '../controllers/jobRoleController.js';
+import { setErrorRedirect } from '../middleware/errorRedirect.js';
+import { validateParams } from '../middleware/validate.js';
+import { jobRoleParamsSchema } from '../models/jobRoleParamsDto.js';
+import { ApiJobRoleService } from '../services/apiJobRoleService.js';
 
-const jobRoleParamsSchema = z.object({
-	id: z.coerce.number().int().positive(),
-});
+const apiHttpClient = createApiHttpClient();
+const jobRoleService = new ApiJobRoleService(apiHttpClient);
+const jobRoleController = new JobRoleController(jobRoleService);
 
-const validateJobRoleId = (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-): void => {
-	const params = jobRoleParamsSchema.safeParse(req.params);
-	if (!params.success) {
-		renderInvalidJobRoleIdError(res);
-		return;
-	}
+const router = Router();
 
-	res.locals.jobRoleId = params.data.id;
-	next();
-};
+router.use(setErrorRedirect('/', 'Back to home'));
 
-export const jobRoleRouter = (jobRoleController: JobRoleController): Router => {
-	const router = Router();
+router.get('/', jobRoleController.getJobRoles);
+router.get(
+	'/:id',
+	validateParams(jobRoleParamsSchema),
+	jobRoleController.getJobRole,
+);
 
-	router.get('/', jobRoleController.getJobRoles);
-	router.get('/:id', validateJobRoleId, jobRoleController.getJobRole);
-
-	return router;
-};
+export default router;
