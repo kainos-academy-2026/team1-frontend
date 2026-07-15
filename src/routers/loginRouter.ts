@@ -5,6 +5,7 @@ import {
 	Router,
 } from 'express';
 import type { LoginController } from '../controllers/loginController.js';
+import { setErrorRedirect } from '../middleware/errorRedirect.js';
 import { loginCredentialsSchema } from '../validators/loginCredentialsValidator.js';
 import { redirectAuthenticatedUser } from './authRouter.js';
 
@@ -67,6 +68,7 @@ const validateLoginForm = (
 
 export const loginRouter = (loginController: LoginController): Router => {
 	const router = Router();
+	router.use(setErrorRedirect('/login', 'Back to login'));
 
 	router.get('/', redirectAuthenticatedUser, loginController.renderLoginPage);
 	router.post('/', validateLoginForm, loginController.handleLogin);
