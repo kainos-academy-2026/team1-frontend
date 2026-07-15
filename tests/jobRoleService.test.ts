@@ -10,9 +10,7 @@ describe('ApiJobRoleService', () => {
 	it('allows construction when an API base URL is injected', () => {
 		const get = vi.fn();
 
-		expect(
-			() => new ApiJobRoleService({ get } as never, 'http://localhost:3001'),
-		).not.toThrow();
+		expect(() => new ApiJobRoleService({ get } as never)).not.toThrow();
 		expect(get).not.toHaveBeenCalled();
 	});
 
@@ -54,15 +52,12 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual(
 			expectedRoles,
 		);
-		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles', {
+		expect(get).toHaveBeenCalledWith('/job-roles', {
 			headers: { Authorization: `Bearer ${authToken}` },
 		});
 	});
@@ -87,10 +82,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual([
 			{
@@ -131,10 +123,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
 			ValidationError,
@@ -164,10 +153,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
 			ValidationError,
@@ -197,10 +183,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual([
 			{
@@ -234,10 +217,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
 			ValidationError,
@@ -267,10 +247,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
 			ValidationError,
@@ -300,10 +277,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
 			ValidationError,
@@ -331,17 +305,14 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
 			...apiRole,
 			closingDate: new Date('2026-08-01'),
 			status: JobRoleStatus.Open,
 		});
-		expect(get).toHaveBeenCalledWith('http://localhost:3001/job-roles/1', {
+		expect(get).toHaveBeenCalledWith('/job-roles/1', {
 			headers: { Authorization: `Bearer ${authToken}` },
 		});
 	});
@@ -366,10 +337,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual([
 			{
@@ -398,10 +366,7 @@ describe('ApiJobRoleService', () => {
 				response: { status: 404 },
 			})
 			.mockResolvedValueOnce({ data: [] });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(999, authToken)).resolves.toBeNull();
 	});
@@ -432,10 +397,7 @@ describe('ApiJobRoleService', () => {
 					},
 				],
 			});
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
 			jobRoleId: 1,
@@ -452,14 +414,10 @@ describe('ApiJobRoleService', () => {
 			status: JobRoleStatus.Open,
 			numberOfOpenPositions: 2,
 		});
-		expect(get).toHaveBeenNthCalledWith(
-			1,
-			'http://localhost:3001/job-roles/1',
-			{
-				headers: { Authorization: `Bearer ${authToken}` },
-			},
-		);
-		expect(get).toHaveBeenNthCalledWith(2, 'http://localhost:3001/job-roles', {
+		expect(get).toHaveBeenNthCalledWith(1, '/job-roles/1', {
+			headers: { Authorization: `Bearer ${authToken}` },
+		});
+		expect(get).toHaveBeenNthCalledWith(2, '/job-roles', {
 			headers: { Authorization: `Bearer ${authToken}` },
 		});
 	});
@@ -484,10 +442,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
 			ValidationError,
@@ -515,10 +470,7 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
 			jobRoleId: 1,
@@ -555,10 +507,7 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService(
-			{ get } as never,
-			'http://localhost:3001',
-		);
+		const service = new ApiJobRoleService({ get } as never);
 
 		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
 			jobRoleId: 1,

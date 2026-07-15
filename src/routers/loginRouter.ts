@@ -4,23 +4,35 @@ import {
 	type Response,
 	Router,
 } from 'express';
-import { z } from 'zod';
 import type { LoginController } from '../controllers/loginController.js';
+import { loginCredentialsSchema } from '../validators/loginCredentialsValidator.js';
 import { redirectAuthenticatedUser } from './authRouter.js';
 
 type FieldErrors = Record<string, string[]>;
 
-const loginFormSchema = z.object({
-	email: z.string().trim().email(),
-	password: z.string().min(1),
-});
+const toLoginErrorMessage = (errors: FieldErrors): string => {
+	const hasEmailError = Boolean(errors.email && errors.email.length > 0);
+	const hasPasswordError = Boolean(
+		errors.password && errors.password.length > 0,
+	);
+
+	if (hasEmailError && !hasPasswordError) {
+		return 'Enter a valid email address that includes an @ symbol.';
+	}
+
+	if (hasPasswordError && !hasEmailError) {
+		return 'Enter your password.';
+	}
+
+	return 'Enter a valid email address and password.';
+};
 
 const validateLoginForm = (
 	req: Request,
 	res: Response,
 	next: NextFunction,
 ): void => {
-	const result = loginFormSchema.safeParse(req.body);
+	const result = loginCredentialsSchema.safeParse(req.body);
 
 	if (!result.success) {
 		const errors: FieldErrors = {};
@@ -40,7 +52,7 @@ const validateLoginForm = (
 
 		res.status(400).render('login.njk', {
 			title: 'Login',
-			loginError: 'Enter a valid email address that includes an @ symbol.',
+			loginError: toLoginErrorMessage(errors),
 			errors,
 			formData: {
 				email: typeof req.body?.email === 'string' ? req.body.email : '',

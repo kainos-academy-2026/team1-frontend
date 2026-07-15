@@ -1,13 +1,11 @@
 import 'dotenv/config';
 import { createApp } from './app.js';
 import { createApiHttpClient } from './config/createApiHttpClient.js';
-import { requireApiBaseUrl } from './config/requireApiBaseUrl.js';
 import { ApiJobRoleService } from './services/apiJobRoleService.js';
 import { LoginService } from './services/loginService.js';
 
-const apiBaseUrl = requireApiBaseUrl();
 const apiHttpClient = createApiHttpClient();
-const jobRoleService = new ApiJobRoleService(apiHttpClient, apiBaseUrl);
+const jobRoleService = new ApiJobRoleService(apiHttpClient);
 const loginService = new LoginService(apiHttpClient);
 const app = createApp(jobRoleService, loginService);
 

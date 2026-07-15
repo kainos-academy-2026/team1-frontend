@@ -12,10 +12,7 @@ import type { JobRole } from '../models/jobRole.js';
 import type { JobRoleService } from './jobRoleService.js';
 
 export class ApiJobRoleService implements JobRoleService {
-	constructor(
-		private readonly httpClient: AxiosInstance,
-		private readonly apiBaseUrl: string,
-	) {}
+	constructor(private readonly httpClient: AxiosInstance) {}
 
 	private authHeaders(authToken?: string): Record<string, string> {
 		if (!authToken || authToken.trim().length === 0) {
@@ -29,7 +26,7 @@ export class ApiJobRoleService implements JobRoleService {
 
 	async getJobRoles(authToken?: string): Promise<JobRole[]> {
 		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
-			`${this.apiBaseUrl}/job-roles`,
+			'/job-roles',
 			{ headers: this.authHeaders(authToken) },
 		);
 
@@ -42,7 +39,7 @@ export class ApiJobRoleService implements JobRoleService {
 	): Promise<JobRole | null> {
 		try {
 			const response = await this.httpClient.get<ApiJobRoleDto>(
-				`${this.apiBaseUrl}/job-roles/${jobRoleId}`,
+				`/job-roles/${jobRoleId}`,
 				{ headers: this.authHeaders(authToken) },
 			);
 

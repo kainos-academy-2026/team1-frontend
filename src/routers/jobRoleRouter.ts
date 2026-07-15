@@ -4,14 +4,10 @@ import {
 	type Response,
 	Router,
 } from 'express';
-import { z } from 'zod';
 import type { JobRoleController } from '../controllers/jobRoleController.js';
 import { renderInvalidJobRoleIdError } from '../errors/errorPage.js';
+import { jobRoleParamsSchema } from '../models/jobRoleParamsDto.js';
 import { requireAuthenticatedUser } from './authRouter.js';
-
-const jobRoleParamsSchema = z.object({
-	id: z.coerce.number().int().positive(),
-});
 
 const validateJobRoleId = (
 	req: Request,
