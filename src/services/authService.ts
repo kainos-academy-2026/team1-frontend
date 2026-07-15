@@ -174,7 +174,18 @@ export const setAuthSession = (
 };
 
 export const getAuthCookieMaxAgeMs = (token: string): number | null => {
-	const decoded = jsonwebtoken.decode(token);
+	const secret = getJwtSecret();
+	if (!secret) {
+		return null;
+	}
+
+	let decoded: unknown;
+	try {
+		decoded = jsonwebtoken.verify(token, secret, { algorithms: ['HS256'] });
+	} catch {
+		return null;
+	}
+
 	if (typeof decoded !== 'object' || decoded === null) {
 		return null;
 	}
