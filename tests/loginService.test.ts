@@ -7,10 +7,7 @@ describe('LoginService', () => {
 		const post = vi.fn().mockResolvedValue({
 			data: { token: 'jwt-token' },
 		});
-		const service = new LoginService(
-			{ post } as unknown as AxiosInstance,
-			'http://localhost:3001',
-		);
+		const service = new LoginService({ post } as unknown as AxiosInstance);
 
 		await expect(
 			service.login({
@@ -19,7 +16,7 @@ describe('LoginService', () => {
 			}),
 		).resolves.toEqual({ token: 'jwt-token' });
 
-		expect(post).toHaveBeenCalledWith('http://localhost:3001/auth/login', {
+		expect(post).toHaveBeenCalledWith('/auth/login', {
 			email: 'test@example.com',
 			password: 'Password123!',
 		});

@@ -362,22 +362,6 @@ body {
 	font-size: 1.4rem;
 }
 
-.job-card-link {
-	color: #132034;
-	text-decoration: none;
-}
-
-.job-card-link:hover {
-	text-decoration: underline;
-	text-underline-offset: 2px;
-}
-
-.job-card-link:focus-visible {
-	outline: 2px solid #0b5cab;
-	outline-offset: 2px;
-	border-radius: 4px;
-}
-
 .job-card-body {
 	display: flex;
 	flex-wrap: wrap;
@@ -395,75 +379,4 @@ body {
 	margin: 0;
 	font-weight: 600;
 	color: #0b5cab;
-}
-
-/*Job Information Style*/
-
-.job-detail-card {
-	background: #ffffff;
-	padding: 12px;
-	margin: 0 16px 16px;
-	border-radius: 12px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.job-detail-section {
-	margin-bottom: 16px;
-}
-
-.job-detail-heading {
-	margin: 0 0 8px;
-	font-size: 1.2rem;
-	color: #132034;
-}
-
-.job-detail-text {
-	margin: 0;
-	line-height: 1.5;
-	color: #333333;
-}
-
-.job-detail-link {
-	color: #0b5cab;
-	text-decoration: underline;
-	text-underline-offset: 2px;
-}
-
-.job-detail-link:hover {
-	color: #08407a;
-}
-
-.job-detail-link:focus-visible {
-	outline: 2px solid #0b5cab;
-	outline-offset: 2px;
-	border-radius: 4px;
-}
-
-.job-detail-meta {
-	display: grid;
-	grid-template-columns: minmax(140px, 220px) 1fr;
-	gap: 8px 12px;
-	margin: 0;
-	padding-top: 12px;
-	border-top: 1px solid #e6ebef;
-}
-
-.job-detail-meta dt {
-	font-weight: 700;
-	color: #132034;
-}
-
-.job-detail-meta dd {
-	margin: 0;
-	color: #555;
-}
-
-@media (max-width: 700px) {
-	.job-detail-meta {
-		grid-template-columns: 1fr;
-	}
-
-	.job-detail-meta dt {
-		margin-top: 8px;
-	}
 }

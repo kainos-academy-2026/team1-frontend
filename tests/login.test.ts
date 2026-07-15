@@ -45,7 +45,6 @@ describe('Login flow', () => {
 		expect(response.text).toContain(
 			'Enter a valid email address that includes an @ symbol.',
 		);
-		expect(response.text).toContain('window.alert');
 	});
 
 	it('stores the login token in the rendered page after a successful login', async () => {

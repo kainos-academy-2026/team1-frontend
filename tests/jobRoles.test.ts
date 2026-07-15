@@ -110,8 +110,8 @@ describe('GET /job-roles', () => {
 			.set('Cookie', authCookie);
 
 		expect(response.status).toBe(500);
-		expect(response.text).toContain('Back to home');
-		expect(response.text).toContain('href="/"');
+		expect(response.text).toContain('Back to open roles');
+		expect(response.text).toContain('href="/job-roles"');
 	});
 
 	it('returns 502 when the service throws a validation error', async () => {
@@ -126,8 +126,8 @@ describe('GET /job-roles', () => {
 		expect(response.text).toContain(
 			'The job data received from the upstream API was invalid.',
 		);
-		expect(response.text).toContain('Back to home');
-		expect(response.text).toContain('href="/"');
+		expect(response.text).toContain('Back to open roles');
+		expect(response.text).toContain('href="/job-roles"');
 	});
 
 	it('renders an empty state when no job roles are returned', async () => {

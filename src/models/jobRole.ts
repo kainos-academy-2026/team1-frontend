@@ -1,4 +1,4 @@
-import type { JobRoleStatus } from './jobRoleStatus';
+import type { JobRoleStatus } from './jobRoleStatus.js';
 
 export interface JobRole {
 	jobRoleId: number;

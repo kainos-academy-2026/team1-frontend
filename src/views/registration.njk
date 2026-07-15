@@ -1,0 +1,16 @@
+{% extends "layouts/base.njk" %}
+{% from "macros/field-macro.njk" import field %}
+{% block content %}
+    <main>
+        <h1>Create an account</h1>
+        <p>Use your email address and a strong password to register.</p>
+
+        <form method="post" action="/registration">
+            {{ field('email', 'Email', 'email', 'name@example.com', formData.email or '', errors, 'email') }}
+
+            {{ field('password', 'Password', 'password', '', '', errors, 'new-password') }}
+
+            <button type="submit">Register</button>
+        </form>
+    </main>
+{% endblock %}
