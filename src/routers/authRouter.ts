@@ -3,7 +3,7 @@ import {
 	clearAuthSession,
 	getAuthSession,
 	getVerifiedAuthContext,
-} from '../services/authService';
+} from '../services/authService.js';
 
 export const attachAuthState = (
 	req: Request,

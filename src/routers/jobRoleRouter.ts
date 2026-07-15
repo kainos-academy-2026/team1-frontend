@@ -5,9 +5,9 @@ import {
 	Router,
 } from 'express';
 import { z } from 'zod';
-import type { JobRoleController } from '../controllers/jobRoleController';
-import { renderInvalidJobRoleIdError } from '../errors/errorPage';
-import { requireAuthenticatedUser } from './authRouter';
+import type { JobRoleController } from '../controllers/jobRoleController.js';
+import { renderInvalidJobRoleIdError } from '../errors/errorPage.js';
+import { requireAuthenticatedUser } from './authRouter.js';
 
 const jobRoleParamsSchema = z.object({
 	id: z.coerce.number().int().positive(),

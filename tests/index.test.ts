@@ -43,6 +43,8 @@ describe('GET /', () => {
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Welcome to Kainos Careers');
-		expect(response.text).toContain('href="/login">View applications</a>');
+		expect(response.text).toContain(
+			'href="/applications">View applications</a>',
+		);
 	});
 });

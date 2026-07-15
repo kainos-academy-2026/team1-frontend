@@ -1,17 +1,13 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createApp } from '../src/app';
+import type { JobRoleService } from '../src/services/jobRoleService';
+import type { LoginServiceClient } from '../src/services/loginService';
 
 const { getJobRoles, getJobRole, createUser } = vi.hoisted(() => ({
 	getJobRoles: vi.fn(),
 	getJobRole: vi.fn(),
 	createUser: vi.fn(),
-}));
-
-vi.mock('../src/services/apiJobRoleService.js', () => ({
-	ApiJobRoleService: class {
-		getJobRoles = getJobRoles;
-		getJobRole = getJobRole;
-	},
 }));
 
 vi.mock('../src/services/apiUserService.js', () => ({
@@ -20,7 +16,14 @@ vi.mock('../src/services/apiUserService.js', () => ({
 	},
 }));
 
-import app from '../src/app';
+const jobRoleService: JobRoleService = {
+	getJobRoles,
+	getJobRole,
+};
+
+const loginService: LoginServiceClient = {
+	login: vi.fn(),
+};
 
 describe('Registration', () => {
 	beforeEach(() => {
@@ -30,6 +33,7 @@ describe('Registration', () => {
 	});
 
 	it('renders the registration page', async () => {
+		const app = createApp(jobRoleService, loginService);
 		const response = await request(app).get('/registration');
 
 		expect(response.status).toBe(200);
@@ -38,6 +42,7 @@ describe('Registration', () => {
 
 	it('creates a user from valid registration data', async () => {
 		createUser.mockResolvedValue(undefined);
+		const app = createApp(jobRoleService, loginService);
 
 		const response = await request(app)
 			.post('/registration')
@@ -56,6 +61,7 @@ describe('Registration', () => {
 	});
 
 	it('rejects invalid registration data', async () => {
+		const app = createApp(jobRoleService, loginService);
 		const response = await request(app)
 			.post('/registration')
 			.type('form')
@@ -76,6 +82,7 @@ describe('Registration', () => {
 
 	it('shows an error page when user creation fails', async () => {
 		createUser.mockRejectedValue({ isAxiosError: true });
+		const app = createApp(jobRoleService, loginService);
 
 		const response = await request(app)
 			.post('/registration')

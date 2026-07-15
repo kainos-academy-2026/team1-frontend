@@ -1,10 +1,10 @@
-import { ValidationError } from '../errors/validationError';
+import { ValidationError } from '../errors/validationError.js';
 import type {
 	ApiJobRoleDto,
 	ApiJobRoleSummaryDto,
-} from '../models/apiJobRoleDto';
-import type { JobRole } from '../models/jobRole';
-import { JobRoleStatus } from '../models/jobRoleStatus';
+} from '../models/apiJobRoleDto.js';
+import type { JobRole } from '../models/jobRole.js';
+import { JobRoleStatus } from '../models/jobRoleStatus.js';
 
 const toRequiredText = (fieldName: string, value: unknown): string => {
 	if (typeof value !== 'string' || value.trim().length === 0) {

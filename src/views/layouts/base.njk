@@ -29,11 +29,12 @@
                         {% endif %}
                         <li>
                             <form action="/login/logout" method="post">
-                                <button type="submit">Logout</button>
+                                <button class="nav-logout-button" type="submit">Logout</button>
                             </form>
                         </li>
                     {% else %}
                         <li><a href="/login">Login</a></li>
+                        <li><a href="/registration">Register</a></li>
                     {% endif %}
                 </ul>
             </nav>

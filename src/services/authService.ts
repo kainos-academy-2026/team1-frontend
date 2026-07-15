@@ -12,6 +12,15 @@ export type VerifiedAuthContext = {
 
 const authContextCache = new WeakMap<Request, VerifiedAuthContext | null>();
 
+const getJwtSecret = (): string | null => {
+	const secret = process.env.JWT_SECRET ?? process.env.JWT_SECRET_KEY;
+	if (!secret || secret.trim().length === 0) {
+		return null;
+	}
+
+	return secret;
+};
+
 const parseCookies = (
 	cookieHeader: string | undefined,
 ): Record<string, string> => {
@@ -79,7 +88,7 @@ const resolveAuthRoleFromPayload = (payload: JwtPayload): AuthRole | null => {
 const validateAndDecodeAuthSession = (
 	token: string,
 ): VerifiedAuthContext | null => {
-	const secret = process.env.JWT_SECRET;
+	const secret = getJwtSecret();
 	if (!secret) {
 		return null;
 	}
@@ -104,6 +113,12 @@ const validateAndDecodeAuthSession = (
 		authSession: token,
 		authRole,
 	};
+};
+
+export const getVerifiedAuthContextFromToken = (
+	token: string,
+): VerifiedAuthContext | null => {
+	return validateAndDecodeAuthSession(token);
 };
 
 export const getVerifiedAuthContext = (
