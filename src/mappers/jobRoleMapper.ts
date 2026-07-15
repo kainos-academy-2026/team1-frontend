@@ -37,7 +37,30 @@ const toRequiredNumber = (fieldName: string, value: unknown): number => {
 	return value;
 };
 
+const toSharepointSourceValue = (
+	sharepointUrl: unknown,
+	specification: unknown,
+): unknown => {
+	if (typeof sharepointUrl === 'string' && sharepointUrl.trim().length > 0) {
+		return sharepointUrl;
+	}
+
+	return specification;
+};
+
 const toSummarySharepointUrl = (value: unknown): string => {
+	if (typeof value !== 'string' || value.trim().length === 0) {
+		return '';
+	}
+
+	try {
+		return toSharepointUrl(value.trim());
+	} catch {
+		return '';
+	}
+};
+
+const toRequiredSharepointUrl = (value: unknown): string => {
 	if (typeof value !== 'string' || value.trim().length === 0) {
 		throw new ValidationError('Missing required job role field: sharepointUrl');
 	}
@@ -114,7 +137,9 @@ export const mapApiJobRoleSummary = (
 			jobRole.responsibilities,
 			'Responsibilities not available.',
 		),
-		sharepointUrl: toSummarySharepointUrl(jobRole.sharepointUrl),
+		sharepointUrl: toSummarySharepointUrl(
+			toSharepointSourceValue(jobRole.sharepointUrl, jobRole.specification),
+		),
 		location: toRequiredText('location', jobRole.location),
 		capabilityId,
 		capabilityName: toSummaryText(
@@ -142,6 +167,8 @@ export const mapApiJobRole = (jobRole: ApiJobRoleDto): JobRole => ({
 		jobRole.responsibilities,
 		'Responsibilities not available.',
 	),
-	sharepointUrl: toSummarySharepointUrl(jobRole.sharepointUrl),
+	sharepointUrl: toRequiredSharepointUrl(
+		toSharepointSourceValue(jobRole.sharepointUrl, jobRole.specification),
+	),
 	numberOfOpenPositions: jobRole.numberOfOpenPositions ?? 0,
 });

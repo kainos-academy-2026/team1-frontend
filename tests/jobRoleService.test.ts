@@ -103,6 +103,47 @@ describe('ApiJobRoleService', () => {
 		]);
 	});
 
+	it('maps summary data when backend uses specification field for URLs', async () => {
+		const apiRoles = [
+			{
+				id: 3,
+				roleName: 'Product Manager',
+				description: 'Lead product development and strategy.',
+				responsibilities: 'Define product vision, strategy, and roadmap.',
+				specification:
+					'https://kainossoftwareltd.sharepoint.com/sites/Career/JobProfiles/Product/Job%20Profile%20-%20Product%20Consultant%20(Manager).pdf',
+				location: 'Chicago',
+				capabilityId: 3,
+				bandId: 3,
+				closingDate: '2024-10-31T00:00:00.000Z',
+				status: 'closed',
+				numberOfOpenPositions: 1,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService({ get } as never);
+
+		await expect(service.getJobRoles(authToken)).resolves.toEqual([
+			{
+				jobRoleId: 3,
+				roleName: 'Product Manager',
+				description: 'Lead product development and strategy.',
+				responsibilities: 'Define product vision, strategy, and roadmap.',
+				sharepointUrl:
+					'https://kainossoftwareltd.sharepoint.com/sites/Career/JobProfiles/Product/Job%20Profile%20-%20Product%20Consultant%20(Manager).pdf',
+				location: 'Chicago',
+				capabilityId: 3,
+				capabilityName: 'Capability 3',
+				bandId: 3,
+				bandName: 'Band 3',
+				closingDate: new Date('2024-10-31T00:00:00.000Z'),
+				status: JobRoleStatus.Closed,
+				numberOfOpenPositions: 1,
+			},
+		]);
+	});
+
 	it('throws when API returns an unexpected status', async () => {
 		const apiRoles = [
 			{
@@ -358,7 +399,7 @@ describe('ApiJobRoleService', () => {
 		]);
 	});
 
-	it('throws when summary data contains an invalid sharepoint URL', async () => {
+	it('keeps summary rows when sharepoint URL is invalid', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -375,17 +416,58 @@ describe('ApiJobRoleService', () => {
 				status: 'open',
 				numberOfOpenPositions: 2,
 			},
+			{
+				jobRoleId: 2,
+				roleName: 'Product Analyst',
+				description: 'Analyse product metrics and customer feedback.',
+				responsibilities: 'Build insights and dashboards.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/2',
+				location: 'Dublin',
+				capabilityId: 2,
+				capabilityName: 'Data',
+				bandId: 3,
+				bandName: 'Consultant',
+				closingDate: '2026-08-15',
+				status: 'open',
+				numberOfOpenPositions: 1,
+			},
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
-			'Invalid sharepointUrl format: not-a-url',
-		);
+		await expect(service.getJobRoles(authToken)).resolves.toEqual([
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: '',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: new Date('2026-08-01'),
+				status: JobRoleStatus.Open,
+				numberOfOpenPositions: 2,
+			},
+			{
+				jobRoleId: 2,
+				roleName: 'Product Analyst',
+				description: 'Analyse product metrics and customer feedback.',
+				responsibilities: 'Build insights and dashboards.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/2',
+				location: 'Dublin',
+				capabilityId: 2,
+				capabilityName: 'Data',
+				bandId: 3,
+				bandName: 'Consultant',
+				closingDate: new Date('2026-08-15'),
+				status: JobRoleStatus.Open,
+				numberOfOpenPositions: 1,
+			},
+		]);
 	});
 
 	it('returns null when the API returns 404 for a role id', async () => {
@@ -507,6 +589,34 @@ describe('ApiJobRoleService', () => {
 		);
 		await expect(service.getJobRole(1, authToken)).rejects.toThrow(
 			'sharepointUrl must use HTTPS: javascript:alert(1)',
+		);
+	});
+
+	it('throws when detail API returns a malformed sharepoint URL', async () => {
+		const apiRole = {
+			jobRoleId: 1,
+			roleName: 'Software Engineer',
+			description: 'Build features that solve customer problems.',
+			responsibilities: 'Deliver code, tests, and documentation.',
+			sharepointUrl: 'not-a-url',
+			location: 'Belfast',
+			capabilityId: 1,
+			capabilityName: 'Workday',
+			bandId: 2,
+			bandName: 'Senior Associate',
+			closingDate: '2026-08-01',
+			status: 'open',
+			numberOfOpenPositions: 2,
+		};
+
+		const get = vi.fn().mockResolvedValue({ data: apiRole });
+		const service = new ApiJobRoleService({ get } as never);
+
+		await expect(service.getJobRole(1, authToken)).rejects.toBeInstanceOf(
+			ValidationError,
+		);
+		await expect(service.getJobRole(1, authToken)).rejects.toThrow(
+			'Invalid sharepointUrl format: not-a-url',
 		);
 	});
 

@@ -5,6 +5,7 @@ export interface ApiJobRoleSummaryDto {
 	description: string;
 	responsibilities: string;
 	sharepointUrl: string;
+	specification: string;
 	location: string;
 	capabilityId: number;
 	capabilityName: string;
@@ -20,6 +21,7 @@ export interface ApiJobRoleDto extends ApiJobRoleSummaryDto {
 	description: string;
 	responsibilities: string;
 	sharepointUrl: string;
+	specification: string;
 	capabilityName: string;
 	bandName: string;
 	numberOfOpenPositions: number;
