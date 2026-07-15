@@ -4,6 +4,8 @@ import type { BackendValidationError } from '../models/backendValidation';
 import {
 	clearAuthSession,
 	getAuthCookieMaxAgeMs,
+	getAuthSession,
+	setAuthSession,
 } from '../services/authService';
 import type { LoginServiceClient } from '../services/loginService';
 
@@ -47,14 +49,7 @@ export class LoginController {
 				return;
 			}
 			res.set('Cache-Control', 'no-store');
-			const isProduction = process.env.NODE_ENV === 'production';
-			res.cookie('authSession', token, {
-				httpOnly: true,
-				secure: isProduction,
-				sameSite: 'strict',
-				path: '/',
-				maxAge,
-			});
+			setAuthSession(res, token, maxAge);
 			res.redirect('/job-roles');
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
@@ -98,10 +93,7 @@ export class LoginController {
 	};
 
 	handleLogout = (req: Request, res: Response): void => {
-		if (
-			typeof req.headers.cookie === 'string' &&
-			req.headers.cookie.includes('authSession=')
-		) {
+		if (getAuthSession(req)) {
 			clearAuthSession(res);
 		}
 		res.redirect('/login?loggedOut=1');

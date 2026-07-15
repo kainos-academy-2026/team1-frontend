@@ -4,8 +4,6 @@ import {
 	getVerifiedAuthContext,
 } from '../services/authService';
 
-export { clearAuthSession } from '../services/authService';
-
 export const attachAuthState = (
 	req: Request,
 	res: Response,

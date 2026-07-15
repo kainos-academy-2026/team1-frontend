@@ -30,14 +30,10 @@ const validateJobRoleId = (
 
 export const jobRoleRouter = (jobRoleController: JobRoleController): Router => {
 	const router = Router();
+	router.use(requireAuthenticatedUser);
 
 	router.get('/', jobRoleController.getJobRoles);
-	router.get(
-		'/:id',
-		requireAuthenticatedUser,
-		validateJobRoleId,
-		jobRoleController.getJobRole,
-	);
+	router.get('/:id', validateJobRoleId, jobRoleController.getJobRole);
 
 	return router;
 };

@@ -37,11 +37,12 @@ describe('Authentication and authorisation', () => {
 			expect(response.status).toBe(200);
 		});
 
-		it('allows anonymous users to access the job role list', async () => {
+		it('redirects anonymous users to login when accessing the job role list', async () => {
 			const app = createApp(jobRoleService, loginService);
 			const response = await request(app).get('/job-roles');
 
-			expect(response.status).toBe(200);
+			expect(response.status).toBe(302);
+			expect(response.headers.location).toBe('/login');
 		});
 
 		it('redirects anonymous users to login when accessing a job role detail page', async () => {
@@ -77,7 +78,7 @@ describe('Authentication and authorisation', () => {
 			const app = createApp(jobRoleService, loginService);
 			const response = await request(app).get('/');
 
-			expect(response.text).toContain('href="/login"');
+			expect(response.text).toContain('>Login</a>');
 			expect(response.text).not.toContain('Logout');
 		});
 
@@ -88,7 +89,7 @@ describe('Authentication and authorisation', () => {
 				.set('Cookie', [`authSession=${createAuthToken('applicant')}`]);
 
 			expect(response.text).toContain('Logout');
-			expect(response.text).not.toContain('href="/login"');
+			expect(response.text).not.toContain('>Login</a>');
 		});
 
 		it('shows Admin badge for admin users', async () => {

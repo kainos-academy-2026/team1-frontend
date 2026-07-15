@@ -220,12 +220,11 @@ describe('GET /job-roles', () => {
 		expect(response.headers.location).toBe('/login');
 	});
 
-	it('allows anonymous users to view the job role list', async () => {
-		getJobRoles.mockResolvedValue([]);
-
+	it('redirects anonymous users to login when accessing the job role list', async () => {
 		const app = createApp(jobRoleService);
 		const response = await request(app).get('/job-roles');
 
-		expect(response.status).toBe(200);
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/login');
 	});
 });

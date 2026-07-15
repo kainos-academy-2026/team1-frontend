@@ -166,4 +166,15 @@ describe('Login flow', () => {
 		expect(response.headers.location).toBe('/login?loggedOut=1');
 		expect(response.headers['set-cookie']).toBeUndefined();
 	});
+
+	it('does not clear auth cookie when a different cookie contains authSession text', async () => {
+		const app = createApp(jobRoleService, loginService);
+		const response = await request(app)
+			.post('/login/logout')
+			.set('Cookie', ['tracking=contains-authSession=value']);
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/login?loggedOut=1');
+		expect(response.headers['set-cookie']).toBeUndefined();
+	});
 });

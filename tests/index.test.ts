@@ -27,6 +27,7 @@ describe('GET /', () => {
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Welcome to Kainos Careers');
+		expect(response.text).toContain('href="/login">View applications</a>');
 	});
 
 	it('renders the home page for authenticated users', async () => {
@@ -42,5 +43,6 @@ describe('GET /', () => {
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Welcome to Kainos Careers');
+		expect(response.text).toContain('href="/login">View applications</a>');
 	});
 });

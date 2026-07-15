@@ -214,6 +214,39 @@ describe('ApiJobRoleService', () => {
 		);
 	});
 
+	it('throws ValidationError when capabilityId is not numeric', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: '1',
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService(
+			{ get } as never,
+			'http://localhost:3001',
+		);
+
+		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
+			ValidationError,
+		);
+		await expect(service.getJobRoles(authToken)).rejects.toThrow(
+			'Missing required job role field: capabilityId',
+		);
+	});
+
 	it('returns a detailed job role by id using the injected client', async () => {
 		const apiRole = {
 			jobRoleId: 1,
