@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import {
 	clearAuthSession,
+	getAuthSession,
 	getVerifiedAuthContext,
 } from '../services/authService';
 
@@ -39,7 +40,9 @@ export const requireAuthenticatedUser = (
 ): void => {
 	const authContext = getVerifiedAuthContext(req);
 	if (!authContext) {
-		clearAuthSession(res);
+		if (getAuthSession(req)) {
+			clearAuthSession(res);
+		}
 		res.redirect('/login');
 		return;
 	}

@@ -6,8 +6,8 @@ import type {
 import type { JobRole } from '../models/jobRole';
 import { JobRoleStatus } from '../models/jobRoleStatus';
 
-const toRequiredText = (fieldName: string, value: string): string => {
-	if (value.trim().length === 0) {
+const toRequiredText = (fieldName: string, value: unknown): string => {
+	if (typeof value !== 'string' || value.trim().length === 0) {
 		throw new ValidationError(`Missing required job role field: ${fieldName}`);
 	}
 	return value;
@@ -61,7 +61,11 @@ const toJobRoleId = ({ jobRoleId, id }: ApiJobRoleSummaryDto): number => {
 	throw new ValidationError('Missing job role ID.');
 };
 
-const toJobRoleStatus = (status: string): JobRoleStatus => {
+const toJobRoleStatus = (status: unknown): JobRoleStatus => {
+	if (typeof status !== 'string') {
+		throw new ValidationError(`Unexpected job role status: ${String(status)}`);
+	}
+
 	const normalizedStatus = status.trim().toLowerCase();
 
 	if (normalizedStatus === JobRoleStatus.Open) return JobRoleStatus.Open;
