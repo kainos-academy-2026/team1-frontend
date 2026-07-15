@@ -157,4 +157,13 @@ describe('Login flow', () => {
 			(response.headers['set-cookie'] as unknown as string[])?.join(';'),
 		).toContain('authSession=;');
 	});
+
+	it('redirects on logout without clearing cookie when no auth session is present', async () => {
+		const app = createApp(jobRoleService, loginService);
+		const response = await request(app).post('/login/logout');
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/login?loggedOut=1');
+		expect(response.headers['set-cookie']).toBeUndefined();
+	});
 });

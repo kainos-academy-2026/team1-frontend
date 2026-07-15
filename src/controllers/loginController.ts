@@ -97,8 +97,13 @@ export class LoginController {
 		}
 	};
 
-	handleLogout = (_req: Request, res: Response): void => {
-		clearAuthSession(res);
+	handleLogout = (req: Request, res: Response): void => {
+		if (
+			typeof req.headers.cookie === 'string' &&
+			req.headers.cookie.includes('authSession=')
+		) {
+			clearAuthSession(res);
+		}
 		res.redirect('/login?loggedOut=1');
 	};
 }

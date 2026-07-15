@@ -14,16 +14,8 @@ const toRequiredText = (fieldName: string, value: string): string => {
 	return value;
 };
 
-const toRequiredTextValue = (fieldName: string, value: unknown): string => {
-	if (typeof value !== 'string') {
-		throw new ValidationError(`Missing required job role field: ${fieldName}`);
-	}
-
-	return toRequiredText(fieldName, value);
-};
-
 const toSummaryText = (
-	fieldName: string,
+	_fieldName: string,
 	value: unknown,
 	fallback: string,
 ): string => {
