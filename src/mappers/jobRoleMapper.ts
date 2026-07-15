@@ -39,14 +39,10 @@ const toRequiredNumber = (fieldName: string, value: unknown): number => {
 
 const toSummarySharepointUrl = (value: unknown): string => {
 	if (typeof value !== 'string' || value.trim().length === 0) {
-		return 'https://example.com/job-specification';
+		throw new ValidationError('Missing required job role field: sharepointUrl');
 	}
 
-	try {
-		return toSharepointUrl(value);
-	} catch {
-		return 'https://example.com/job-specification';
-	}
+	return toSharepointUrl(value.trim());
 };
 
 const toJobRoleId = ({ jobRoleId, id }: ApiJobRoleSummaryDto): number => {

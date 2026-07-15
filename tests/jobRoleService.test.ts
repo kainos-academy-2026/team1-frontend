@@ -324,7 +324,7 @@ describe('ApiJobRoleService', () => {
 				roleName: 'Software Engineer',
 				description: '   ',
 				responsibilities: ' ',
-				sharepointUrl: 'not-a-url',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 				location: 'Belfast',
 				capabilityId: 1,
 				capabilityName: ' ',
@@ -345,7 +345,7 @@ describe('ApiJobRoleService', () => {
 				roleName: 'Software Engineer',
 				description: 'Description not available.',
 				responsibilities: 'Responsibilities not available.',
-				sharepointUrl: 'https://example.com/job-specification',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 				location: 'Belfast',
 				capabilityId: 1,
 				capabilityName: 'Capability 1',
@@ -356,6 +356,36 @@ describe('ApiJobRoleService', () => {
 				numberOfOpenPositions: 2,
 			},
 		]);
+	});
+
+	it('throws when summary data contains an invalid sharepoint URL', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'not-a-url',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = new ApiJobRoleService({ get } as never);
+
+		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
+			ValidationError,
+		);
+		await expect(service.getJobRoles(authToken)).rejects.toThrow(
+			'Invalid sharepointUrl format: not-a-url',
+		);
 	});
 
 	it('returns null when the API returns 404 for a role id', async () => {
@@ -452,7 +482,7 @@ describe('ApiJobRoleService', () => {
 		);
 	});
 
-	it('falls back when detail API returns an insecure sharepoint URL', async () => {
+	it('throws when detail API returns an insecure sharepoint URL', async () => {
 		const apiRole = {
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
@@ -472,21 +502,12 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
-			jobRoleId: 1,
-			roleName: 'Software Engineer',
-			description: 'Build features that solve customer problems.',
-			responsibilities: 'Deliver code, tests, and documentation.',
-			sharepointUrl: 'https://example.com/job-specification',
-			location: 'Belfast',
-			capabilityId: 1,
-			capabilityName: 'Workday',
-			bandId: 2,
-			bandName: 'Senior Associate',
-			closingDate: new Date('2026-08-01'),
-			status: JobRoleStatus.Open,
-			numberOfOpenPositions: 2,
-		});
+		await expect(service.getJobRole(1, authToken)).rejects.toBeInstanceOf(
+			ValidationError,
+		);
+		await expect(service.getJobRole(1, authToken)).rejects.toThrow(
+			'sharepointUrl must use HTTPS: javascript:alert(1)',
+		);
 	});
 
 	it('uses fallback values when detail optional fields are blank', async () => {
@@ -495,7 +516,7 @@ describe('ApiJobRoleService', () => {
 			roleName: 'Software Engineer',
 			description: ' ',
 			responsibilities: ' ',
-			sharepointUrl: ' ',
+			sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 			location: 'Belfast',
 			capabilityId: 1,
 			capabilityName: 'Workday',
@@ -514,7 +535,7 @@ describe('ApiJobRoleService', () => {
 			roleName: 'Software Engineer',
 			description: 'Description not available.',
 			responsibilities: 'Responsibilities not available.',
-			sharepointUrl: 'https://example.com/job-specification',
+			sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 			location: 'Belfast',
 			capabilityId: 1,
 			capabilityName: 'Workday',
