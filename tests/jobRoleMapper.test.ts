@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import {
-	mapApiJobRole,
-	mapApiJobRoleSummary,
-} from '../src/mappers/jobRoleMapper';
+import { JobRoleMapper } from '../src/mappers/jobRoleMapper';
+
+const mapper = new JobRoleMapper();
 
 describe('jobRoleMapper', () => {
 	it('maps summary job role fields from API DTO', () => {
-		const mapped = mapApiJobRoleSummary({
+		const mapped = mapper.mapApiJobRoleSummary({
 			id: 8,
+			jobRoleId: 8,
 			roleName: 'Analyst',
 			description: 'Analyse data',
 			responsibilities: 'Build reports',
 			sharepointUrl: 'https://example.com/sharepoint',
+			specification: 'https://example.com/specification',
 			location: 'Dublin',
 			capabilityId: 1,
 			capabilityName: 'Capability',
@@ -28,32 +29,42 @@ describe('jobRoleMapper', () => {
 		expect(mapped.numberOfOpenPositions).toBe(1);
 	});
 
-	it('maps summary fields as-is when optional fields are missing', () => {
-		const mapped = mapApiJobRoleSummary({
+	it('maps summary fields as-is', () => {
+		const mapped = mapper.mapApiJobRoleSummary({
 			id: 9,
+			jobRoleId: 9,
 			roleName: 'Consultant',
+			description: '',
+			responsibilities: '',
+			sharepointUrl: '',
+			specification: '',
 			location: 'London',
 			capabilityId: 1,
+			capabilityName: '',
 			bandId: 2,
+			bandName: '',
 			closingDate: '2026-10-10T00:00:00.000Z',
 			status: 'open',
+			numberOfOpenPositions: 0,
 		});
 
-		expect(mapped.description).toBeUndefined();
-		expect(mapped.responsibilities).toBeUndefined();
-		expect(mapped.sharepointUrl).toBeUndefined();
-		expect(mapped.capabilityName).toBeUndefined();
-		expect(mapped.bandName).toBeUndefined();
-		expect(mapped.numberOfOpenPositions).toBeUndefined();
+		expect(mapped.description).toBe('');
+		expect(mapped.responsibilities).toBe('');
+		expect(mapped.sharepointUrl).toBe('');
+		expect(mapped.capabilityName).toBe('');
+		expect(mapped.bandName).toBe('');
+		expect(mapped.numberOfOpenPositions).toBe(0);
 	});
 
 	it('maps detail job role fields from API DTO', () => {
-		const mapped = mapApiJobRole({
+		const mapped = mapper.mapApiJobRole({
 			id: 10,
+			jobRoleId: 10,
 			roleName: 'Manager',
 			description: 'Manage teams',
 			responsibilities: 'Lead delivery',
 			sharepointUrl: 'https://example.com/sharepoint',
+			specification: 'https://example.com/specification',
 			location: 'Dublin',
 			capabilityId: 1,
 			capabilityName: 'Capability',

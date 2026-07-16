@@ -1,10 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
+import { JobRoleMapper } from '../src/mappers/jobRoleMapper';
 import type { JobRole } from '../src/models/jobRole';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import { ApiJobRoleService } from '../src/services/apiJobRoleService';
 
 describe('ApiJobRoleService', () => {
 	const authToken = 'test-auth-token';
+	const createService = (get: ReturnType<typeof vi.fn>): ApiJobRoleService => {
+		return new ApiJobRoleService({ get } as never, new JobRoleMapper());
+	};
 
 	it('returns data from the API using the injected client', async () => {
 		const apiRoles = [
@@ -44,7 +48,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual(
 			expectedRoles,
@@ -56,7 +60,7 @@ describe('ApiJobRoleService', () => {
 
 	it('omits authorization header when auth token is blank', async () => {
 		const get = vi.fn().mockResolvedValue({ data: [] });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRoles('   ')).resolves.toEqual([]);
 		expect(get).toHaveBeenCalledWith('/job-roles', {
@@ -84,7 +88,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual([
 			{
@@ -124,7 +128,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual([
 			{
@@ -166,7 +170,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		const result = await service.getJobRoles(authToken);
 		expect(result[0].status).toBe('draft');
@@ -192,7 +196,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		const result = await service.getJobRoles(authToken);
 		expect(result[0].status).toBe(null);
@@ -218,7 +222,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual([
 			{
@@ -252,7 +256,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		const result = await service.getJobRoles(authToken);
 		expect(result[0].jobRoleId).toBeUndefined();
@@ -278,7 +282,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		const result = await service.getJobRoles(authToken);
 		expect(result[0].capabilityId).toBe('1');
@@ -304,7 +308,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		const result = await service.getJobRoles(authToken);
 		expect(result[0].roleName).toBe(null);
@@ -328,7 +332,7 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRole('1', authToken)).resolves.toEqual({
 			...apiRole,
@@ -360,7 +364,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual([
 			{
@@ -416,7 +420,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRoles(authToken)).resolves.toEqual([
 			{
@@ -460,7 +464,7 @@ describe('ApiJobRoleService', () => {
 				response: { status: 404 },
 			})
 			.mockResolvedValueOnce({ data: [] });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRole('999', authToken)).resolves.toBeNull();
 	});
@@ -491,7 +495,7 @@ describe('ApiJobRoleService', () => {
 					},
 				],
 			});
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRole('1', authToken)).resolves.toEqual({
 			jobRoleId: 1,
@@ -536,7 +540,7 @@ describe('ApiJobRoleService', () => {
 		];
 
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		const result = await service.getJobRoles(authToken);
 		expect(result[0].closingDate).toEqual(new Date('not-a-date'));
@@ -560,7 +564,7 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		const result = await service.getJobRole('1', authToken);
 		expect(result?.sharepointUrl).toBe('javascript:alert(1)');
@@ -584,7 +588,7 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		const result = await service.getJobRole('1', authToken);
 		expect(result?.sharepointUrl).toBe('not-a-url');
@@ -608,7 +612,7 @@ describe('ApiJobRoleService', () => {
 		};
 
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
-		const service = new ApiJobRoleService({ get } as never);
+		const service = createService(get);
 
 		await expect(service.getJobRole('1', authToken)).resolves.toEqual({
 			jobRoleId: 1,

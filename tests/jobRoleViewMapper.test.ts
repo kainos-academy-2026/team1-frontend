@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import {
-	mapJobRoleDetailViewModel,
-	mapJobRoleListItemViewModel,
-} from '../src/mappers/jobRoleViewMapper';
+import { JobRoleViewMapper } from '../src/mappers/jobRoleViewMapper';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
+
+const mapper = new JobRoleViewMapper();
 
 const baseJobRole = {
 	jobRoleId: 1,
@@ -23,19 +22,28 @@ const baseJobRole = {
 
 describe('jobRoleViewMapper', () => {
 	it('maps provided closingDate into list view model', () => {
-		const mapped = mapJobRoleListItemViewModel(baseJobRole, '01-08-2026');
+		const mapped = mapper.mapJobRoleListItemViewModel(
+			baseJobRole,
+			'01-08-2026',
+		);
 
 		expect(mapped.closingDate).toBe('01-08-2026');
 	});
 
 	it('preserves provided closingDate text as-is in list view model', () => {
-		const mapped = mapJobRoleListItemViewModel(baseJobRole, 'Invalid Date');
+		const mapped = mapper.mapJobRoleListItemViewModel(
+			baseJobRole,
+			'Invalid Date',
+		);
 
 		expect(mapped.closingDate).toBe('Invalid Date');
 	});
 
 	it('maps list view model fields from a job role', () => {
-		const mapped = mapJobRoleListItemViewModel(baseJobRole, '01-08-2026');
+		const mapped = mapper.mapJobRoleListItemViewModel(
+			baseJobRole,
+			'01-08-2026',
+		);
 
 		expect(mapped).toEqual({
 			jobRoleId: 1,
@@ -48,7 +56,10 @@ describe('jobRoleViewMapper', () => {
 	});
 
 	it('maps detail view model fields from a job role', () => {
-		const mapped = mapJobRoleDetailViewModel(baseJobRole, '01-08-2026');
+		const mapped = mapper.mapJobRoleDetailViewModel(
+			baseJobRole,
+			'01-08-2026',
+		);
 
 		expect(mapped).toEqual({
 			jobRoleId: 1,
