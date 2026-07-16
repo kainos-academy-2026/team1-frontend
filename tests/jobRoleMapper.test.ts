@@ -79,4 +79,48 @@ describe('jobRoleMapper', () => {
 		expect(mapped.description).toBe('Manage teams');
 		expect(mapped.numberOfOpenPositions).toBe(5);
 	});
+
+	it('normalises uppercase status values to lowercase', () => {
+		const mapped = mapper.mapApiJobRoleSummary({
+			id: 11,
+			jobRoleId: 11,
+			roleName: 'Engineer',
+			description: 'Build software',
+			responsibilities: 'Write code',
+			sharepointUrl: 'https://example.com/spec',
+			specification: 'https://example.com/spec',
+			location: 'Belfast',
+			capabilityId: 1,
+			capabilityName: 'Engineering',
+			bandId: 2,
+			bandName: 'Senior',
+			closingDate: '2026-08-01',
+			status: 'OPEN',
+			numberOfOpenPositions: 3,
+		});
+
+		expect(mapped.status).toBe('open');
+	});
+
+	it('normalises uppercase CLOSED status to lowercase', () => {
+		const mapped = mapper.mapApiJobRoleSummary({
+			id: 12,
+			jobRoleId: 12,
+			roleName: 'Analyst',
+			description: 'Analyse',
+			responsibilities: 'Report',
+			sharepointUrl: 'https://example.com/spec',
+			specification: 'https://example.com/spec',
+			location: 'Dublin',
+			capabilityId: 1,
+			capabilityName: 'Data',
+			bandId: 3,
+			bandName: 'Consultant',
+			closingDate: '2026-08-01',
+			status: 'CLOSED',
+			numberOfOpenPositions: 0,
+		});
+
+		expect(mapped.status).toBe('closed');
+	});
 });

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { createApiHttpClient } from '../config/createApiHttpClient.js';
+import { ApplicationController } from '../controllers/applicationController.js';
 import { JobRoleController } from '../controllers/jobRoleController.js';
 import { JobRoleMapper } from '../mappers/jobRoleMapper.js';
 import { JobRoleViewMapper } from '../mappers/jobRoleViewMapper.js';
@@ -18,6 +19,7 @@ const jobRoleController = new JobRoleController(
 	jobRoleService,
 	jobRoleViewMapper,
 );
+const applicationController = new ApplicationController(jobRoleService);
 
 router.get(
 	'/',
@@ -29,6 +31,18 @@ router.get(
 	authoriseRoles([Role.Admin, Role.User]),
 	validateJobRoleId,
 	jobRoleController.getJobRole,
+);
+router.get(
+	'/:id/apply',
+	authoriseRoles([Role.User]),
+	validateJobRoleId,
+	applicationController.renderApplyPage,
+);
+router.post(
+	'/:id/apply',
+	authoriseRoles([Role.User]),
+	validateJobRoleId,
+	applicationController.handleApply,
 );
 
 export default router;

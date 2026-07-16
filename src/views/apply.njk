@@ -1,0 +1,38 @@
+{% extends "layouts/base.njk" %}
+{% block content %}
+	<a class="back-btn" href="/job-roles/{{ jobRole.jobRoleId }}" aria-label="Back to job role">Back</a>
+	<h1 class="job-listings-title">Apply for {{ jobRole.roleName }}</h1>
+
+	<article class="job-detail-card">
+		<form id="apply-form" class="apply-form" novalidate>
+			<input type="hidden" name="jobRoleId" value="{{ jobRole.jobRoleId }}">
+
+			<div class="form-group">
+				<label for="cv-file" class="form-label">Upload your CV (PDF only)</label>
+				<input
+					type="file"
+					id="cv-file"
+					name="cv"
+					accept="application/pdf"
+					required
+					class="form-input"
+					aria-describedby="cv-hint"
+				>
+				<p id="cv-hint" class="form-hint">Maximum file size: 5MB. Only PDF files are accepted.</p>
+			</div>
+
+			<div id="apply-error" class="form-error" role="alert" hidden></div>
+			<div id="apply-success" class="form-success" role="status" hidden>
+				<p>Your application has been submitted successfully.</p>
+				<a href="/job-roles">Back to Job Roles</a>
+			</div>
+
+			<button type="submit" id="apply-submit" class="btn btn-primary">Submit Application</button>
+			<div id="apply-loading" class="form-loading" hidden>
+				<p>Uploading your CV...</p>
+			</div>
+		</form>
+	</article>
+
+	<script src="/assets/apply.js"></script>
+{% endblock %}

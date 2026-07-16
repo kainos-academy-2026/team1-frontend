@@ -39,5 +39,11 @@
 			<dt>Open Positions</dt>
 			<dd>{{ jobRole.numberOfOpenPositions }}</dd>
 		</dl>
+
+		{% if jobRole.status == "open" and jobRole.numberOfOpenPositions > 0 %}
+			<form action="/job-roles/{{ jobRole.jobRoleId }}/apply" method="get">
+				<button type="submit" class="btn btn-primary apply-btn">Apply for this role</button>
+			</form>
+		{% endif %}
 	</article>
 {% endblock %}

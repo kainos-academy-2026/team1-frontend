@@ -19,7 +19,9 @@ export class JobRoleMapper {
 			bandId: jobRole.bandId,
 			bandName: jobRole.bandName,
 			closingDate: new Date(jobRole.closingDate),
-			status: jobRole.status as JobRoleStatus,
+			status: (typeof jobRole.status === 'string'
+				? jobRole.status.toLowerCase()
+				: jobRole.status) as JobRoleStatus,
 			numberOfOpenPositions: jobRole.numberOfOpenPositions,
 		};
 	}
