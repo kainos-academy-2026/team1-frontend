@@ -6,6 +6,8 @@ import type {
 	ApiJobRoleSummaryDto,
 } from '../models/apiJobRoleDto.js';
 import type { JobRole } from '../models/jobRole.js';
+import type { GetJobRolesPageParams } from './getJobRolesPageParams.js';
+import type { GetJobRolesPageResult } from './getJobRolesPageResult.js';
 import type { JobRoleService } from './jobRoleService.js';
 
 export class ApiJobRoleService implements JobRoleService {
@@ -24,7 +26,7 @@ export class ApiJobRoleService implements JobRoleService {
 		};
 	}
 
-	async getJobRoles(authToken: string): Promise<JobRole[]> {
+	async getJobRoles(authToken = ''): Promise<JobRole[]> {
 		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
 			'/job-roles',
 			{ headers: this.authHeaders(authToken) },
@@ -33,6 +35,36 @@ export class ApiJobRoleService implements JobRoleService {
 		return response.data.map((jobRole) =>
 			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
 		);
+	}
+
+	async getJobRolesPage(
+		params: GetJobRolesPageParams,
+	): Promise<GetJobRolesPageResult> {
+		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
+			'/job-roles',
+			{
+				params: {
+					limit: params.limit,
+					offset: params.offset,
+				},
+				headers: this.authHeaders(params.authToken),
+			},
+		);
+
+		const items = response.data.map((jobRole) =>
+			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
+		);
+		const parsedTotal = Number(response.headers?.['x-total-count']);
+		const total = Number.isFinite(parsedTotal) ? parsedTotal : items.length;
+
+		return {
+			items,
+			total,
+			limit: params.limit,
+			offset: params.offset,
+			hasNext: params.offset + params.limit < total,
+			hasPrevious: params.offset > 0,
+		};
 	}
 
 	async getJobRole(
