@@ -6,6 +6,7 @@ import {
 } from '../mappers/jobRoleViewMapper.js';
 import { JobRoleStatus } from '../models/jobRoleStatus.js';
 import type { JobRoleService } from '../services/jobRoleService.js';
+import { formatClosingDate } from '../utils/formatClosingDate.js';
 
 export class JobRoleController {
 	constructor(private readonly jobRoleService: JobRoleService) {}
@@ -15,7 +16,12 @@ export class JobRoleController {
 
 		const jobRoles = (await this.jobRoleService.getJobRoles(authToken))
 			.filter((jobRole) => jobRole.status === JobRoleStatus.Open)
-			.map(mapJobRoleListItemViewModel);
+			.map((jobRole) =>
+				mapJobRoleListItemViewModel(
+					jobRole,
+					formatClosingDate(jobRole.closingDate),
+				),
+			);
 
 		res.render('job-role-list.njk', { jobRoles });
 	};
@@ -31,7 +37,10 @@ export class JobRoleController {
 		}
 
 		res.render('job-role-information.njk', {
-			jobRole: mapJobRoleDetailViewModel(jobRole),
+			jobRole: mapJobRoleDetailViewModel(
+				jobRole,
+				formatClosingDate(jobRole.closingDate),
+			),
 		});
 	};
 }

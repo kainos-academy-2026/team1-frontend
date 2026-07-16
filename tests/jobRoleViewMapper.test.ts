@@ -22,23 +22,20 @@ const baseJobRole = {
 };
 
 describe('jobRoleViewMapper', () => {
-	it('formats a valid closing date as DD-MM-YYYY in the list view model', () => {
-		const mapped = mapJobRoleListItemViewModel(baseJobRole);
+	it('maps provided closingDate into list view model', () => {
+		const mapped = mapJobRoleListItemViewModel(baseJobRole, '01-08-2026');
 
 		expect(mapped.closingDate).toBe('01-08-2026');
 	});
 
-	it('preserves invalid date text in list view model formatting fallback', () => {
-		const mapped = mapJobRoleListItemViewModel({
-			...baseJobRole,
-			closingDate: new Date('invalid date'),
-		});
+	it('preserves provided closingDate text as-is in list view model', () => {
+		const mapped = mapJobRoleListItemViewModel(baseJobRole, 'Invalid Date');
 
 		expect(mapped.closingDate).toBe('Invalid Date');
 	});
 
 	it('maps list view model fields from a job role', () => {
-		const mapped = mapJobRoleListItemViewModel(baseJobRole);
+		const mapped = mapJobRoleListItemViewModel(baseJobRole, '01-08-2026');
 
 		expect(mapped).toEqual({
 			jobRoleId: 1,
@@ -51,7 +48,7 @@ describe('jobRoleViewMapper', () => {
 	});
 
 	it('maps detail view model fields from a job role', () => {
-		const mapped = mapJobRoleDetailViewModel(baseJobRole);
+		const mapped = mapJobRoleDetailViewModel(baseJobRole, '01-08-2026');
 
 		expect(mapped).toEqual({
 			jobRoleId: 1,

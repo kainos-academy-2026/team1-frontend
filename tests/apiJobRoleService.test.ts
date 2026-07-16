@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ValidationError } from '../src/errors/validationError';
 import type { JobRole } from '../src/models/jobRole';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import { ApiJobRoleService } from '../src/services/apiJobRoleService';
@@ -137,9 +136,9 @@ describe('ApiJobRoleService', () => {
 					'https://kainossoftwareltd.sharepoint.com/sites/Career/JobProfiles/Product/Job%20Profile%20-%20Product%20Consultant%20(Manager).pdf',
 				location: 'Chicago',
 				capabilityId: 3,
-				capabilityName: 'Capability 3',
+				capabilityName: undefined,
 				bandId: 3,
-				bandName: 'Band 3',
+				bandName: undefined,
 				closingDate: new Date('2024-10-31T00:00:00.000Z'),
 				status: JobRoleStatus.Closed,
 				numberOfOpenPositions: 1,
@@ -147,7 +146,7 @@ describe('ApiJobRoleService', () => {
 		]);
 	});
 
-	it('throws when API returns an unexpected status', async () => {
+	it('maps unexpected status values as-is since mappers do not validate', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -169,15 +168,11 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
-			'Unexpected job role status: draft',
-		);
+		const result = await service.getJobRoles(authToken);
+		expect(result[0].status).toBe('draft');
 	});
 
-	it('throws ValidationError when status is not a string', async () => {
+	it('maps non-string status values as-is since mappers do not validate', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -199,15 +194,11 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
-			'Unexpected job role status: null',
-		);
+		const result = await service.getJobRoles(authToken);
+		expect(result[0].status).toBe(null);
 	});
 
-	it('maps status case-insensitively for summary data', async () => {
+	it('maps status value as-is for summary data', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -242,13 +233,13 @@ describe('ApiJobRoleService', () => {
 				bandId: 2,
 				bandName: 'Senior Associate',
 				closingDate: new Date('2026-08-01'),
-				status: JobRoleStatus.Open,
+				status: 'OPEN',
 				numberOfOpenPositions: 2,
 			},
 		]);
 	});
 
-	it('throws ValidationError when list items have no supported identifier', async () => {
+	it('maps missing identifier as-is since mappers do not validate', async () => {
 		const apiRoles = [
 			{
 				roleName: 'Software Engineer',
@@ -263,15 +254,11 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
-			'Missing job role ID.',
-		);
+		const result = await service.getJobRoles(authToken);
+		expect(result[0].jobRoleId).toBeUndefined();
 	});
 
-	it('throws ValidationError when capabilityId is not numeric', async () => {
+	it('maps non-numeric capabilityId as-is since mappers do not validate', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -293,15 +280,11 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
-			'Missing required job role field: capabilityId',
-		);
+		const result = await service.getJobRoles(authToken);
+		expect(result[0].capabilityId).toBe('1');
 	});
 
-	it('throws ValidationError when roleName is not a string', async () => {
+	it('maps non-string roleName as-is since mappers do not validate', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -323,12 +306,8 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
-			'Missing required job role field: roleName',
-		);
+		const result = await service.getJobRoles(authToken);
+		expect(result[0].roleName).toBe(null);
 	});
 
 	it('returns a detailed job role by id using the injected client', async () => {
@@ -361,7 +340,7 @@ describe('ApiJobRoleService', () => {
 		});
 	});
 
-	it('uses fallback text when optional summary fields are blank', async () => {
+	it('maps optional summary fields as-is when blank', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -387,14 +366,14 @@ describe('ApiJobRoleService', () => {
 			{
 				jobRoleId: 1,
 				roleName: 'Software Engineer',
-				description: 'Description not available.',
-				responsibilities: 'Responsibilities not available.',
+				description: '   ',
+				responsibilities: ' ',
 				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 				location: 'Belfast',
 				capabilityId: 1,
-				capabilityName: 'Capability 1',
+				capabilityName: ' ',
 				bandId: 2,
-				bandName: 'Band 2',
+				bandName: ' ',
 				closingDate: new Date('2026-08-01'),
 				status: JobRoleStatus.Open,
 				numberOfOpenPositions: 2,
@@ -402,7 +381,7 @@ describe('ApiJobRoleService', () => {
 		]);
 	});
 
-	it('keeps summary rows when sharepoint URL is invalid', async () => {
+	it('maps invalid sharepoint URL value as-is for summary rows', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -445,7 +424,7 @@ describe('ApiJobRoleService', () => {
 				roleName: 'Software Engineer',
 				description: 'Build features that solve customer problems.',
 				responsibilities: 'Deliver code, tests, and documentation.',
-				sharepointUrl: '',
+				sharepointUrl: 'not-a-url',
 				location: 'Belfast',
 				capabilityId: 1,
 				capabilityName: 'Workday',
@@ -537,7 +516,7 @@ describe('ApiJobRoleService', () => {
 		});
 	});
 
-	it('throws when API returns an invalid closing date', async () => {
+	it('maps invalid closing date as-is since mappers do not validate', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -559,15 +538,11 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRoles });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRoles(authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRoles(authToken)).rejects.toThrow(
-			'Unexpected job role closing date: not-a-date',
-		);
+		const result = await service.getJobRoles(authToken);
+		expect(result[0].closingDate).toEqual(new Date('not-a-date'));
 	});
 
-	it('throws when detail API returns an insecure sharepoint URL', async () => {
+	it('maps insecure sharepoint URL value as-is', async () => {
 		const apiRole = {
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
@@ -587,15 +562,11 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole('1', authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRole('1', authToken)).rejects.toThrow(
-			'sharepointUrl must use HTTPS: javascript:alert(1)',
-		);
+		const result = await service.getJobRole('1', authToken);
+		expect(result?.sharepointUrl).toBe('javascript:alert(1)');
 	});
 
-	it('throws when detail API returns a malformed sharepoint URL', async () => {
+	it('maps malformed sharepoint URL value as-is for detail response', async () => {
 		const apiRole = {
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
@@ -615,15 +586,11 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole('1', authToken)).rejects.toBeInstanceOf(
-			ValidationError,
-		);
-		await expect(service.getJobRole('1', authToken)).rejects.toThrow(
-			'Invalid sharepointUrl format: not-a-url',
-		);
+		const result = await service.getJobRole('1', authToken);
+		expect(result?.sharepointUrl).toBe('not-a-url');
 	});
 
-	it('uses fallback values when detail optional fields are blank', async () => {
+	it('maps detail optional fields as-is when blank', async () => {
 		const apiRole = {
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
@@ -646,8 +613,8 @@ describe('ApiJobRoleService', () => {
 		await expect(service.getJobRole('1', authToken)).resolves.toEqual({
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
-			description: 'Description not available.',
-			responsibilities: 'Responsibilities not available.',
+			description: ' ',
+			responsibilities: ' ',
 			sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
 			location: 'Belfast',
 			capabilityId: 1,
