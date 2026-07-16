@@ -134,6 +134,8 @@ export default app;
 - Avoid deeply nested conditionals; extract helper functions when logic grows.
 - Keep side effects explicit and localized.
 - Add brief comments only where intent is not obvious from code.
+- Prefer one object parameter when a function would otherwise accept multiple related arguments.
+- In service methods, normalize response parsing into one consolidated return object before mapping or rendering.
 
 ## Data Flow And Mapping
 - Validate inbound request data before it reaches business logic.

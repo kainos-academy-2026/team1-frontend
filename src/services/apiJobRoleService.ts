@@ -16,6 +16,25 @@ interface ApiJobRolesPageDto {
 	total: number;
 }
 
+const toFiniteNumber = (value: unknown): number | null => {
+	if (typeof value === 'number' && Number.isFinite(value)) {
+		return value;
+	}
+
+	if (typeof value === 'string') {
+		const parsed = Number(value);
+		if (Number.isFinite(parsed)) {
+			return parsed;
+		}
+	}
+
+	if (Array.isArray(value) && value.length > 0) {
+		return toFiniteNumber(value[0]);
+	}
+
+	return null;
+};
+
 const isApiJobRolesPageDto = (value: unknown): value is ApiJobRolesPageDto => {
 	if (typeof value !== 'object' || value === null) {
 		return false;
@@ -23,6 +42,22 @@ const isApiJobRolesPageDto = (value: unknown): value is ApiJobRolesPageDto => {
 
 	const page = value as { items?: unknown; total?: unknown };
 	return Array.isArray(page.items) && Number.isFinite(page.total);
+};
+
+const toApiJobRolesPageDto = (
+	data: ApiJobRoleSummaryDto[] | ApiJobRolesPageDto,
+	headerTotal: unknown,
+	offset: number,
+): ApiJobRolesPageDto => {
+	if (isApiJobRolesPageDto(data)) {
+		return data;
+	}
+
+	const parsedTotal = toFiniteNumber(headerTotal);
+	return {
+		items: data,
+		total: parsedTotal ?? offset + data.length,
+	};
 };
 
 export class ApiJobRoleService implements JobRoleService {
@@ -64,17 +99,16 @@ export class ApiJobRoleService implements JobRoleService {
 			},
 			headers: this.authHeaders(params.authToken),
 		});
+		const apiPage = toApiJobRolesPageDto(
+			response.data,
+			response.headers?.['x-total-count'],
+			params.offset,
+		);
 
-		const apiItems = isApiJobRolesPageDto(response.data)
-			? response.data.items
-			: response.data;
-		const total = isApiJobRolesPageDto(response.data)
-			? response.data.total
-			: params.offset + apiItems.length;
-
-		const items = apiItems.map((jobRole) =>
+		const items = apiPage.items.map((jobRole) =>
 			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
 		);
+		const total = apiPage.total;
 
 		return {
 			items,

@@ -41,10 +41,10 @@ export class JobRoleController {
 		const jobRoles = page.items
 			.filter((jobRole) => jobRole.status === JobRoleStatus.Open)
 			.map((jobRole) =>
-				this.jobRoleViewMapper.mapJobRoleListItemViewModel(
+				this.jobRoleViewMapper.mapJobRoleListItemViewModel({
 					jobRole,
-					formatClosingDate(jobRole.closingDate),
-				),
+					closingDate: formatClosingDate(jobRole.closingDate),
+				}),
 			);
 
 		res.render('job-role-list.njk', {
@@ -75,10 +75,10 @@ export class JobRoleController {
 		}
 
 		res.render('job-role-information.njk', {
-			jobRole: this.jobRoleViewMapper.mapJobRoleDetailViewModel(
+			jobRole: this.jobRoleViewMapper.mapJobRoleDetailViewModel({
 				jobRole,
-				formatClosingDate(jobRole.closingDate),
-			),
+				closingDate: formatClosingDate(jobRole.closingDate),
+			}),
 		});
 	};
 }
