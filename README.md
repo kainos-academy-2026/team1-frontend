@@ -69,6 +69,33 @@ npm run test:coverage
 npm run test:ui
 ```
 
+### Test file mapping
+
+Primary ownership mapping between test files and source files:
+
+| Test file | Primary source file(s) |
+| --- | --- |
+| `tests/index.test.ts` | `src/index.ts` |
+| `tests/requireApiBaseUrl.test.ts` | `src/config/requireApiBaseUrl.ts` |
+| `tests/apiUserService.test.ts` | `src/services/apiUserService.ts` |
+| `tests/apiJobRoleService.test.ts` | `src/services/apiJobRoleService.ts` |
+| `tests/loginService.test.ts` | `src/services/loginService.ts` |
+| `tests/userRequestMapper.test.ts` | `src/mappers/userRequestMapper.ts` |
+| `tests/jobRoleMapper.test.ts` | `src/mappers/jobRoleMapper.ts` |
+| `tests/jobRoleViewMapper.test.ts` | `src/mappers/jobRoleViewMapper.ts` |
+| `tests/mapBackendFieldErrors.test.ts` | `src/errors/mapBackendFieldErrors.ts` |
+| `tests/mapRegistrationApiError.test.ts` | `src/errors/mapRegistrationApiError.ts` |
+| `tests/errorPage.test.ts` | `src/errors/errorPage.ts` |
+| `tests/errorHandler.test.ts` | `src/errors/errorHandler.ts` |
+| `tests/validate.test.ts` | `src/middleware/validate.ts` |
+| `tests/middlewareAuth.test.ts` | `src/middleware/authoriseRoles.ts`, `src/middleware/userInfo.ts` |
+| `tests/authTokenHelper.test.ts` | auth token helper utilities |
+| `tests/registrationController.test.ts` | `src/controllers/registrationController.ts` |
+| `tests/loginRouter.test.ts` | `src/routers/loginRouter.ts`, `src/controllers/loginController.ts` |
+| `tests/registrationRouter.test.ts` | `src/routers/registrationRouter.ts`, `src/controllers/registrationController.ts` |
+| `tests/jobRoleRouter.test.ts` | `src/routers/jobRoleRouter.ts`, `src/controllers/jobRoleController.ts` |
+| `tests/auth.test.ts` | auth/session middleware integration via `src/app.ts` |
+
 ### Git hooks
 
 After cloning the repo, run this once to activate the pre-commit lint hook:

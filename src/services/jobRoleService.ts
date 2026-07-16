@@ -2,5 +2,5 @@ import type { JobRole } from '../models/jobRole.js';
 
 export interface JobRoleService {
 	getJobRoles(authToken?: string): Promise<JobRole[]>;
-	getJobRole(jobRoleId: number, authToken: string): Promise<JobRole | null>;
+	getJobRole(jobRoleId: string, authToken: string): Promise<JobRole | null>;
 }

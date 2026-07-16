@@ -1,15 +1,12 @@
 import 'dotenv/config';
-import { createApp } from './app.js';
-import { createApiHttpClient } from './config/createApiHttpClient.js';
-import { ApiJobRoleService } from './services/apiJobRoleService.js';
-import { LoginService } from './services/loginService.js';
-
-const apiHttpClient = createApiHttpClient();
-const jobRoleService = new ApiJobRoleService(apiHttpClient);
-const loginService = new LoginService(apiHttpClient);
-const app = createApp(jobRoleService, loginService);
+import app from './app.js';
 
 const PORT = Number(process.env.PORT) || 3000;
+
+if (!process.env.API_BASE_URL) {
+	console.error('Error: API_BASE_URL environment variable is not set.');
+	process.exit(1);
+}
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`);

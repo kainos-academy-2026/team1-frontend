@@ -10,19 +10,21 @@ import type { JobRoleService } from '../services/jobRoleService.js';
 export class JobRoleController {
 	constructor(private readonly jobRoleService: JobRoleService) {}
 
-	getJobRoles = async (_req: Request, res: Response): Promise<void> => {
-		const authToken = res.locals.authToken as string | undefined;
-		const isAdmin = res.locals.isAdmin as boolean;
+	getJobRoles = async (req: Request, res: Response): Promise<void> => {
+		const authToken = req.cookies.token;
+
 		const jobRoles = (await this.jobRoleService.getJobRoles(authToken))
-			.filter((jobRole) => isAdmin || jobRole.status === JobRoleStatus.Open)
+			.filter((jobRole) => jobRole.status === JobRoleStatus.Open)
 			.map(mapJobRoleListItemViewModel);
+
 		res.render('job-role-list.njk', { jobRoles });
 	};
 
-	getJobRole = async (_req: Request, res: Response): Promise<void> => {
-		const jobRoleId = res.locals.jobRoleId as number;
-		const authToken = res.locals.authToken as string;
-		const jobRole = await this.jobRoleService.getJobRole(jobRoleId, authToken);
+	getJobRole = async (req: Request, res: Response): Promise<void> => {
+		const token = req.cookies.token as string;
+		const jobRoleId = req.params.id as string;
+
+		const jobRole = await this.jobRoleService.getJobRole(jobRoleId, token);
 		if (!jobRole) {
 			renderJobRoleNotFoundError(res);
 			return;

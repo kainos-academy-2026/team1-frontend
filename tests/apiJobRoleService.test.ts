@@ -7,13 +7,6 @@ import { ApiJobRoleService } from '../src/services/apiJobRoleService';
 describe('ApiJobRoleService', () => {
 	const authToken = 'test-auth-token';
 
-	it('allows construction when an API base URL is injected', () => {
-		const get = vi.fn();
-
-		expect(() => new ApiJobRoleService({ get } as never)).not.toThrow();
-		expect(get).not.toHaveBeenCalled();
-	});
-
 	it('returns data from the API using the injected client', async () => {
 		const apiRoles = [
 			{
@@ -59,6 +52,16 @@ describe('ApiJobRoleService', () => {
 		);
 		expect(get).toHaveBeenCalledWith('/job-roles', {
 			headers: { Authorization: `Bearer ${authToken}` },
+		});
+	});
+
+	it('omits authorization header when auth token is blank', async () => {
+		const get = vi.fn().mockResolvedValue({ data: [] });
+		const service = new ApiJobRoleService({ get } as never);
+
+		await expect(service.getJobRoles('   ')).resolves.toEqual([]);
+		expect(get).toHaveBeenCalledWith('/job-roles', {
+			headers: {},
 		});
 	});
 
@@ -348,7 +351,7 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
+		await expect(service.getJobRole('1', authToken)).resolves.toEqual({
 			...apiRole,
 			closingDate: new Date('2026-08-01'),
 			status: JobRoleStatus.Open,
@@ -480,7 +483,7 @@ describe('ApiJobRoleService', () => {
 			.mockResolvedValueOnce({ data: [] });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole(999, authToken)).resolves.toBeNull();
+		await expect(service.getJobRole('999', authToken)).resolves.toBeNull();
 	});
 
 	it('falls back to the list endpoint when the detail endpoint returns 404', async () => {
@@ -511,7 +514,7 @@ describe('ApiJobRoleService', () => {
 			});
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
+		await expect(service.getJobRole('1', authToken)).resolves.toEqual({
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
 			description: 'Build features that solve customer problems.',
@@ -584,10 +587,10 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole(1, authToken)).rejects.toBeInstanceOf(
+		await expect(service.getJobRole('1', authToken)).rejects.toBeInstanceOf(
 			ValidationError,
 		);
-		await expect(service.getJobRole(1, authToken)).rejects.toThrow(
+		await expect(service.getJobRole('1', authToken)).rejects.toThrow(
 			'sharepointUrl must use HTTPS: javascript:alert(1)',
 		);
 	});
@@ -612,10 +615,10 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole(1, authToken)).rejects.toBeInstanceOf(
+		await expect(service.getJobRole('1', authToken)).rejects.toBeInstanceOf(
 			ValidationError,
 		);
-		await expect(service.getJobRole(1, authToken)).rejects.toThrow(
+		await expect(service.getJobRole('1', authToken)).rejects.toThrow(
 			'Invalid sharepointUrl format: not-a-url',
 		);
 	});
@@ -640,7 +643,7 @@ describe('ApiJobRoleService', () => {
 		const get = vi.fn().mockResolvedValue({ data: apiRole });
 		const service = new ApiJobRoleService({ get } as never);
 
-		await expect(service.getJobRole(1, authToken)).resolves.toEqual({
+		await expect(service.getJobRole('1', authToken)).resolves.toEqual({
 			jobRoleId: 1,
 			roleName: 'Software Engineer',
 			description: 'Description not available.',

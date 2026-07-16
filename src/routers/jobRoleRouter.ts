@@ -1,14 +1,27 @@
 import { Router } from 'express';
-import type { JobRoleController } from '../controllers/jobRoleController.js';
-import { requireAuthenticatedUser } from '../middleware/auth.js';
+import { createApiHttpClient } from '../config/createApiHttpClient.js';
+import { JobRoleController } from '../controllers/jobRoleController.js';
+import authoriseRoles from '../middleware/authoriseRoles.js';
 import { validateJobRoleId } from '../middleware/validateJobRoleId.js';
+import { Role } from '../models/role.js';
+import { ApiJobRoleService } from '../services/apiJobRoleService.js';
 
-export const jobRoleRouter = (jobRoleController: JobRoleController): Router => {
-	const router = Router();
-	router.use(requireAuthenticatedUser);
+const router = Router();
 
-	router.get('/', jobRoleController.getJobRoles);
-	router.get('/:id', validateJobRoleId, jobRoleController.getJobRole);
+const apiHttpClient = createApiHttpClient();
+const jobRoleService = new ApiJobRoleService(apiHttpClient);
+const jobRoleController = new JobRoleController(jobRoleService);
 
-	return router;
-};
+router.get(
+	'/',
+	authoriseRoles([Role.Admin, Role.User]),
+	jobRoleController.getJobRoles,
+);
+router.get(
+	'/:id',
+	authoriseRoles([Role.Admin, Role.User]),
+	validateJobRoleId,
+	jobRoleController.getJobRole,
+);
+
+export default router;

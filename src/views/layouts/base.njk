@@ -21,19 +21,19 @@
                 <ul>
                     <li><a href="/">Home</a></li>
                     <li><a href="/job-roles">Job Roles</a></li>
-                    {% if isAuthenticated %}
-                        {% if isAdmin %}
+                    {% if user %}
+                        {% if user.isAdmin %}
                             <li><span class="auth-role-badge">Admin</span></li>
                         {% else %}
                             <li><span class="auth-role-badge">Applicant</span></li>
                         {% endif %}
                         <li>
-                            <form action="/login/logout" method="post">
+                            <form action="/auth/logout" method="post">
                                 <button class="nav-logout-button" type="submit">Logout</button>
                             </form>
                         </li>
                     {% else %}
-                        <li><a href="/login">Login</a></li>
+                        <li><a href="/auth/login">Login</a></li>
                         <li><a href="/registration">Register</a></li>
                     {% endif %}
                 </ul>

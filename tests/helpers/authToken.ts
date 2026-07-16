@@ -1,6 +1,7 @@
-import jsonwebtoken from 'jsonwebtoken';
-
 export const TEST_JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long';
+
+const encodeBase64Url = (value: string): string =>
+	Buffer.from(value).toString('base64url');
 
 export const withTestJwtSecret = (): (() => void) => {
 	const originalJwtSecret = process.env.JWT_SECRET;
@@ -17,11 +18,18 @@ export const withTestJwtSecret = (): (() => void) => {
 };
 
 export const createAuthToken = (
-	role: 'admin' | 'applicant' = 'applicant',
-	expiresIn: number | `${number}${'s' | 'm' | 'h'}` = '1h',
+	role: 'ADMIN' | 'USER' = 'USER',
+	expiresInSeconds = 3600,
 ): string => {
-	return jsonwebtoken.sign({ role }, TEST_JWT_SECRET, {
-		algorithm: 'HS256',
-		expiresIn,
-	});
+	const nowInSeconds = Math.floor(Date.now() / 1000);
+	const payload = {
+		sub: 'test-user-id',
+		email: 'test.user@example.com',
+		role,
+		iat: nowInSeconds,
+		exp: nowInSeconds + expiresInSeconds,
+	};
+
+	const header = { alg: 'none', typ: 'JWT' };
+	return `${encodeBase64Url(JSON.stringify(header))}.${encodeBase64Url(JSON.stringify(payload))}.${encodeBase64Url('signature')}`;
 };
