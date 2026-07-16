@@ -1,9 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
-import {
-	mapApiJobRole,
-	mapApiJobRoleSummary,
-} from '../mappers/jobRoleMapper.js';
+import type { JobRoleMapper } from '../mappers/jobRoleMapper.js';
 import type {
 	ApiJobRoleDto,
 	ApiJobRoleSummaryDto,
@@ -12,27 +9,50 @@ import type { JobRole } from '../models/jobRole.js';
 import type { JobRoleService } from './jobRoleService.js';
 
 export class ApiJobRoleService implements JobRoleService {
-	constructor(private readonly httpClient: AxiosInstance) {}
+	constructor(
+		private readonly httpClient: AxiosInstance,
+		private readonly jobRoleMapper: JobRoleMapper,
+	) {}
 
-	async getJobRoles(): Promise<JobRole[]> {
-		const response =
-			await this.httpClient.get<ApiJobRoleSummaryDto[]>('/job-roles');
+	private authHeaders(authToken?: string): Record<string, string> {
+		if (!authToken || authToken.trim().length === 0) {
+			return {};
+		}
 
-		return response.data.map(mapApiJobRoleSummary);
+		return {
+			Authorization: `Bearer ${authToken.trim()}`,
+		};
 	}
 
-	async getJobRole(jobRoleId: number): Promise<JobRole | null> {
+	async getJobRoles(authToken: string): Promise<JobRole[]> {
+		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
+			'/job-roles',
+			{ headers: this.authHeaders(authToken) },
+		);
+
+		return response.data.map((jobRole) =>
+			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
+		);
+	}
+
+	async getJobRole(
+		jobRoleId: string,
+		authToken: string,
+	): Promise<JobRole | null> {
 		try {
 			const response = await this.httpClient.get<ApiJobRoleDto>(
 				`/job-roles/${jobRoleId}`,
+				{ headers: this.authHeaders(authToken) },
 			);
 
-			return mapApiJobRole(response.data);
+			return this.jobRoleMapper.mapApiJobRole(response.data);
 		} catch (error) {
 			if (axios.isAxiosError(error) && error.response?.status === 404) {
-				const jobRoles = await this.getJobRoles();
+				const jobRoles = await this.getJobRoles(authToken);
 				return (
-					jobRoles.find((jobRole) => jobRole.jobRoleId === jobRoleId) ?? null
+					jobRoles.find(
+						(jobRole) => jobRole.jobRoleId.toString() === jobRoleId,
+					) ?? null
 				);
 			}
 

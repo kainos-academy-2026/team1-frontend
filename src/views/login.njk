@@ -17,7 +17,7 @@
                 <p class="login-error" role="alert">{{ loginError }}</p>
             {% endif %}
 
-            <form class="login-form" method="post" action="/login">
+            <form class="login-form" method="post" action="/auth/login">
                 {{ field('email', 'Email', 'email', 'name@example.com', formData.email or '', errors, 'email') }}
 
                 {{ field('password', 'Password', 'password', '', '', errors, 'current-password') }}
@@ -26,11 +26,4 @@
             </form>
         </div>
     </section>
-
-    {% if loginToken %}
-        <script>
-            sessionStorage.setItem('loginToken', '{{ loginToken | safe }}');
-            window.location.href = '/';
-        </script>
-    {% endif %}
 {% endblock %}

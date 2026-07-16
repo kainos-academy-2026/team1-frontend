@@ -11,33 +11,42 @@
         <header class="site-header">
             <div class="brand">
                 <a href="/" class="brand-link">
-                    <img src="/assets/images/kainos_logo.svg" alt="Kainos logo" class="brand-logo">
+                <img src="/assets/images/kainos_logo.svg" alt="Kainos logo" class="brand-logo">
                 </a>
             </div>
+
             <span class="brand-name">Kainos Careers</span>
+
             <nav class="site-nav" aria-label="Main navigation">
                 <ul>
-                    <li>
-                        <a href="/">Home</a>
-                    </li>
-                    <li id="login-nav-item">
-                        <a href="/login">Login</a>
-                    </li>
-                    <li id="registration-nav-item">
-                        <a href="/registration">Register</a>
-                    </li>
-                    <li id="logout-nav-item" hidden>
-                        <a href="/login?loggedOut=1" onclick="sessionStorage.removeItem('loginToken');">Logout</a>
-                    </li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/job-roles">Job Roles</a></li>
+                    {% if user %}
+                        {% if user.isAdmin %}
+                            <li><span class="auth-role-badge">Admin</span></li>
+                        {% else %}
+                            <li><span class="auth-role-badge">Applicant</span></li>
+                        {% endif %}
+                        <li>
+                            <form action="/auth/logout" method="post">
+                                <button class="nav-logout-button" type="submit">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li><a href="/auth/login">Login</a></li>
+                        <li><a href="/registration">Register</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </header>
-        <main class="page-content"> {% block content %}{% endblock %}
-            </main>
-            <footer class="site-footer">
-                <img src="/assets/images/kainos_logo.svg" alt="Kainos logo" class="footer-logo">
-                <p>Contact us at info@kainos.com
-                </p>
-            </footer>
-        </body>
-    </html>
+
+        <main class="page-content">
+            {% block content %}{% endblock %}
+
+        </main>
+        <footer class="site-footer">
+            <img src="/assets/images/kainos_logo.svg" alt="Kainos logo" class="footer-logo">
+            <p>Contact us at info@kainos.com </p>
+        </footer>
+    </body>
+</html>

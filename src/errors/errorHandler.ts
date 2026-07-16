@@ -55,6 +55,7 @@ export const errorHandler = (
 	res: Response,
 	_next: NextFunction,
 ): void => {
+	console.error(error);
 	const redirectOptions = getErrorRedirect(res);
 
 	if (error instanceof ValidationError) {

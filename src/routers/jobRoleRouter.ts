@@ -1,23 +1,33 @@
 import { Router } from 'express';
 import { createApiHttpClient } from '../config/createApiHttpClient.js';
 import { JobRoleController } from '../controllers/jobRoleController.js';
-import { setErrorRedirect } from '../middleware/errorRedirect.js';
-import { validateParams } from '../middleware/validate.js';
-import { jobRoleParamsSchema } from '../models/jobRoleParamsDto.js';
+import { JobRoleMapper } from '../mappers/jobRoleMapper.js';
+import { JobRoleViewMapper } from '../mappers/jobRoleViewMapper.js';
+import authoriseRoles from '../middleware/authoriseRoles.js';
+import { validateJobRoleId } from '../middleware/validateJobRoleId.js';
+import { Role } from '../models/role.js';
 import { ApiJobRoleService } from '../services/apiJobRoleService.js';
-
-const apiHttpClient = createApiHttpClient();
-const jobRoleService = new ApiJobRoleService(apiHttpClient);
-const jobRoleController = new JobRoleController(jobRoleService);
 
 const router = Router();
 
-router.use(setErrorRedirect('/', 'Back to home'));
+const apiHttpClient = createApiHttpClient();
+const jobRoleMapper = new JobRoleMapper();
+const jobRoleViewMapper = new JobRoleViewMapper();
+const jobRoleService = new ApiJobRoleService(apiHttpClient, jobRoleMapper);
+const jobRoleController = new JobRoleController(
+	jobRoleService,
+	jobRoleViewMapper,
+);
 
-router.get('/', jobRoleController.getJobRoles);
+router.get(
+	'/',
+	authoriseRoles([Role.Admin, Role.User]),
+	jobRoleController.getJobRoles,
+);
 router.get(
 	'/:id',
-	validateParams(jobRoleParamsSchema),
+	authoriseRoles([Role.Admin, Role.User]),
+	validateJobRoleId,
 	jobRoleController.getJobRole,
 );
 

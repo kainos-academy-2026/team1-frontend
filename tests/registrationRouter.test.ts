@@ -1,17 +1,9 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import app from '../src/app';
 
-const { getJobRoles, getJobRole, createUser } = vi.hoisted(() => ({
-	getJobRoles: vi.fn(),
-	getJobRole: vi.fn(),
+const { createUser } = vi.hoisted(() => ({
 	createUser: vi.fn(),
-}));
-
-vi.mock('../src/services/apiJobRoleService.js', () => ({
-	ApiJobRoleService: class {
-		getJobRoles = getJobRoles;
-		getJobRole = getJobRole;
-	},
 }));
 
 vi.mock('../src/services/apiUserService.js', () => ({
@@ -19,14 +11,9 @@ vi.mock('../src/services/apiUserService.js', () => ({
 		createUser = createUser;
 	},
 }));
-
-import app from '../src/app';
-
 describe('Registration', () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
-		getJobRoles.mockResolvedValue([]);
-		getJobRole.mockResolvedValue(null);
 	});
 
 	it('renders the registration page', async () => {
@@ -55,19 +42,26 @@ describe('Registration', () => {
 		});
 	});
 
-	it('rejects invalid registration data', async () => {
+	it('shows an email validation error for an invalid email format', async () => {
 		const response = await request(app)
 			.post('/registration')
 			.type('form')
-			.send({
-				email: 'invalid-email',
-				password: 'weak',
-			});
+			.send({ email: 'invalid-email', password: 'StrongPass!1' });
 
 		expect(response.status).toBe(400);
 		expect(response.text).toContain(
 			'Please enter a valid email address (for example, name@example.com).',
 		);
+		expect(createUser).not.toHaveBeenCalled();
+	});
+
+	it('shows a password validation error for a weak password', async () => {
+		const response = await request(app)
+			.post('/registration')
+			.type('form')
+			.send({ email: 'person@example.com', password: 'weak' });
+
+		expect(response.status).toBe(400);
 		expect(response.text).toContain(
 			'Password must be more than 8 characters and include at least one uppercase letter, one lowercase letter, and one special character.',
 		);
@@ -85,7 +79,6 @@ describe('Registration', () => {
 				},
 			},
 		});
-
 		const response = await request(app)
 			.post('/registration')
 			.type('form')
@@ -112,7 +105,6 @@ describe('Registration', () => {
 				},
 			},
 		});
-
 		const response = await request(app)
 			.post('/registration')
 			.type('form')
