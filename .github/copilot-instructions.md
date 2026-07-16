@@ -1,4 +1,4 @@
-Use these instructions in every chat.
+Use these instructions in every chat/session and confirm that they are being used clearly to the user in each chat.
 
 ## SOLID Principles
 
@@ -52,6 +52,7 @@ Validation belongs at the boundary (middleware layer), not in controllers or ser
 - Place validation logic in middleware files.
 - Place error-page rendering helpers in error or middleware files.
 - Router files should only compose dependencies and declare routes/middleware chains.
+- For server-rendered forms, pass transient validation/API error state via `res.locals` instead of expanding view model interfaces.
 
 ## Nunjucks Reuse Pattern
 

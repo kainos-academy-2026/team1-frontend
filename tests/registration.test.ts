@@ -48,7 +48,7 @@ describe('Registration', () => {
 			.post('/registration')
 			.type('form')
 			.send({
-				email: 'person@example.com',
+				email: ' Person@Example.com ',
 				password: 'StrongPass!1',
 			});
 
@@ -80,8 +80,17 @@ describe('Registration', () => {
 		expect(createUser).not.toHaveBeenCalled();
 	});
 
-	it('shows an error page when user creation fails', async () => {
-		createUser.mockRejectedValue({ isAxiosError: true });
+	it('shows an inline email error when signup returns 409 conflict', async () => {
+		createUser.mockRejectedValue({
+			isAxiosError: true,
+			response: {
+				status: 409,
+				data: {
+					error: 'Conflict',
+					message: 'Email already exists',
+				},
+			},
+		});
 		const app = createApp(jobRoleService, loginService);
 
 		const response = await request(app)
@@ -92,9 +101,36 @@ describe('Registration', () => {
 				password: 'StrongPass!1',
 			});
 
-		expect(response.status).toBe(502);
-		expect(response.text).toContain('Upstream API error');
-		expect(response.text).toContain('Back to registration');
-		expect(response.text).toContain('href="/registration"');
+		expect(response.status).toBe(409);
+		expect(response.text).toContain(
+			'An account with this email already exists.',
+		);
+		expect(response.text).toContain('Create an account');
+	});
+
+	it('shows a generic form error when signup returns 500', async () => {
+		createUser.mockRejectedValue({
+			isAxiosError: true,
+			response: {
+				status: 500,
+				data: {
+					error: 'Internal Server Error',
+					message: 'Unexpected error',
+				},
+			},
+		});
+		const app = createApp(jobRoleService, loginService);
+
+		const response = await request(app)
+			.post('/registration')
+			.type('form')
+			.send({
+				email: 'person@example.com',
+				password: 'StrongPass!1',
+			});
+
+		expect(response.status).toBe(500);
+		expect(response.text).toContain('Something went wrong, please try again.');
+		expect(response.text).toContain('Create an account');
 	});
 });

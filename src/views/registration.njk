@@ -7,6 +7,10 @@
             <h1>Create an account</h1>
             <p class="login-intro">Use your email address and a strong password to register.</p>
 
+            {% if formError %}
+                <p class="field-error" role="alert">{{ formError }}</p>
+            {% endif %}
+
             <form class="login-form" method="post" action="/registration">
                 {{ field('email', 'Email', 'email', 'name@example.com', formData.email or '', errors, 'email') }}
 

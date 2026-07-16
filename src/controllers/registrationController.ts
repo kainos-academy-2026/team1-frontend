@@ -1,10 +1,7 @@
 import axios from 'axios';
 import type { NextFunction, Request, Response } from 'express';
-import {
-	type FieldErrors,
-	mapBackendFieldErrors,
-} from '../errors/mapBackendFieldErrors.js';
-import type { BackendValidationError } from '../models/backendValidation.js';
+import type { FieldErrors } from '../errors/mapBackendFieldErrors.js';
+import { mapRegistrationApiError } from '../errors/mapRegistrationApiError.js';
 import type { RegistrationViewModel } from '../models/registrationViewModel.js';
 import type { UserRequestDto } from '../models/userRequestDto.js';
 import type { UserService } from '../services/userService.js';
@@ -31,9 +28,9 @@ export class RegistrationController {
 			| undefined;
 
 		if (validationErrors && Object.keys(validationErrors).length > 0) {
+			res.locals.formError = null;
 			res.status(400).render('registration.njk', {
 				title: 'Register',
-				errors: validationErrors,
 				formData: {
 					email: typeof req.body?.email === 'string' ? req.body.email : '',
 				},
@@ -46,15 +43,16 @@ export class RegistrationController {
 			res.redirect('/');
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				if (error.response?.status === 400) {
-					const errors = error.response.data?.errors as
-						| BackendValidationError[]
-						| undefined;
-					const mappedFieldErrors = mapBackendFieldErrors(errors);
+				const mappedError = mapRegistrationApiError(
+					error.response?.status,
+					error.response?.data,
+				);
 
-					res.status(400).render('registration.njk', {
+				if (mappedError) {
+					res.locals.errors = mappedError.fieldErrors;
+					res.locals.formError = mappedError.formError;
+					res.status(mappedError.status).render('registration.njk', {
 						title: 'Register',
-						errors: mappedFieldErrors,
 						formData: {
 							email: typeof req.body?.email === 'string' ? req.body.email : '',
 						},
