@@ -56,10 +56,7 @@ describe('jobRoleViewMapper', () => {
 	});
 
 	it('maps detail view model fields from a job role', () => {
-		const mapped = mapper.mapJobRoleDetailViewModel(
-			baseJobRole,
-			'01-08-2026',
-		);
+		const mapped = mapper.mapJobRoleDetailViewModel(baseJobRole, '01-08-2026');
 
 		expect(mapped).toEqual({
 			jobRoleId: 1,
