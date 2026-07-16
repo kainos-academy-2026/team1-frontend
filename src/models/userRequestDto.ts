@@ -3,6 +3,8 @@ import { z } from 'zod';
 export const createUserRequestSchema = z.object({
 	email: z
 		.string()
+		.trim()
+		.toLowerCase()
 		.email(
 			'Please enter a valid email address (for example, name@example.com).',
 		),
