@@ -314,6 +314,143 @@ describe('ApiJobRoleService', () => {
 		expect(result[0].roleName).toBe(null);
 	});
 
+	it('maps paged list data from response body and uses provided total', async () => {
+		const apiPage = {
+			items: [
+				{
+					jobRoleId: 1,
+					roleName: 'Software Engineer',
+					description: 'Build features that solve customer problems.',
+					responsibilities: 'Deliver code, tests, and documentation.',
+					sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+					location: 'Belfast',
+					capabilityId: 1,
+					capabilityName: 'Workday',
+					bandId: 2,
+					bandName: 'Senior Associate',
+					closingDate: '2026-08-01',
+					status: 'open',
+					numberOfOpenPositions: 2,
+				},
+			],
+			total: 25,
+		};
+
+		const get = vi.fn().mockResolvedValue({ data: apiPage });
+		const service = createService(get);
+
+		await expect(
+			service.getJobRolesPage({ limit: 10, offset: 10, authToken }),
+		).resolves.toEqual({
+			items: [
+				{
+					jobRoleId: 1,
+					roleName: 'Software Engineer',
+					description: 'Build features that solve customer problems.',
+					responsibilities: 'Deliver code, tests, and documentation.',
+					sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+					location: 'Belfast',
+					capabilityId: 1,
+					capabilityName: 'Workday',
+					bandId: 2,
+					bandName: 'Senior Associate',
+					closingDate: new Date('2026-08-01'),
+					status: JobRoleStatus.Open,
+					numberOfOpenPositions: 2,
+				},
+			],
+			total: 25,
+			limit: 10,
+			offset: 10,
+			hasNext: true,
+			hasPrevious: true,
+		});
+		expect(get).toHaveBeenCalledWith('/job-roles', {
+			params: { limit: 10, offset: 10 },
+			headers: { Authorization: `Bearer ${authToken}` },
+		});
+	});
+
+	it('falls back to offset plus item count when response is not paged', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+			{
+				jobRoleId: 2,
+				roleName: 'Product Analyst',
+				description: 'Analyse product metrics and customer feedback.',
+				responsibilities: 'Build insights and dashboards.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/2',
+				location: 'Dublin',
+				capabilityId: 2,
+				capabilityName: 'Data',
+				bandId: 3,
+				bandName: 'Consultant',
+				closingDate: '2026-08-15',
+				status: 'open',
+				numberOfOpenPositions: 1,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = createService(get);
+
+		await expect(
+			service.getJobRolesPage({ limit: 10, offset: 20, authToken }),
+		).resolves.toEqual({
+			items: [
+				{
+					jobRoleId: 1,
+					roleName: 'Software Engineer',
+					description: 'Build features that solve customer problems.',
+					responsibilities: 'Deliver code, tests, and documentation.',
+					sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+					location: 'Belfast',
+					capabilityId: 1,
+					capabilityName: 'Workday',
+					bandId: 2,
+					bandName: 'Senior Associate',
+					closingDate: new Date('2026-08-01'),
+					status: JobRoleStatus.Open,
+					numberOfOpenPositions: 2,
+				},
+				{
+					jobRoleId: 2,
+					roleName: 'Product Analyst',
+					description: 'Analyse product metrics and customer feedback.',
+					responsibilities: 'Build insights and dashboards.',
+					sharepointUrl: 'https://sharepoint.example.com/job-specs/2',
+					location: 'Dublin',
+					capabilityId: 2,
+					capabilityName: 'Data',
+					bandId: 3,
+					bandName: 'Consultant',
+					closingDate: new Date('2026-08-15'),
+					status: JobRoleStatus.Open,
+					numberOfOpenPositions: 1,
+				},
+			],
+			total: 22,
+			limit: 10,
+			offset: 20,
+			hasNext: false,
+			hasPrevious: true,
+		});
+	});
+
 	it('returns a detailed job role by id using the injected client', async () => {
 		const apiRole = {
 			jobRoleId: 1,

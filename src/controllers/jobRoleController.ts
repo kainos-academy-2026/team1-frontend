@@ -28,8 +28,11 @@ export class JobRoleController {
 
 	getJobRoles = async (req: Request, res: Response): Promise<void> => {
 		const authToken = req.cookies.token as string;
-		const pageSize = toQueryNumber(req.query.limit, 10);
-		const offset = toQueryNumber(req.query.offset, 0);
+		const pageSize = Math.max(
+			1,
+			Math.trunc(toQueryNumber(req.query.limit, 10)),
+		);
+		const offset = Math.max(0, Math.trunc(toQueryNumber(req.query.offset, 0)));
 		const page = await this.jobRoleService.getJobRolesPage({
 			limit: pageSize,
 			offset,

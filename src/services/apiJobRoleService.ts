@@ -10,6 +10,20 @@ import type { GetJobRolesPageParams } from './getJobRolesPageParams.js';
 import type { GetJobRolesPageResult } from './getJobRolesPageResult.js';
 import type { JobRoleService } from './jobRoleService.js';
 
+interface ApiJobRolesPageDto {
+	items: ApiJobRoleSummaryDto[];
+	total: number;
+}
+
+const isApiJobRolesPageDto = (value: unknown): value is ApiJobRolesPageDto => {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+
+	const page = value as { items?: unknown; total?: unknown };
+	return Array.isArray(page.items) && Number.isFinite(page.total);
+};
+
 export class ApiJobRoleService implements JobRoleService {
 	constructor(
 		private readonly httpClient: AxiosInstance,
@@ -26,7 +40,7 @@ export class ApiJobRoleService implements JobRoleService {
 		};
 	}
 
-	async getJobRoles(authToken = ''): Promise<JobRole[]> {
+	async getJobRoles(authToken?: string): Promise<JobRole[]> {
 		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
 			'/job-roles',
 			{ headers: this.authHeaders(authToken) },
@@ -40,22 +54,26 @@ export class ApiJobRoleService implements JobRoleService {
 	async getJobRolesPage(
 		params: GetJobRolesPageParams,
 	): Promise<GetJobRolesPageResult> {
-		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
-			'/job-roles',
-			{
-				params: {
-					limit: params.limit,
-					offset: params.offset,
-				},
-				headers: this.authHeaders(params.authToken),
+		const response = await this.httpClient.get<
+			ApiJobRoleSummaryDto[] | ApiJobRolesPageDto
+		>('/job-roles', {
+			params: {
+				limit: params.limit,
+				offset: params.offset,
 			},
-		);
+			headers: this.authHeaders(params.authToken),
+		});
 
-		const items = response.data.map((jobRole) =>
+		const apiItems = isApiJobRolesPageDto(response.data)
+			? response.data.items
+			: response.data;
+		const total = isApiJobRolesPageDto(response.data)
+			? response.data.total
+			: params.offset + apiItems.length;
+
+		const items = apiItems.map((jobRole) =>
 			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
 		);
-		const parsedTotal = Number(response.headers?.['x-total-count']);
-		const total = Number.isFinite(parsedTotal) ? parsedTotal : items.length;
 
 		return {
 			items,
