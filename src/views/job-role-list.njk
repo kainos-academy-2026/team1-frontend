@@ -17,6 +17,37 @@
                 </a>
             {% endfor %}
         </section>
+        <nav class="pagination" aria-label="Job roles pages">
+            <a
+                class="pagination-link{% if not hasPrevious %} is-disabled{% endif %}"
+                href="{% if hasPrevious %}/job-roles?limit={{ pageSize }}&offset={{ firstOffset }}{% else %}#{% endif %}"
+                {% if not hasPrevious %}aria-disabled="true" tabindex="-1"{% endif %}
+            >
+                First
+            </a>
+            <a
+                class="pagination-link{% if not hasPrevious %} is-disabled{% endif %}"
+                href="{% if hasPrevious %}/job-roles?limit={{ pageSize }}&offset={{ previousOffset }}{% else %}#{% endif %}"
+                {% if not hasPrevious %}aria-disabled="true" tabindex="-1"{% endif %}
+            >
+                Previous
+            </a>
+            <span class="pagination-summary">Page {{ currentPage }} of {{ totalPages }}</span>
+            <a
+                class="pagination-link{% if not hasNext %} is-disabled{% endif %}"
+                href="{% if hasNext %}/job-roles?limit={{ pageSize }}&offset={{ nextOffset }}{% else %}#{% endif %}"
+                {% if not hasNext %}aria-disabled="true" tabindex="-1"{% endif %}
+            >
+                Next
+            </a>
+            <a
+                class="pagination-link{% if not hasNext %} is-disabled{% endif %}"
+                href="{% if hasNext %}/job-roles?limit={{ pageSize }}&offset={{ lastOffset }}{% else %}#{% endif %}"
+                {% if not hasNext %}aria-disabled="true" tabindex="-1"{% endif %}
+            >
+                Last
+            </a>
+        </nav>
     {% else %}
         <p>No job roles are currently available.</p>
     {% endif %}
