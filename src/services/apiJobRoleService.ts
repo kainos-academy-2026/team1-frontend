@@ -106,8 +106,7 @@ export class ApiJobRoleService implements JobRoleService {
 			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
 		);
 		const total = apiPage.total;
-
-		return {
+		const pageResult: GetJobRolesPageResult = {
 			items,
 			total,
 			limit: params.limit,
@@ -115,6 +114,8 @@ export class ApiJobRoleService implements JobRoleService {
 			hasNext: params.offset + params.limit < total,
 			hasPrevious: params.offset > 0,
 		};
+
+		return pageResult;
 	}
 
 	async getJobRole(
