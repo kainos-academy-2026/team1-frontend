@@ -421,6 +421,59 @@ describe('ApiJobRoleService', () => {
 		});
 	});
 
+	it('uses x-total-count header when response body is an array', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({
+			data: apiRoles,
+			headers: { 'x-total-count': '31' },
+		});
+		const service = createService(get);
+
+		await expect(
+			service.getJobRolesPage({ limit: 10, offset: 0, authToken }),
+		).resolves.toEqual({
+			items: [
+				{
+					jobRoleId: 1,
+					roleName: 'Software Engineer',
+					description: 'Build features that solve customer problems.',
+					responsibilities: 'Deliver code, tests, and documentation.',
+					sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+					location: 'Belfast',
+					capabilityId: 1,
+					capabilityName: 'Workday',
+					bandId: 2,
+					bandName: 'Senior Associate',
+					closingDate: new Date('2026-08-01'),
+					status: JobRoleStatus.Open,
+					numberOfOpenPositions: 2,
+				},
+			],
+			total: 31,
+			limit: 10,
+			offset: 0,
+			hasNext: true,
+			hasPrevious: false,
+		});
+	});
+
 	it('falls back to offset plus item count when response is not paged', async () => {
 		const apiRoles = [
 			{

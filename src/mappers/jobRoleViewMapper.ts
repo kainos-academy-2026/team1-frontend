@@ -4,11 +4,16 @@ import type {
 	JobRoleListItemViewModel,
 } from '../models/jobRoleViewModel.js';
 
+interface JobRoleViewMapperInput {
+	jobRole: JobRole;
+	closingDate: string;
+}
+
 export class JobRoleViewMapper {
-	mapJobRoleListItemViewModel(
-		jobRole: JobRole,
-		closingDate: string,
-	): JobRoleListItemViewModel {
+	mapJobRoleListItemViewModel({
+		jobRole,
+		closingDate,
+	}: JobRoleViewMapperInput): JobRoleListItemViewModel {
 		return {
 			jobRoleId: jobRole.jobRoleId,
 			roleName: jobRole.roleName,
@@ -19,12 +24,12 @@ export class JobRoleViewMapper {
 		};
 	}
 
-	mapJobRoleDetailViewModel(
-		jobRole: JobRole,
-		closingDate: string,
-	): JobRoleDetailViewModel {
+	mapJobRoleDetailViewModel({
+		jobRole,
+		closingDate,
+	}: JobRoleViewMapperInput): JobRoleDetailViewModel {
 		return {
-			...this.mapJobRoleListItemViewModel(jobRole, closingDate),
+			...this.mapJobRoleListItemViewModel({ jobRole, closingDate }),
 			description: jobRole.description,
 			responsibilities: jobRole.responsibilities,
 			sharepointUrl: jobRole.sharepointUrl,

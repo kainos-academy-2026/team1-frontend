@@ -41,13 +41,12 @@ export class JobRoleController {
 		const jobRoles = page.items
 			.filter((jobRole) => jobRole.status === JobRoleStatus.Open)
 			.map((jobRole) =>
-				this.jobRoleViewMapper.mapJobRoleListItemViewModel(
+				this.jobRoleViewMapper.mapJobRoleListItemViewModel({
 					jobRole,
-					formatClosingDate(jobRole.closingDate),
-				),
+					closingDate: formatClosingDate(jobRole.closingDate),
+				}),
 			);
-
-		res.render('job-role-list.njk', {
+		const jobRoleListViewModel = {
 			jobRoles,
 			pageSize,
 			offset,
@@ -61,7 +60,9 @@ export class JobRoleController {
 			nextOffset: offset + pageSize,
 			lastOffset:
 				page.total > 0 ? Math.floor((page.total - 1) / pageSize) * pageSize : 0,
-		});
+		};
+
+		res.render('job-role-list.njk', jobRoleListViewModel);
 	};
 
 	getJobRole = async (req: Request, res: Response): Promise<void> => {
@@ -75,10 +76,10 @@ export class JobRoleController {
 		}
 
 		res.render('job-role-information.njk', {
-			jobRole: this.jobRoleViewMapper.mapJobRoleDetailViewModel(
+			jobRole: this.jobRoleViewMapper.mapJobRoleDetailViewModel({
 				jobRole,
-				formatClosingDate(jobRole.closingDate),
-			),
+				closingDate: formatClosingDate(jobRole.closingDate),
+			}),
 		});
 	};
 }
