@@ -403,7 +403,9 @@ body {
 	border-radius: 12px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 	margin-bottom: 8px;
-	transition: transform 0.15s ease, box-shadow 0.15s ease;
+	transition:
+		transform 0.15s ease,
+		box-shadow 0.15s ease;
 }
 
 .job-card-link:hover .job-card,
