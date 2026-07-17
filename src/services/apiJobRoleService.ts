@@ -103,7 +103,6 @@ export class ApiJobRoleService implements JobRoleService {
 			params.offset,
 		);
 		const items = apiPage.items.map((jobRole) =>
-		const items = apiPage.items.map((jobRole) =>
 			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
 		);
 		const total = apiPage.total;
