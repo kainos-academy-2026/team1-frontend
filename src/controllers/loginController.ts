@@ -1,7 +1,4 @@
-import axios from 'axios';
 import type { Request, Response } from 'express';
-import { mapBackendFieldErrors } from '../errors/mapBackendFieldErrors.js';
-import type { BackendValidationError } from '../models/backendValidation.js';
 import type { LoginServiceClient } from '../services/loginService.js';
 
 export class LoginController {
@@ -45,7 +42,7 @@ export class LoginController {
 		res.redirect('/');
 	};
 
-	handleLogout = (req: Request, res: Response): void => {
+	handleLogout = (_req: Request, res: Response): void => {
 		res.cookie('token', null);
 		res.redirect('/auth/login?loggedOut=1');
 	};

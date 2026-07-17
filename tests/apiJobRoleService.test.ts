@@ -202,7 +202,7 @@ describe('ApiJobRoleService', () => {
 		expect(result[0].status).toBe(null);
 	});
 
-	it('maps status value as-is for summary data', async () => {
+	it('normalises uppercase OPEN status for summary data', async () => {
 		const apiRoles = [
 			{
 				jobRoleId: 1,
@@ -237,8 +237,49 @@ describe('ApiJobRoleService', () => {
 				bandId: 2,
 				bandName: 'Senior Associate',
 				closingDate: new Date('2026-08-01'),
-				status: 'OPEN',
+				status: JobRoleStatus.Open,
 				numberOfOpenPositions: 2,
+			},
+		]);
+	});
+
+	it('normalises uppercase CLOSED status for summary data', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 2,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/2',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-02',
+				status: 'CLOSED',
+				numberOfOpenPositions: 0,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({ data: apiRoles });
+		const service = createService(get);
+
+		await expect(service.getJobRoles(authToken)).resolves.toEqual([
+			{
+				jobRoleId: 2,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/2',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: new Date('2026-08-02'),
+				status: JobRoleStatus.Closed,
+				numberOfOpenPositions: 0,
 			},
 		]);
 	});

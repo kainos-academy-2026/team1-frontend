@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { JobRoleMapper } from '../src/mappers/jobRoleMapper';
+import { JobRoleStatus } from '../src/models/jobRoleStatus';
 
 const mapper = new JobRoleMapper();
 
@@ -78,5 +79,49 @@ describe('jobRoleMapper', () => {
 		expect(mapped.jobRoleId).toBe(10);
 		expect(mapped.description).toBe('Manage teams');
 		expect(mapped.numberOfOpenPositions).toBe(5);
+	});
+
+	it('normalises uppercase OPEN status when mapping summary data', () => {
+		const mapped = mapper.mapApiJobRoleSummary({
+			id: 11,
+			jobRoleId: 11,
+			roleName: 'Architect',
+			description: 'Design systems',
+			responsibilities: 'Define architecture',
+			sharepointUrl: 'https://example.com/sharepoint',
+			specification: 'https://example.com/specification',
+			location: 'Dublin',
+			capabilityId: 1,
+			capabilityName: 'Capability',
+			bandId: 2,
+			bandName: 'Band',
+			closingDate: '2026-10-10T00:00:00.000Z',
+			status: 'OPEN',
+			numberOfOpenPositions: 1,
+		});
+
+		expect(mapped.status).toBe(JobRoleStatus.Open);
+	});
+
+	it('normalises uppercase CLOSED status when mapping detail data', () => {
+		const mapped = mapper.mapApiJobRole({
+			id: 12,
+			jobRoleId: 12,
+			roleName: 'Architect',
+			description: 'Design systems',
+			responsibilities: 'Define architecture',
+			sharepointUrl: 'https://example.com/sharepoint',
+			specification: 'https://example.com/specification',
+			location: 'Dublin',
+			capabilityId: 1,
+			capabilityName: 'Capability',
+			bandId: 2,
+			bandName: 'Band',
+			closingDate: '2026-10-10T00:00:00.000Z',
+			status: 'CLOSED',
+			numberOfOpenPositions: 0,
+		});
+
+		expect(mapped.status).toBe(JobRoleStatus.Closed);
 	});
 });
