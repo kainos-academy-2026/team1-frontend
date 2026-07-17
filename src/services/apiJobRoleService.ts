@@ -7,7 +7,23 @@ import type {
 } from '../models/apiJobRoleDto.js';
 import type { ApplyJobRoleResponse } from '../models/applyJobRoleResponse.js';
 import type { JobRole } from '../models/jobRole.js';
+import type { GetJobRolesPageParams } from './getJobRolesPageParams.js';
+import type { GetJobRolesPageResult } from './getJobRolesPageResult.js';
 import type { JobRoleService } from './jobRoleService.js';
+
+interface ApiJobRolesPageDto {
+	items: ApiJobRoleSummaryDto[];
+	total: number;
+}
+
+const isApiJobRolesPageDto = (value: unknown): value is ApiJobRolesPageDto => {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+
+	const page = value as { items?: unknown; total?: unknown };
+	return Array.isArray(page.items) && Number.isFinite(page.total);
+};
 
 export class ApiJobRoleService implements JobRoleService {
 	constructor(
@@ -25,7 +41,7 @@ export class ApiJobRoleService implements JobRoleService {
 		};
 	}
 
-	async getJobRoles(authToken: string): Promise<JobRole[]> {
+	async getJobRoles(authToken?: string): Promise<JobRole[]> {
 		const response = await this.httpClient.get<ApiJobRoleSummaryDto[]>(
 			'/job-roles',
 			{ headers: this.authHeaders(authToken) },
@@ -34,6 +50,40 @@ export class ApiJobRoleService implements JobRoleService {
 		return response.data.map((jobRole) =>
 			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
 		);
+	}
+
+	async getJobRolesPage(
+		params: GetJobRolesPageParams,
+	): Promise<GetJobRolesPageResult> {
+		const response = await this.httpClient.get<
+			ApiJobRoleSummaryDto[] | ApiJobRolesPageDto
+		>('/job-roles', {
+			params: {
+				limit: params.limit,
+				offset: params.offset,
+			},
+			headers: this.authHeaders(params.authToken),
+		});
+
+		const apiItems = isApiJobRolesPageDto(response.data)
+			? response.data.items
+			: response.data;
+		const total = isApiJobRolesPageDto(response.data)
+			? response.data.total
+			: params.offset + apiItems.length;
+
+		const items = apiItems.map((jobRole) =>
+			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
+		);
+
+		return {
+			items,
+			total,
+			limit: params.limit,
+			offset: params.offset,
+			hasNext: params.offset + params.limit < total,
+			hasPrevious: params.offset > 0,
+		};
 	}
 
 	async getJobRole(

@@ -62,3 +62,17 @@ export function validateParams(schema: ZodSchema): RequestHandler {
 		next();
 	};
 }
+
+export function validateQuery(schema: ZodSchema): RequestHandler {
+	return (req, res, next) => {
+		const result = schema.safeParse(req.query);
+
+		if (!result.success) {
+			res.status(400).json({ errors: toErrors(result.error.issues) });
+			return;
+		}
+
+		Object.assign(req.query, result.data);
+		next();
+	};
+}

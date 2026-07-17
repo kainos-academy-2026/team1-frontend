@@ -49,6 +49,7 @@ Validation belongs at the boundary (middleware layer), not in controllers or ser
 ## File Separation Rules
 
 - Place Zod schemas and DTO types in model files.
+- Place interfaces in dedicated files by responsibility (avoid grouping unrelated interfaces in one file).
 - Place validation logic in middleware files.
 - Place error-page rendering helpers in error or middleware files.
 - Router files should only compose dependencies and declare routes/middleware chains.

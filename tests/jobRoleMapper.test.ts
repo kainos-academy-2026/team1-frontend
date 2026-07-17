@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { JobRoleMapper } from '../src/mappers/jobRoleMapper';
+import { JobRoleStatus } from '../src/models/jobRoleStatus';
 
 const mapper = new JobRoleMapper();
 
@@ -80,47 +81,47 @@ describe('jobRoleMapper', () => {
 		expect(mapped.numberOfOpenPositions).toBe(5);
 	});
 
-	it('normalises uppercase status values to lowercase', () => {
+	it('normalises uppercase OPEN status when mapping summary data', () => {
 		const mapped = mapper.mapApiJobRoleSummary({
 			id: 11,
 			jobRoleId: 11,
-			roleName: 'Engineer',
-			description: 'Build software',
-			responsibilities: 'Write code',
-			sharepointUrl: 'https://example.com/spec',
-			specification: 'https://example.com/spec',
-			location: 'Belfast',
-			capabilityId: 1,
-			capabilityName: 'Engineering',
-			bandId: 2,
-			bandName: 'Senior',
-			closingDate: '2026-08-01',
-			status: 'OPEN',
-			numberOfOpenPositions: 3,
-		});
-
-		expect(mapped.status).toBe('open');
-	});
-
-	it('normalises uppercase CLOSED status to lowercase', () => {
-		const mapped = mapper.mapApiJobRoleSummary({
-			id: 12,
-			jobRoleId: 12,
-			roleName: 'Analyst',
-			description: 'Analyse',
-			responsibilities: 'Report',
-			sharepointUrl: 'https://example.com/spec',
-			specification: 'https://example.com/spec',
+			roleName: 'Architect',
+			description: 'Design systems',
+			responsibilities: 'Define architecture',
+			sharepointUrl: 'https://example.com/sharepoint',
+			specification: 'https://example.com/specification',
 			location: 'Dublin',
 			capabilityId: 1,
-			capabilityName: 'Data',
-			bandId: 3,
-			bandName: 'Consultant',
-			closingDate: '2026-08-01',
+			capabilityName: 'Capability',
+			bandId: 2,
+			bandName: 'Band',
+			closingDate: '2026-10-10T00:00:00.000Z',
+			status: 'OPEN',
+			numberOfOpenPositions: 1,
+		});
+
+		expect(mapped.status).toBe(JobRoleStatus.Open);
+	});
+
+	it('normalises uppercase CLOSED status when mapping detail data', () => {
+		const mapped = mapper.mapApiJobRole({
+			id: 12,
+			jobRoleId: 12,
+			roleName: 'Architect',
+			description: 'Design systems',
+			responsibilities: 'Define architecture',
+			sharepointUrl: 'https://example.com/sharepoint',
+			specification: 'https://example.com/specification',
+			location: 'Dublin',
+			capabilityId: 1,
+			capabilityName: 'Capability',
+			bandId: 2,
+			bandName: 'Band',
+			closingDate: '2026-10-10T00:00:00.000Z',
 			status: 'CLOSED',
 			numberOfOpenPositions: 0,
 		});
 
-		expect(mapped.status).toBe('closed');
+		expect(mapped.status).toBe(JobRoleStatus.Closed);
 	});
 });
