@@ -19,6 +19,15 @@ describe('ApiJobRoleService', () => {
 		);
 	};
 
+	const createServiceWithPatch = (
+		patch: ReturnType<typeof vi.fn>,
+	): ApiJobRoleService => {
+		return new ApiJobRoleService(
+			{ get: vi.fn(), patch } as never,
+			new JobRoleMapper(),
+		);
+	};
+
 	it('returns data from the API using the injected client', async () => {
 		const apiRoles = [
 			{
@@ -848,5 +857,70 @@ describe('ApiJobRoleService', () => {
 		await expect(
 			service.applyForJobRole('1', 'cv.pdf', 'application/pdf', authToken),
 		).rejects.toThrow('network error');
+	});
+
+	it('returns applications for a job role with parsed dates and CV URL', async () => {
+		const get = vi.fn().mockResolvedValue({
+			data: [
+				{
+					applicationId: 11,
+					userId: 7,
+					userEmail: 'applicant@example.com',
+					status: 'IN_PROGRESS',
+					dateApplied: '2026-07-01T00:00:00.000Z',
+					cvPresignedUrl: 'https://s3.example.com/cv-link',
+				},
+			],
+		});
+		const service = createService(get);
+
+		await expect(
+			service.getApplicationsForJobRole('1', authToken),
+		).resolves.toEqual([
+			{
+				applicationId: 11,
+				userId: 7,
+				userEmail: 'applicant@example.com',
+				status: 'IN_PROGRESS',
+				dateApplied: new Date('2026-07-01T00:00:00.000Z'),
+				cvUrl: 'https://s3.example.com/cv-link',
+			},
+		]);
+
+		expect(get).toHaveBeenCalledWith('/job-roles/1/applications', {
+			headers: { Authorization: `Bearer ${authToken}` },
+		});
+	});
+
+	it('calls backend hire endpoint for application status updates', async () => {
+		const patch = vi
+			.fn()
+			.mockResolvedValue({ data: { message: 'Applicant hired' } });
+		const service = createServiceWithPatch(patch);
+
+		await expect(
+			service.hireApplicant('1', '11', authToken),
+		).resolves.toBeUndefined();
+		expect(patch).toHaveBeenCalledWith(
+			'/job-roles/1/applications/11/hire',
+			{},
+			{ headers: { Authorization: `Bearer ${authToken}` } },
+		);
+	});
+
+	it('calls backend reject endpoint for application status updates', async () => {
+		const patch = vi
+			.fn()
+			.mockResolvedValue({ data: { message: 'Applicant rejected' } });
+		const service = createServiceWithPatch(patch);
+
+		await expect(
+			service.rejectApplicant('1', '11', authToken),
+		).resolves.toBeUndefined();
+		expect(patch).toHaveBeenCalledWith(
+			'/job-roles/1/applications/11/reject',
+			{},
+			{ headers: { Authorization: `Bearer ${authToken}` } },
+		);
 	});
 });

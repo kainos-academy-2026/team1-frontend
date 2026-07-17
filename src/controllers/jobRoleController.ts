@@ -67,6 +67,8 @@ export class JobRoleController {
 	getJobRole = async (req: Request, res: Response): Promise<void> => {
 		const token = req.cookies.token as string;
 		const jobRoleId = req.params.id as string;
+		const currentUser = res.locals.user as { isAdmin?: boolean } | undefined;
+		const isAdmin = currentUser?.isAdmin === true;
 
 		const jobRole = await this.jobRoleService.getJobRole(jobRoleId, token);
 		if (!jobRole) {
@@ -74,10 +76,17 @@ export class JobRoleController {
 			return;
 		}
 
+		const applications = isAdmin
+			? await this.jobRoleService.getApplicationsForJobRole(jobRoleId, token)
+			: [];
+
 		res.render('job-role-information.njk', {
 			jobRole: this.jobRoleViewMapper.mapJobRoleDetailViewModel(
 				jobRole,
 				formatClosingDate(jobRole.closingDate),
+				applications.map((application) =>
+					this.jobRoleViewMapper.mapJobRoleApplicationViewModel(application),
+				),
 			),
 		});
 	};

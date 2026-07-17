@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
-import { validateBody, validateParams } from '../src/middleware/validate';
+import {
+	validateBody,
+	validateJsonBody,
+	validateParams,
+} from '../src/middleware/validate';
 
 const createResponse = () => ({
 	locals: { errors: null as Record<string, string[]> | null },
@@ -85,6 +89,39 @@ describe('validateParams', () => {
 		middleware(req as never, res as never, next);
 
 		expect(req.params).toEqual({ id: 42 });
+		expect(next).toHaveBeenCalled();
+	});
+});
+
+describe('validateJsonBody', () => {
+	it('returns 400 with structured errors when JSON body validation fails', () => {
+		const middleware = validateJsonBody(
+			z.object({ fileName: z.string().min(1, 'File name is required') }),
+		);
+		const req = { body: { fileName: '' } };
+		const res = createResponse();
+		const next = vi.fn();
+
+		middleware(req as never, res as never, next);
+
+		expect(res.status).toHaveBeenCalledWith(400);
+		expect(res.json).toHaveBeenCalledWith({
+			errors: [{ field: 'fileName', message: 'File name is required' }],
+		});
+		expect(next).not.toHaveBeenCalled();
+	});
+
+	it('writes parsed JSON body and calls next on success', () => {
+		const middleware = validateJsonBody(
+			z.object({ email: z.string().trim().toLowerCase().email() }),
+		);
+		const req = { body: { email: ' Person@Example.com ' } };
+		const res = createResponse();
+		const next = vi.fn();
+
+		middleware(req as never, res as never, next);
+
+		expect(req.body).toEqual({ email: 'person@example.com' });
 		expect(next).toHaveBeenCalled();
 	});
 });

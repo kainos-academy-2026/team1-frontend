@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { JobRoleViewMapper } from '../src/mappers/jobRoleViewMapper';
+import { ApplicationStatus } from '../src/models/applicationStatus';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 
 const mapper = new JobRoleViewMapper();
@@ -70,6 +71,42 @@ describe('jobRoleViewMapper', () => {
 			sharepointUrl: 'https://sharepoint.example.com/spec',
 			status: JobRoleStatus.Open,
 			numberOfOpenPositions: 1,
+			applications: [],
 		});
+	});
+
+	it('maps application rows with actions for in-progress status', () => {
+		const mapped = mapper.mapJobRoleApplicationViewModel({
+			applicationId: 10,
+			userId: 2,
+			userEmail: 'applicant@example.com',
+			status: ApplicationStatus.InProgress,
+			dateApplied: new Date('2026-07-01T00:00:00.000Z'),
+			cvUrl: 'https://s3.example.com/cv',
+		});
+
+		expect(mapped).toEqual({
+			applicationId: 10,
+			username: 'applicant@example.com',
+			status: 'in progress',
+			cvUrl: 'https://s3.example.com/cv',
+			canHire: true,
+			canReject: true,
+		});
+	});
+
+	it('hides actions for non in-progress application statuses', () => {
+		const mapped = mapper.mapJobRoleApplicationViewModel({
+			applicationId: 10,
+			userId: 2,
+			userEmail: 'applicant@example.com',
+			status: ApplicationStatus.Hired,
+			dateApplied: new Date('2026-07-01T00:00:00.000Z'),
+			cvUrl: 'https://s3.example.com/cv',
+		});
+
+		expect(mapped.canHire).toBe(false);
+		expect(mapped.canReject).toBe(false);
+		expect(mapped.status).toBe('hired');
 	});
 });

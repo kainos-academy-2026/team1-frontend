@@ -1,12 +1,14 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import type { JobRoleMapper } from '../mappers/jobRoleMapper.js';
+import type { ApiApplicationDto } from '../models/apiApplicationDto.js';
 import type {
 	ApiJobRoleDto,
 	ApiJobRoleSummaryDto,
 } from '../models/apiJobRoleDto.js';
 import type { ApplyJobRoleResponse } from '../models/applyJobRoleResponse.js';
 import type { JobRole } from '../models/jobRole.js';
+import type { JobRoleApplication } from '../models/jobRoleApplication.js';
 import type { GetJobRolesPageParams } from './getJobRolesPageParams.js';
 import type { GetJobRolesPageResult } from './getJobRolesPageResult.js';
 import type { JobRoleService } from './jobRoleService.js';
@@ -124,5 +126,48 @@ export class ApiJobRoleService implements JobRoleService {
 		);
 
 		return response.data;
+	}
+
+	async getApplicationsForJobRole(
+		jobRoleId: string,
+		authToken: string,
+	): Promise<JobRoleApplication[]> {
+		const response = await this.httpClient.get<ApiApplicationDto[]>(
+			`/job-roles/${jobRoleId}/applications`,
+			{ headers: this.authHeaders(authToken) },
+		);
+
+		return response.data.map((application) => ({
+			applicationId: application.applicationId,
+			userId: application.userId,
+			userEmail: application.userEmail,
+			status: application.status as JobRoleApplication['status'],
+			dateApplied: new Date(application.dateApplied),
+			cvUrl: application.cvPresignedUrl,
+		}));
+	}
+
+	async hireApplicant(
+		jobRoleId: string,
+		applicationId: string,
+		authToken: string,
+	): Promise<void> {
+		await this.httpClient.patch(
+			`/job-roles/${jobRoleId}/applications/${applicationId}/hire`,
+			{},
+			{ headers: this.authHeaders(authToken) },
+		);
+	}
+
+	async rejectApplicant(
+		jobRoleId: string,
+		applicationId: string,
+		authToken: string,
+	): Promise<void> {
+		await this.httpClient.patch(
+			`/job-roles/${jobRoleId}/applications/${applicationId}/reject`,
+			{},
+			{ headers: this.authHeaders(authToken) },
+		);
 	}
 }

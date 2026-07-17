@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
 import { renderErrorPage } from '../errors/errorPage.js';
+import type { ApplyJobRoleRequestDto } from '../models/applyJobRoleRequestDto.js';
 import type { JobRoleService } from '../services/jobRoleService.js';
 
 export class ApplicationController {
@@ -41,10 +42,7 @@ export class ApplicationController {
 	handleApply = async (req: Request, res: Response): Promise<void> => {
 		const jobRoleId = req.params.id as string;
 		const token = req.cookies.token as string;
-		const { fileName, contentType } = req.body as {
-			fileName: string;
-			contentType: string;
-		};
+		const { fileName, contentType } = req.body as ApplyJobRoleRequestDto;
 
 		try {
 			const result = await this.jobRoleService.applyForJobRole(
@@ -80,6 +78,93 @@ export class ApplicationController {
 			}
 
 			res.status(500).json({ error: 'Something went wrong' });
+		}
+	};
+
+	hireApplicant = async (req: Request, res: Response): Promise<void> => {
+		const jobRoleId = req.params.id as string;
+		const applicationId = req.params.applicationId as string;
+		const token = req.cookies.token as string;
+
+		try {
+			await this.jobRoleService.hireApplicant(jobRoleId, applicationId, token);
+			res.redirect(`/job-roles/${jobRoleId}`);
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				const status = error.response?.status ?? 500;
+
+				if (status === 404) {
+					renderErrorPage(res, {
+						status: 404,
+						title: 'Application not found',
+						message: 'The application you are trying to hire no longer exists.',
+					});
+					return;
+				}
+
+				if (status === 409) {
+					renderErrorPage(res, {
+						status: 409,
+						title: 'Cannot hire applicant',
+						message:
+							error.response?.data?.error ??
+							'This application is no longer in progress.',
+					});
+					return;
+				}
+			}
+
+			renderErrorPage(res, {
+				status: 500,
+				title: 'Something went wrong',
+				message: 'We could not update the application right now.',
+			});
+		}
+	};
+
+	rejectApplicant = async (req: Request, res: Response): Promise<void> => {
+		const jobRoleId = req.params.id as string;
+		const applicationId = req.params.applicationId as string;
+		const token = req.cookies.token as string;
+
+		try {
+			await this.jobRoleService.rejectApplicant(
+				jobRoleId,
+				applicationId,
+				token,
+			);
+			res.redirect(`/job-roles/${jobRoleId}`);
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				const status = error.response?.status ?? 500;
+
+				if (status === 404) {
+					renderErrorPage(res, {
+						status: 404,
+						title: 'Application not found',
+						message:
+							'The application you are trying to reject no longer exists.',
+					});
+					return;
+				}
+
+				if (status === 409) {
+					renderErrorPage(res, {
+						status: 409,
+						title: 'Cannot reject applicant',
+						message:
+							error.response?.data?.error ??
+							'This application is no longer in progress.',
+					});
+					return;
+				}
+			}
+
+			renderErrorPage(res, {
+				status: 500,
+				title: 'Something went wrong',
+				message: 'We could not update the application right now.',
+			});
 		}
 	};
 }

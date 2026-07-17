@@ -1,5 +1,6 @@
 import type { ApplyJobRoleResponse } from '../models/applyJobRoleResponse.js';
 import type { JobRole } from '../models/jobRole.js';
+import type { JobRoleApplication } from '../models/jobRoleApplication.js';
 import type { GetJobRolesPageParams } from './getJobRolesPageParams.js';
 import type { GetJobRolesPageResult } from './getJobRolesPageResult.js';
 
@@ -15,4 +16,18 @@ export interface JobRoleService {
 		contentType: string,
 		authToken: string,
 	): Promise<ApplyJobRoleResponse>;
+	getApplicationsForJobRole(
+		jobRoleId: string,
+		authToken: string,
+	): Promise<JobRoleApplication[]>;
+	hireApplicant(
+		jobRoleId: string,
+		applicationId: string,
+		authToken: string,
+	): Promise<void>;
+	rejectApplicant(
+		jobRoleId: string,
+		applicationId: string,
+		authToken: string,
+	): Promise<void>;
 }
