@@ -10,6 +10,15 @@ describe('ApiJobRoleService', () => {
 		return new ApiJobRoleService({ get } as never, new JobRoleMapper());
 	};
 
+	const createServiceWithPost = (
+		post: ReturnType<typeof vi.fn>,
+	): ApiJobRoleService => {
+		return new ApiJobRoleService(
+			{ get: vi.fn(), post } as never,
+			new JobRoleMapper(),
+		);
+	};
+
 	it('returns data from the API using the injected client', async () => {
 		const apiRoles = [
 			{
@@ -807,5 +816,37 @@ describe('ApiJobRoleService', () => {
 			status: JobRoleStatus.Open,
 			numberOfOpenPositions: 2,
 		});
+	});
+
+	it('calls the apply endpoint and returns presigned upload data', async () => {
+		const applyResponse = {
+			uploadUrl: 'https://s3.example.com/presigned',
+			key: 'job-applications/1/7/123-cv.pdf',
+		};
+		const post = vi.fn().mockResolvedValue({ data: applyResponse });
+		const service = createServiceWithPost(post);
+
+		const result = await service.applyForJobRole(
+			'1',
+			'cv.pdf',
+			'application/pdf',
+			authToken,
+		);
+
+		expect(post).toHaveBeenCalledWith(
+			'/job-roles/1/apply',
+			{ fileName: 'cv.pdf', contentType: 'application/pdf' },
+			{ headers: { Authorization: `Bearer ${authToken}` } },
+		);
+		expect(result).toEqual(applyResponse);
+	});
+
+	it('propagates errors from the apply endpoint', async () => {
+		const post = vi.fn().mockRejectedValue(new Error('network error'));
+		const service = createServiceWithPost(post);
+
+		await expect(
+			service.applyForJobRole('1', 'cv.pdf', 'application/pdf', authToken),
+		).rejects.toThrow('network error');
 	});
 });

@@ -5,6 +5,7 @@ import type {
 	ApiJobRoleDto,
 	ApiJobRoleSummaryDto,
 } from '../models/apiJobRoleDto.js';
+import type { ApplyJobRoleResponse } from '../models/applyJobRoleResponse.js';
 import type { JobRole } from '../models/jobRole.js';
 import type { GetJobRolesPageParams } from './getJobRolesPageParams.js';
 import type { GetJobRolesPageResult } from './getJobRolesPageResult.js';
@@ -108,5 +109,20 @@ export class ApiJobRoleService implements JobRoleService {
 
 			throw error;
 		}
+	}
+
+	async applyForJobRole(
+		jobRoleId: string,
+		fileName: string,
+		contentType: string,
+		authToken: string,
+	): Promise<ApplyJobRoleResponse> {
+		const response = await this.httpClient.post<ApplyJobRoleResponse>(
+			`/job-roles/${jobRoleId}/apply`,
+			{ fileName, contentType },
+			{ headers: this.authHeaders(authToken) },
+		);
+
+		return response.data;
 	}
 }
