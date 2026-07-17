@@ -5,9 +5,20 @@ import { ValidationError } from '../src/errors/validationError';
 import { JobRoleStatus } from '../src/models/jobRoleStatus';
 import { createAuthToken, withTestJwtSecret } from './helpers/authToken';
 
-const { getJobRolesPage, getJobRole } = vi.hoisted(() => ({
+const {
+	getJobRolesPage,
+	getJobRole,
+	getApplicationsForJobRole,
+	hireApplicant,
+	rejectApplicant,
+	applyForJobRole,
+} = vi.hoisted(() => ({
 	getJobRolesPage: vi.fn(),
 	getJobRole: vi.fn(),
+	getApplicationsForJobRole: vi.fn(),
+	hireApplicant: vi.fn(),
+	rejectApplicant: vi.fn(),
+	applyForJobRole: vi.fn(),
 }));
 
 vi.mock('../src/services/apiJobRoleService.js', () => ({
@@ -15,16 +26,22 @@ vi.mock('../src/services/apiJobRoleService.js', () => ({
 		getJobRoles = vi.fn();
 		getJobRolesPage = getJobRolesPage;
 		getJobRole = getJobRole;
+		getApplicationsForJobRole = getApplicationsForJobRole;
+		hireApplicant = hireApplicant;
+		rejectApplicant = rejectApplicant;
+		applyForJobRole = applyForJobRole;
 	},
 }));
 
 describe('GET /job-roles', () => {
 	let restoreJwtSecret: () => void;
 	let authCookie: string[];
+	let adminAuthCookie: string[];
 
 	beforeEach(() => {
 		restoreJwtSecret = withTestJwtSecret();
 		authCookie = [`token=${createAuthToken()}`];
+		adminAuthCookie = [`token=${createAuthToken('ADMIN')}`];
 		vi.resetAllMocks();
 	});
 
@@ -192,6 +209,129 @@ describe('GET /job-roles', () => {
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain('Software Engineer');
+	});
+
+	it('renders applications for admins on the role detail page', async () => {
+		getJobRole.mockResolvedValue({
+			jobRoleId: 1,
+			roleName: 'Software Engineer',
+			description: 'Build features that solve customer problems.',
+			responsibilities: 'Deliver code, tests, and documentation.',
+			sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+			location: 'Belfast',
+			capabilityId: 1,
+			capabilityName: 'Workday',
+			bandId: 1,
+			bandName: 'Associate',
+			closingDate: new Date('2026-08-01T00:00:00.000Z'),
+			status: JobRoleStatus.Open,
+			numberOfOpenPositions: 2,
+		});
+		getApplicationsForJobRole.mockResolvedValue([
+			{
+				applicationId: 11,
+				userId: 77,
+				userEmail: 'applicant@example.com',
+				status: 'IN_PROGRESS',
+				dateApplied: new Date('2026-07-01T00:00:00.000Z'),
+				cvUrl: 'https://s3.example.com/cv-presigned',
+			},
+		]);
+
+		const response = await request(app)
+			.get('/job-roles/1')
+			.set('Cookie', adminAuthCookie);
+
+		expect(response.status).toBe(200);
+		expect(response.text).toContain('Applications');
+		expect(response.text).toContain('applicant@example.com');
+		expect(response.text).toContain(
+			'href="https://s3.example.com/cv-presigned"',
+		);
+		expect(response.text).toContain('/job-roles/1/applications/11/hire');
+		expect(response.text).toContain('/job-roles/1/applications/11/reject');
+		expect(getApplicationsForJobRole).toHaveBeenCalledWith(
+			'1',
+			expect.any(String),
+		);
+	});
+
+	it('does not render applications for non-admin users', async () => {
+		getJobRole.mockResolvedValue({
+			jobRoleId: 1,
+			roleName: 'Software Engineer',
+			description: 'Build features that solve customer problems.',
+			responsibilities: 'Deliver code, tests, and documentation.',
+			sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+			location: 'Belfast',
+			capabilityId: 1,
+			capabilityName: 'Workday',
+			bandId: 1,
+			bandName: 'Associate',
+			closingDate: new Date('2026-08-01T00:00:00.000Z'),
+			status: JobRoleStatus.Open,
+			numberOfOpenPositions: 2,
+		});
+
+		const response = await request(app)
+			.get('/job-roles/1')
+			.set('Cookie', authCookie);
+
+		expect(response.status).toBe(200);
+		expect(response.text).not.toContain('Applications');
+		expect(getApplicationsForJobRole).not.toHaveBeenCalled();
+	});
+
+	it('allows admin to hire an in-progress applicant', async () => {
+		hireApplicant.mockResolvedValue(undefined);
+
+		const response = await request(app)
+			.post('/job-roles/1/applications/11/hire')
+			.set('Cookie', adminAuthCookie);
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/job-roles/1');
+		expect(hireApplicant).toHaveBeenCalledWith(1, 11, expect.any(String));
+	});
+
+	it('allows admin to reject an in-progress applicant', async () => {
+		rejectApplicant.mockResolvedValue(undefined);
+
+		const response = await request(app)
+			.post('/job-roles/1/applications/11/reject')
+			.set('Cookie', adminAuthCookie);
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe('/job-roles/1');
+		expect(rejectApplicant).toHaveBeenCalledWith(1, 11, expect.any(String));
+	});
+
+	it('returns forbidden when non-admin tries to hire applicant', async () => {
+		const response = await request(app)
+			.post('/job-roles/1/applications/11/hire')
+			.set('Cookie', authCookie);
+
+		expect(response.status).toBe(403);
+		expect(hireApplicant).not.toHaveBeenCalled();
+	});
+
+	it('returns 400 when apply payload is invalid and does not call service', async () => {
+		const response = await request(app)
+			.post('/job-roles/1/apply')
+			.set('Cookie', authCookie)
+			.send({ fileName: '', contentType: 'text/plain' });
+
+		expect(response.status).toBe(400);
+		expect(response.body).toEqual({
+			errors: [
+				{ field: 'fileName', message: 'File name is required' },
+				{
+					field: 'contentType',
+					message: 'CV must be a PDF (application/pdf)',
+				},
+			],
+		});
+		expect(applyForJobRole).not.toHaveBeenCalled();
 	});
 
 	it('returns 400 when the job role id is invalid', async () => {

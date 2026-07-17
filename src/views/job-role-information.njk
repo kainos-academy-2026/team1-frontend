@@ -45,5 +45,76 @@
 				<button type="submit" class="btn btn-primary apply-btn">Apply for this role</button>
 			</form>
 		{% endif %}
+
+		{% if user and user.isAdmin %}
+			<section class="job-detail-section" aria-labelledby="applications-heading">
+				<h2 id="applications-heading" class="job-detail-heading">Applications</h2>
+
+				{% if jobRole.applications.length > 0 %}
+					<div class="applications-table-wrapper">
+						<table class="applications-table">
+							<thead>
+								<tr>
+									<th scope="col">Username</th>
+									<th scope="col">Status</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for application in jobRole.applications %}
+									<tr>
+										<td>
+											<a
+												class="job-detail-link"
+												href="{{ application.cvUrl }}"
+												target="_blank"
+												rel="noopener noreferrer"
+											>
+												{{ application.username }}
+											</a>
+										</td>
+										<td class="applications-status">{{ application.status }}</td>
+										<td>
+											{% if application.canHire or application.canReject %}
+												<div class="application-actions">
+													{% if application.canHire %}
+														<form
+															action="/job-roles/{{ jobRole.jobRoleId }}/applications/{{ application.applicationId }}/hire"
+															method="post"
+															class="application-action-form"
+															data-confirm-message="Are you sure you want to hire this applicant?"
+														>
+															<button class="application-action-link" type="submit">Hire</button>
+														</form>
+													{% endif %}
+													{% if application.canReject %}
+														<form
+															action="/job-roles/{{ jobRole.jobRoleId }}/applications/{{ application.applicationId }}/reject"
+															method="post"
+															class="application-action-form"
+															data-confirm-message="Are you sure you want to reject this applicant?"
+														>
+															<button class="application-action-link" type="submit">Reject</button>
+														</form>
+													{% endif %}
+												</div>
+											{% else %}
+												<span class="applications-no-actions">-</span>
+											{% endif %}
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				{% else %}
+					<p class="job-detail-text">There are no applications for this role yet.</p>
+				{% endif %}
+			</section>
+		{% endif %}
 	</article>
+
+	{% if user and user.isAdmin %}
+		<script src="/assets/job-role-applications.js"></script>
+	{% endif %}
 {% endblock %}
