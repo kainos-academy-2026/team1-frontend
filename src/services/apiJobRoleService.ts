@@ -34,7 +34,6 @@ const toFiniteNumber = (value: unknown): number | null => {
 
 	return null;
 };
-
 const isApiJobRolesPageDto = (value: unknown): value is ApiJobRolesPageDto => {
 	if (typeof value !== 'object' || value === null) {
 		return false;
@@ -59,7 +58,6 @@ const toApiJobRolesPageDto = (
 		total: parsedTotal ?? offset + data.length,
 	};
 };
-
 export class ApiJobRoleService implements JobRoleService {
 	constructor(
 		private readonly httpClient: AxiosInstance,
