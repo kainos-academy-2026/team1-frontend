@@ -102,7 +102,7 @@ export class ApiJobRoleService implements JobRoleService {
 			response.headers?.['x-total-count'],
 			params.offset,
 		);
-
+		const items = apiPage.items.map((jobRole) =>
 		const items = apiPage.items.map((jobRole) =>
 			this.jobRoleMapper.mapApiJobRoleSummary(jobRole),
 		);
