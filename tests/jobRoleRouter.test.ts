@@ -59,6 +59,7 @@ describe('GET /job-roles', () => {
 		expect(response.text).toContain('Belfast');
 		expect(response.text).toContain('Workday');
 		expect(response.text).toContain('Associate');
+		expect(response.text).toContain('class="job-card-link"');
 		expect(response.text).toContain('href="/job-roles/1"');
 	});
 

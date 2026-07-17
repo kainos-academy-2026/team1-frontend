@@ -372,6 +372,18 @@ body {
 	margin-top: 12px;
 }
 
+.job-card-link {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+}
+
+.job-card-link:focus-visible {
+	outline: 2px solid #0b5cab;
+	outline-offset: 2px;
+	border-radius: 12px;
+}
+
 .job-listings-title {
 	display: inline-block;
 	width: fit-content;
@@ -391,6 +403,13 @@ body {
 	border-radius: 12px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 	margin-bottom: 8px;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.job-card-link:hover .job-card,
+.job-card-link:focus-visible .job-card {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .job-card-title {
