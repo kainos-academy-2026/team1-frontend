@@ -85,8 +85,8 @@ describe('ApplicationController', () => {
 
 			expect(res.status).toHaveBeenCalledWith(404);
 			expect(res.render).toHaveBeenCalledWith(
-				'error-page.njk',
-				expect.objectContaining({ heading: 'Job role not found' }),
+				'errors/error-page.njk',
+				expect.objectContaining({ title: 'Job role not found' }),
 			);
 		});
 
@@ -105,8 +105,8 @@ describe('ApplicationController', () => {
 
 			expect(res.status).toHaveBeenCalledWith(409);
 			expect(res.render).toHaveBeenCalledWith(
-				'error-page.njk',
-				expect.objectContaining({ heading: 'Role not available' }),
+				'errors/error-page.njk',
+				expect.objectContaining({ title: 'Role not available' }),
 			);
 		});
 

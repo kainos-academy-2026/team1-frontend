@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
+import { renderErrorPage } from '../errors/errorPage.js';
 import type { JobRoleService } from '../services/jobRoleService.js';
 
 export class ApplicationController {
@@ -11,18 +12,18 @@ export class ApplicationController {
 
 		const jobRole = await this.jobRoleService.getJobRole(jobRoleId, token);
 		if (!jobRole) {
-			res.status(404).render('error-page.njk', {
-				title: 'Not Found',
-				heading: 'Job role not found',
+			renderErrorPage(res, {
+				status: 404,
+				title: 'Job role not found',
 				message: 'The job role you are trying to apply for does not exist.',
 			});
 			return;
 		}
 
 		if (jobRole.status !== 'open' || jobRole.numberOfOpenPositions <= 0) {
-			res.status(409).render('error-page.njk', {
-				title: 'Cannot Apply',
-				heading: 'Role not available',
+			renderErrorPage(res, {
+				status: 409,
+				title: 'Role not available',
 				message: 'This job role is not currently open for applications.',
 			});
 			return;

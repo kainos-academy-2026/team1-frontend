@@ -9,6 +9,7 @@ const createResponse = () => ({
 	redirect: vi.fn(),
 	cookie: vi.fn(),
 	status: vi.fn().mockReturnThis(),
+	render: vi.fn(),
 });
 
 describe('authoriseRoles middleware', () => {
@@ -61,6 +62,10 @@ describe('authoriseRoles middleware', () => {
 		);
 
 		expect(res.status).toHaveBeenCalledWith(403);
+		expect(res.render).toHaveBeenCalledWith(
+			'errors/error-page.njk',
+			expect.objectContaining({ title: 'Forbidden' }),
+		);
 		expect(next).not.toHaveBeenCalled();
 	});
 });

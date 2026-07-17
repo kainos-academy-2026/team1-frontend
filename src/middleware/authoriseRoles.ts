@@ -39,7 +39,12 @@ export default function authoriseRoles(allowedRoles: Role[]) {
 
 		//Check the role from the token is in the allowedRoles array
 		if (!allowedRoles.includes(role)) {
-			res.status(403);
+			res.status(403).render('errors/error-page.njk', {
+				title: 'Forbidden',
+				message: 'You do not have permission to access this page.',
+				redirectHref: '/job-roles',
+				redirectText: 'Back to open roles',
+			});
 			return;
 		}
 
