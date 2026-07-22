@@ -1,0 +1,125 @@
+{
+	"lastQuestionAnswered": 55,
+	"framework": {
+		"language": "TypeScript",
+		"bddEnabled": true,
+		"lifecycle": {
+			"globalSetup": false,
+			"globalTeardown": false
+		}
+	},
+	"testTypes": {
+		"ui": {
+			"enabled": true
+		},
+		"api": {
+			"enabled": true
+		},
+		"crossBrowser": {
+			"enabled": true,
+			"browsers": ["chromium", "edge"]
+		},
+		"accessibility": {
+			"enabled": true,
+			"standards": ["wcag22aa"]
+		}
+	},
+	"reporting": {
+		"outputDirectory": "test-reports",
+		"namingConvention": "date",
+		"traces": {
+			"enabled": true,
+			"mode": "on-failure"
+		},
+		"screenshots": {
+			"enabled": true,
+			"mode": "on-failure"
+		},
+		"testManagementIntegration": {
+			"enabled": false
+		}
+	},
+	"execution": {
+		"parallel": {
+			"enabled": true,
+			"workers": 4
+		},
+		"retries": {
+			"enabled": true,
+			"maxAttempts": 3
+		},
+		"timeout": {
+			"default": 30000,
+			"navigation": 60000
+		},
+		"headless": false
+	},
+	"environments": {
+		"default": "local",
+		"available": ["local"],
+		"ui": {
+			"baseUrls": [
+				{
+					"environment": "local",
+					"url": "http://localhost:4000"
+				}
+			]
+		},
+		"api": {
+			"baseUrls": [
+				{
+					"environment": "local",
+					"url": "http://localhost:3001"
+				}
+			]
+		}
+	},
+	"utilities": {
+		"loggingModule": {
+			"enabled": true
+		},
+		"fileReaders": {
+			"enabled": true,
+			"csv": true,
+			"json": true,
+			"txt": false
+		},
+		"configuration": {
+			"enabled": true
+		},
+		"asyncWaits": {
+			"enabled": false
+		},
+		"mfa": {
+			"enabled": false
+		},
+		"database": {
+			"enabled": false
+		},
+		"queues": {
+			"enabled": false
+		}
+	},
+	"cloud": {
+		"enabled": true,
+		"provider": "AWS",
+		"services": ["storage"]
+	},
+	"pipelines": {
+		"technology": "github-actions",
+		"onDemand": {
+			"enabled": true
+		},
+		"scheduled": {
+			"enabled": false
+		}
+	},
+	"dataManagement": {
+		"testData": {
+			"enabled": true
+		},
+		"users": {
+			"enabled": true
+		}
+	}
+}

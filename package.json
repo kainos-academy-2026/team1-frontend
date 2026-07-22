@@ -9,6 +9,9 @@
 		"build": "tsc && cp -r src/views dist/views",
 		"start": "node dist/index.js",
 		"test": "vitest run",
+		"test:bdd": "API_BASE_URL=http://localhost:3001 JWT_SECRET=bdd-test-secret tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js tests/bdd/features/**/*.feature --import tests/bdd/steps/**/*.ts --format progress --format json:test-reports/cucumber-$(date +%F).json",
+		"test:ui:e2e": "playwright test",
+		"test:framework": "npm run test && npm run test:bdd && npm run test:ui:e2e",
 		"test:ui": "vitest --ui",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
@@ -38,7 +41,10 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
+		"@axe-core/playwright": "^4.12.1",
 		"@biomejs/biome": "^2.5.2",
+		"@cucumber/cucumber": "^13.2.0",
+		"@playwright/test": "^1.61.1",
 		"@types/cookie-parser": "^1.4.10",
 		"@types/express": "^5.0.6",
 		"@types/jsonwebtoken": "^9.0.10",
@@ -48,6 +54,7 @@
 		"@vitest/coverage-v8": "^4.1.10",
 		"@vitest/ui": "^4.1.10",
 		"supertest": "^7.2.2",
+		"ts-node": "^10.9.2",
 		"tsx": "^4.23.0",
 		"typescript": "^6.0.3",
 		"vitest": "^4.1.10"
