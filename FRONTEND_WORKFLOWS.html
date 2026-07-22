@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Application Workflows</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .diagram-container {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        .section {
+            margin: 40px 0;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .section h3 {
+            color: #764ba2;
+            margin: 20px 0 10px 0;
+            font-size: 1.1em;
+        }
+        .section ul {
+            margin-left: 20px;
+        }
+        .section li {
+            margin: 8px 0;
+            line-height: 1.6;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .workflow-item {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        .priority-high {
+            background: #fff3cd;
+        }
+        .priority-medium {
+            background: #e7f3ff;
+        }
+        footer {
+            background: #f5f7fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Frontend Application Workflows</h1>
+            <p>Visual guide for Playwright testing framework test selection</p>
+        </div>
+        
+        <div class="content">
+            <p style="margin-bottom: 30px; font-size: 1.05em; color: #555; line-height: 1.8;">
+                This diagram shows the main user workflows in the team1-frontend application. 
+                Use this as a reference when selecting workflows to test with the Playwright testing framework.
+            </p>
+
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TD
+                        A["👤 User Visits App<br/>(GET /)"] --> B{Authenticated?}
+                        B -->|No| C["🔓 Unauthenticated Flow"]
+                        B -->|Yes| D["🔐 Authenticated Flow"]
+                        
+                        C --> C1["Login Workflow"]
+                        C1 --> C1A["GET /auth/login<br/>(Render Login Form)"]
+                        C1A --> C1B["POST /auth/login<br/>(Validate Credentials)"]
+                        C1B --> C1B1{Login Successful?}
+                        C1B1 -->|Yes| C1C["✅ Set Auth Cookie<br/>Redirect to Job Roles"]
+                        C1B1 -->|No| C1D["❌ Show Error<br/>Redirect to Login"]
+                        
+                        C --> C2["Registration Workflow"]
+                        C2 --> C2A["GET /registration<br/>(Render Registration Form)"]
+                        C2A --> C2B["POST /registration<br/>(Validate Input)"]
+                        C2B --> C2B1{Registration Valid?}
+                        C2B1 -->|Yes| C2C["✅ Create User<br/>Redirect to Login"]
+                        C2B1 -->|No| C2D["❌ Show Field Errors<br/>Redirect to Registration"]
+                        
+                        D --> D1["Job Browsing Workflow"]
+                        D1 --> D1A["GET /job-roles<br/>(List All Jobs)"]
+                        D1A --> D1B["Filter/Paginate<br/>Display Results"]
+                        D1B --> D1C["Click Job Card"]
+                        D1C --> D1D["GET /job-roles/:id<br/>(View Details)"]
+                        
+                        D --> D2["Application Workflow"]
+                        D2 --> D2A{User Role = User?}
+                        D2A -->|No| D2A1["❌ Admin Cannot Apply<br/>Show Error"]
+                        D2A -->|Yes| D2B["GET /job-roles/:id/apply<br/>(Render Apply Form)"]
+                        D2B --> D2C["POST /job-roles/:id/apply<br/>(Submit Application)"]
+                        D2C --> D2C1{Application Valid?}
+                        D2C1 -->|Yes| D2D["✅ Application Saved<br/>Show Success"]
+                        D2C1 -->|No| D2E["❌ Show Validation Errors<br/>Redirect to Apply"]
+                        
+                        D --> D3["Logout Workflow"]
+                        D3 --> D3A["POST /auth/logout<br/>(Clear Session)"]
+                        D3A --> D3B["✅ Redirect to Home<br/>Unauthenticated"]
+                        
+                        C1C --> D1A
+                        D1D --> D2A
+                        D3B --> A
+                        
+                        style A fill:#e1f5ff
+                        style C fill:#fff3e0
+                        style D fill:#f3e5f5
+                        style C1C fill:#c8e6c9
+                        style C2C fill:#c8e6c9
+                        style D2D fill:#c8e6c9
+                        style D3B fill:#c8e6c9
+                        style C1D fill:#ffcdd2
+                        style C2D fill:#ffcdd2
+                        style D2A1 fill:#ffcdd2
+                        style D2E fill:#ffcdd2
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 Key Workflows for Playwright Testing</h2>
+                
+                <h3>1. Authentication Flows</h3>
+                <div class="workflow-item">
+                    <strong>Login:</strong> Render form → Submit credentials → Validate → Redirect (success/error)
+                </div>
+                <div class="workflow-item">
+                    <strong>Registration:</strong> Render form → Submit data → Validate → Create user → Redirect (success/error)
+                </div>
+                <div class="workflow-item">
+                    <strong>Logout:</strong> Clear session → Redirect to home
+                </div>
+
+                <h3>2. Job Browsing Flows</h3>
+                <div class="workflow-item">
+                    <strong>List Jobs:</strong> View all available job roles with pagination/filtering
+                </div>
+                <div class="workflow-item">
+                    <strong>View Details:</strong> Click on a job to see full details (title, description, salary, etc.)
+                </div>
+
+                <h3>3. Application Flow</h3>
+                <div class="workflow-item">
+                    <strong>Apply for Job:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>User (role check) → Render apply form</li>
+                        <li>Submit application with validation</li>
+                        <li>Success/error handling and redirect</li>
+                    </ul>
+                </div>
+
+                <h3>4. Authorization Checks</h3>
+                <div class="workflow-item">
+                    <strong>Admin vs User:</strong> Different access levels (Admins can't apply, Users can't access admin features)
+                </div>
+                <div class="workflow-item">
+                    <strong>Authenticated vs Unauthenticated:</strong> Different routes available
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔧 Middleware & Validation Points</h2>
+                <ul>
+                    <li><code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">validateBody()</code> - Validates request payloads against schemas</li>
+                    <li><code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">authoriseRoles()</code> - Checks user role for route access</li>
+                    <li><code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">validateJobRoleId</code> - Validates job role ID parameter</li>
+                    <li><code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">setErrorRedirect()</code> - Handles error redirects with context</li>
+                    <li><code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">userInfo</code> - Loads user info from auth cookies</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>📊 Test Coverage Recommendations</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Workflow</th>
+                            <th>Test Type</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="priority-high">
+                            <td>Login (success)</td>
+                            <td>E2E</td>
+                            <td><strong>High</strong></td>
+                        </tr>
+                        <tr class="priority-high">
+                            <td>Login (invalid credentials)</td>
+                            <td>E2E</td>
+                            <td><strong>High</strong></td>
+                        </tr>
+                        <tr class="priority-high">
+                            <td>Registration (success)</td>
+                            <td>E2E</td>
+                            <td><strong>High</strong></td>
+                        </tr>
+                        <tr class="priority-high">
+                            <td>Registration (validation errors)</td>
+                            <td>E2E</td>
+                            <td><strong>High</strong></td>
+                        </tr>
+                        <tr class="priority-medium">
+                            <td>Logout</td>
+                            <td>E2E</td>
+                            <td><strong>Medium</strong></td>
+                        </tr>
+                        <tr class="priority-high">
+                            <td>View job list</td>
+                            <td>E2E</td>
+                            <td><strong>High</strong></td>
+                        </tr>
+                        <tr class="priority-high">
+                            <td>View job details</td>
+                            <td>E2E</td>
+                            <td><strong>High</strong></td>
+                        </tr>
+                        <tr class="priority-high">
+                            <td>Apply for job (success)</td>
+                            <td>E2E</td>
+                            <td><strong>High</strong></td>
+                        </tr>
+                        <tr class="priority-medium">
+                            <td>Apply for job (validation errors)</td>
+                            <td>E2E</td>
+                            <td><strong>Medium</strong></td>
+                        </tr>
+                        <tr class="priority-medium">
+                            <td>Authorization: Admin cannot apply</td>
+                            <td>E2E</td>
+                            <td><strong>Medium</strong></td>
+                        </tr>
+                        <tr class="priority-medium">
+                            <td>Authorization: Unauthenticated cannot access jobs</td>
+                            <td>E2E</td>
+                            <td><strong>Medium</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>Frontend Application Workflows • Created for team1-frontend Playwright Testing Framework</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+        mermaid.contentLoaded();
+    </script>
+</body>
+</html>
