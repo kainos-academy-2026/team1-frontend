@@ -67,7 +67,24 @@ npm run test:coverage
 
 # Run tests with the Vitest UI
 npm run test:ui
+
+# Run BDD feature tests (Cucumber)
+npm run test:bdd
+
+# Run browser E2E tests (Playwright: chromium + edge)
+npm run test:ui:e2e
+
+# Run full mandatory framework checks
+npm run test:framework
 ```
+
+Framework test environment variables:
+
+- `TEST_ENV`: `local` | `dev` | `staging` | `qa` | `test` (defaults to `local`)
+- `UI_<ENV>_BASE_URL`: UI base URL for each environment, e.g. `UI_DEV_BASE_URL`
+- `API_<ENV>_BASE_URL`: API base URL for each environment, e.g. `API_DEV_BASE_URL`
+
+If an environment-specific URL is missing, tests will fail with a clear message.
 
 ### Test file mapping
 
