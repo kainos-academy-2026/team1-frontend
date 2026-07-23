@@ -595,6 +595,71 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 		expect(response.body).toEqual({ error: 'File name is required' });
 	});
 
+	it('ERROR: returns default 400 message when upstream 400 has no error body', async () => {
+		applyForJobRole.mockRejectedValue({
+			isAxiosError: true,
+			response: {
+				status: 400,
+				data: {},
+			},
+		});
+
+		const response = await request(app)
+			.post('/job-roles/5/apply')
+			.set('Cookie', userAuthCookie)
+			.send({
+				fileName: 'resume.pdf',
+				contentType: 'application/pdf',
+			});
+
+		expect(response.status).toBe(400);
+		expect(response.body).toEqual({
+			error: 'Invalid application request',
+		});
+	});
+
+	it('ERROR: returns 401 when upstream API rejects authentication', async () => {
+		applyForJobRole.mockRejectedValue({
+			isAxiosError: true,
+			response: {
+				status: 401,
+				data: { error: 'Unauthorized' },
+			},
+		});
+
+		const response = await request(app)
+			.post('/job-roles/5/apply')
+			.set('Cookie', userAuthCookie)
+			.send({
+				fileName: 'resume.pdf',
+				contentType: 'application/pdf',
+			});
+
+		expect(response.status).toBe(401);
+		expect(response.body).toEqual({ error: 'Authentication required' });
+	});
+
+	it('ERROR: returns 403 when upstream API rejects authorization', async () => {
+		applyForJobRole.mockRejectedValue({
+			isAxiosError: true,
+			response: {
+				status: 403,
+				data: { error: 'Forbidden' },
+			},
+		});
+
+		const response = await request(app)
+			.post('/job-roles/5/apply')
+			.set('Cookie', userAuthCookie)
+			.send({
+				fileName: 'resume.pdf',
+				contentType: 'application/pdf',
+			});
+
+		expect(response.status).toBe(403);
+		expect(response.body).toEqual({ error: 'Forbidden' });
+	});
+
 	/**
 	 * TEST 5: Error Case - Server error (500)
 	 *
@@ -604,6 +669,45 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 	 */
 	it('ERROR: returns 500 for unexpected server errors', async () => {
 		applyForJobRole.mockRejectedValue(new Error('Database connection failed'));
+
+		const response = await request(app)
+			.post('/job-roles/5/apply')
+			.set('Cookie', userAuthCookie)
+			.send({
+				fileName: 'resume.pdf',
+				contentType: 'application/pdf',
+			});
+
+		expect(response.status).toBe(500);
+		expect(response.body).toEqual({ error: 'Something went wrong' });
+	});
+
+	it('ERROR: returns 500 when Axios error has no response status', async () => {
+		applyForJobRole.mockRejectedValue({
+			isAxiosError: true,
+			request: {},
+		});
+
+		const response = await request(app)
+			.post('/job-roles/5/apply')
+			.set('Cookie', userAuthCookie)
+			.send({
+				fileName: 'resume.pdf',
+				contentType: 'application/pdf',
+			});
+
+		expect(response.status).toBe(500);
+		expect(response.body).toEqual({ error: 'Something went wrong' });
+	});
+
+	it('ERROR: returns 500 for unmatched upstream axios status codes', async () => {
+		applyForJobRole.mockRejectedValue({
+			isAxiosError: true,
+			response: {
+				status: 502,
+				data: { error: 'Bad gateway' },
+			},
+		});
 
 		const response = await request(app)
 			.post('/job-roles/5/apply')

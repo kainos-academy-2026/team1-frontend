@@ -59,6 +59,16 @@ export class ApplicationController {
 			if (axios.isAxiosError(error)) {
 				const status = error.response?.status ?? 500;
 
+				if (status === 401) {
+					res.status(401).json({ error: 'Authentication required' });
+					return;
+				}
+
+				if (status === 403) {
+					res.status(403).json({ error: 'Forbidden' });
+					return;
+				}
+
 				if (status === 404) {
 					res.status(404).json({ error: 'Job role not found' });
 					return;

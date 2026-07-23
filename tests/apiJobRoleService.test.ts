@@ -77,6 +77,26 @@ describe('ApiJobRoleService', () => {
 		});
 	});
 
+	it('propagates 5xx errors when fetching job roles list', async () => {
+		const serviceError = {
+			isAxiosError: true,
+			response: { status: 502 },
+		};
+		const get = vi.fn().mockRejectedValue(serviceError);
+		const service = createService(get);
+
+		await expect(service.getJobRoles(authToken)).rejects.toBe(serviceError);
+	});
+
+	it('propagates network errors when fetching job roles list', async () => {
+		const get = vi.fn().mockRejectedValue(new Error('connect ECONNREFUSED'));
+		const service = createService(get);
+
+		await expect(service.getJobRoles(authToken)).rejects.toThrow(
+			'connect ECONNREFUSED',
+		);
+	});
+
 	it('maps summary data from the backend list endpoint', async () => {
 		const apiRoles = [
 			{
@@ -474,6 +494,74 @@ describe('ApiJobRoleService', () => {
 		});
 	});
 
+	it('uses numeric x-total-count header values as total', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({
+			data: apiRoles,
+			headers: { 'x-total-count': 41 },
+		});
+		const service = createService(get);
+
+		await expect(
+			service.getJobRolesPage({ limit: 10, offset: 0, authToken }),
+		).resolves.toMatchObject({
+			total: 41,
+			hasNext: true,
+			hasPrevious: false,
+		});
+	});
+
+	it('uses first x-total-count header entry when the header is an array', async () => {
+		const apiRoles = [
+			{
+				jobRoleId: 1,
+				roleName: 'Software Engineer',
+				description: 'Build features that solve customer problems.',
+				responsibilities: 'Deliver code, tests, and documentation.',
+				sharepointUrl: 'https://sharepoint.example.com/job-specs/1',
+				location: 'Belfast',
+				capabilityId: 1,
+				capabilityName: 'Workday',
+				bandId: 2,
+				bandName: 'Senior Associate',
+				closingDate: '2026-08-01',
+				status: 'open',
+				numberOfOpenPositions: 2,
+			},
+		];
+
+		const get = vi.fn().mockResolvedValue({
+			data: apiRoles,
+			headers: { 'x-total-count': ['51', '99'] },
+		});
+		const service = createService(get);
+
+		await expect(
+			service.getJobRolesPage({ limit: 10, offset: 0, authToken }),
+		).resolves.toMatchObject({
+			total: 51,
+			hasNext: true,
+			hasPrevious: false,
+		});
+	});
+
 	it('falls back to offset plus item count when response is not paged', async () => {
 		const apiRoles = [
 			{
@@ -552,6 +640,45 @@ describe('ApiJobRoleService', () => {
 			hasNext: false,
 			hasPrevious: true,
 		});
+	});
+
+	it('throws when paged endpoint returns malformed data shape', async () => {
+		const get = vi.fn().mockResolvedValue({
+			data: null,
+			headers: { 'x-total-count': '10' },
+		});
+		const service = createService(get);
+
+		await expect(
+			service.getJobRolesPage({ limit: 10, offset: 0, authToken }),
+		).rejects.toBeInstanceOf(TypeError);
+	});
+
+	it('propagates 5xx errors when fetching paged job roles', async () => {
+		const serviceError = {
+			isAxiosError: true,
+			response: { status: 503 },
+		};
+		const get = vi.fn().mockRejectedValue(serviceError);
+		const service = createService(get);
+
+		await expect(
+			service.getJobRolesPage({ limit: 10, offset: 0, authToken }),
+		).rejects.toBe(serviceError);
+		expect(get).toHaveBeenCalledWith('/job-roles', {
+			params: { limit: 10, offset: 0 },
+			headers: { Authorization: `Bearer ${authToken}` },
+		});
+	});
+
+	it('propagates network errors when fetching paged job roles', async () => {
+		const serviceError = new Error('socket hang up');
+		const get = vi.fn().mockRejectedValue(serviceError);
+		const service = createService(get);
+
+		await expect(
+			service.getJobRolesPage({ limit: 10, offset: 0, authToken }),
+		).rejects.toThrow('socket hang up');
 	});
 
 	it('returns a detailed job role by id using the injected client', async () => {
@@ -760,6 +887,23 @@ describe('ApiJobRoleService', () => {
 		});
 	});
 
+	it('rethrows non-404 Axios errors from detail endpoint without fallback', async () => {
+		const get = vi.fn().mockRejectedValue({
+			isAxiosError: true,
+			response: { status: 500 },
+		});
+		const service = createService(get);
+
+		await expect(service.getJobRole('1', authToken)).rejects.toMatchObject({
+			isAxiosError: true,
+			response: { status: 500 },
+		});
+		expect(get).toHaveBeenCalledTimes(1);
+		expect(get).toHaveBeenCalledWith('/job-roles/1', {
+			headers: { Authorization: `Bearer ${authToken}` },
+		});
+	});
+
 	it('maps invalid closing date as-is since mappers do not validate', async () => {
 		const apiRoles = [
 			{
@@ -901,5 +1045,31 @@ describe('ApiJobRoleService', () => {
 		await expect(
 			service.applyForJobRole('1', 'cv.pdf', 'application/pdf', authToken),
 		).rejects.toThrow('network error');
+	});
+
+	it('propagates 401 errors from the apply endpoint', async () => {
+		const serviceError = {
+			isAxiosError: true,
+			response: { status: 401 },
+		};
+		const post = vi.fn().mockRejectedValue(serviceError);
+		const service = createServiceWithPost(post);
+
+		await expect(
+			service.applyForJobRole('1', 'cv.pdf', 'application/pdf', authToken),
+		).rejects.toBe(serviceError);
+	});
+
+	it('propagates 403 errors from the apply endpoint', async () => {
+		const serviceError = {
+			isAxiosError: true,
+			response: { status: 403 },
+		};
+		const post = vi.fn().mockRejectedValue(serviceError);
+		const service = createServiceWithPost(post);
+
+		await expect(
+			service.applyForJobRole('1', 'cv.pdf', 'application/pdf', authToken),
+		).rejects.toBe(serviceError);
 	});
 });
