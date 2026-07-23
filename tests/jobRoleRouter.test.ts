@@ -221,14 +221,14 @@ describe('GET /job-roles', () => {
  * ============================================================================
  * GET /job-roles/:id/apply - INTEGRATION TESTS
  * ============================================================================
- * 
+ *
  * Purpose: Test that users can view the job application form
  * What it does: Renders apply form for a valid, open job role
  * What's mocked: ApiJobRoleService.getJobRole() - returns job role data
- * 
+ *
  * Routes tested:
  * - GET /job-roles/:id/apply (show apply form)
- * 
+ *
  * Tests cover:
  * - Happy path: renders apply form for open role
  * - Edge case: role not found
@@ -256,7 +256,7 @@ describe('GET /job-roles/:id/apply - Show Apply Form', () => {
 
 	/**
 	 * TEST 1: Happy Path - User can view apply form
-	 * 
+	 *
 	 * Scenario: User navigates to apply page for an open job role
 	 * Expected: Form is rendered with job role title and ID
 	 * Mocked: getJobRole returns valid open job role data
@@ -293,7 +293,7 @@ describe('GET /job-roles/:id/apply - Show Apply Form', () => {
 
 	/**
 	 * TEST 2: Edge Case - Role does not exist
-	 * 
+	 *
 	 * Scenario: User tries to apply for a job role that doesn't exist
 	 * Expected: 404 error page displayed
 	 * Mocked: getJobRole returns null
@@ -311,7 +311,7 @@ describe('GET /job-roles/:id/apply - Show Apply Form', () => {
 
 	/**
 	 * TEST 3: Edge Case - Role is closed
-	 * 
+	 *
 	 * Scenario: User tries to apply for a job role that's no longer open
 	 * Expected: 409 error page - role not available for applications
 	 * Mocked: getJobRole returns closed job role
@@ -343,7 +343,7 @@ describe('GET /job-roles/:id/apply - Show Apply Form', () => {
 
 	/**
 	 * TEST 4: Edge Case - No open positions
-	 * 
+	 *
 	 * Scenario: Role is marked open but has 0 positions available
 	 * Expected: 409 error - role not available
 	 * Mocked: getJobRole returns role with numberOfOpenPositions = 0
@@ -374,7 +374,7 @@ describe('GET /job-roles/:id/apply - Show Apply Form', () => {
 
 	/**
 	 * TEST 5: Security - Admin users cannot apply
-	 * 
+	 *
 	 * Scenario: Admin user tries to access apply form
 	 * Expected: 403 Forbidden (admins don't apply for jobs)
 	 * Mocked: getJobRole (should NOT be called due to auth middleware)
@@ -397,7 +397,7 @@ describe('GET /job-roles/:id/apply - Show Apply Form', () => {
 
 	/**
 	 * TEST 6: Security - Authentication required
-	 * 
+	 *
 	 * Scenario: Unauthenticated user tries to access apply form
 	 * Expected: Redirect to login or 401/302
 	 * Mocked: getJobRole (should NOT be called)
@@ -419,7 +419,7 @@ describe('GET /job-roles/:id/apply - Show Apply Form', () => {
 
 	/**
 	 * TEST 7: Validation - Invalid role ID format
-	 * 
+	 *
 	 * Scenario: User provides non-numeric role ID
 	 * Expected: 400 Bad Request (validation middleware catches it)
 	 * Mocked: getJobRole (should NOT be called)
@@ -438,14 +438,14 @@ describe('GET /job-roles/:id/apply - Show Apply Form', () => {
  * ============================================================================
  * POST /job-roles/:id/apply - INTEGRATION TESTS
  * ============================================================================
- * 
+ *
  * Purpose: Test that users can submit job applications
  * What it does: Processes application and returns presigned upload URL
  * What's mocked: ApiJobRoleService.applyForJobRole() - returns upload URL
- * 
+ *
  * Routes tested:
  * - POST /job-roles/:id/apply (submit application)
- * 
+ *
  * Tests cover:
  * - Happy path: successful application submission
  * - Error case: role not found
@@ -475,7 +475,7 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 
 	/**
 	 * TEST 1: Happy Path - Application submitted successfully
-	 * 
+	 *
 	 * Scenario: User submits application with valid CV
 	 * Expected: 200 response with presigned S3 upload URL
 	 * Mocked: applyForJobRole returns presigned URL and key
@@ -511,7 +511,7 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 
 	/**
 	 * TEST 2: Error Case - Role not found (404)
-	 * 
+	 *
 	 * Scenario: User tries to apply for non-existent job role
 	 * Expected: 404 response with error message
 	 * Mocked: applyForJobRole throws 404 error
@@ -539,7 +539,7 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 
 	/**
 	 * TEST 3: Error Case - Role not open (409)
-	 * 
+	 *
 	 * Scenario: User tries to apply for closed or full role
 	 * Expected: 409 response - role not available
 	 * Mocked: applyForJobRole throws 409 error
@@ -569,7 +569,7 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 
 	/**
 	 * TEST 4: Error Case - Bad request (400)
-	 * 
+	 *
 	 * Scenario: Request has invalid format (missing fileName, etc.)
 	 * Expected: 400 response with specific error message
 	 * Mocked: applyForJobRole throws 400 error
@@ -597,15 +597,13 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 
 	/**
 	 * TEST 5: Error Case - Server error (500)
-	 * 
+	 *
 	 * Scenario: Backend service encounters unexpected error
 	 * Expected: 500 response - generic error message
 	 * Mocked: applyForJobRole throws unexpected error
 	 */
 	it('ERROR: returns 500 for unexpected server errors', async () => {
-		applyForJobRole.mockRejectedValue(
-			new Error('Database connection failed'),
-		);
+		applyForJobRole.mockRejectedValue(new Error('Database connection failed'));
 
 		const response = await request(app)
 			.post('/job-roles/5/apply')
@@ -621,7 +619,7 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 
 	/**
 	 * TEST 6: Security - Admin users cannot apply
-	 * 
+	 *
 	 * Scenario: Admin user tries to submit application
 	 * Expected: 403 Forbidden
 	 * Mocked: applyForJobRole (should NOT be called)
@@ -646,7 +644,7 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 
 	/**
 	 * TEST 7: Security - Authentication required
-	 * 
+	 *
 	 * Scenario: Unauthenticated user tries to submit application
 	 * Expected: Redirect to login or 401
 	 * Mocked: applyForJobRole (should NOT be called)
@@ -657,12 +655,10 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 			key: 'job-applications/5/user/resume.pdf',
 		});
 
-		const response = await request(app)
-			.post('/job-roles/5/apply')
-			.send({
-				fileName: 'resume.pdf',
-				contentType: 'application/pdf',
-			});
+		const response = await request(app).post('/job-roles/5/apply').send({
+			fileName: 'resume.pdf',
+			contentType: 'application/pdf',
+		});
 		// No auth cookie
 
 		expect([301, 302, 401]).toContain(response.status);
@@ -671,7 +667,7 @@ describe('POST /job-roles/:id/apply - Submit Application', () => {
 
 	/**
 	 * TEST 8: Validation - Invalid role ID format
-	 * 
+	 *
 	 * Scenario: User provides non-numeric role ID
 	 * Expected: 400 Bad Request
 	 * Mocked: applyForJobRole (should NOT be called)
