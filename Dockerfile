@@ -49,8 +49,8 @@ RUN addgroup -g 1001 -S nodejs && \
 
 USER nodejs
 
-# Expose port 3000
-EXPOSE 3000
+# Expose port 4000
+EXPOSE 4000
 
 # Start application (Node.js handles SIGTERM)
 CMD ["node", "dist/index.js"]
