@@ -1,0 +1,79 @@
+flowchart TD
+    Browser[Browser]
+
+    subgraph AppLayer[src/app.ts]
+        App[Express app]
+        UserInfo[userInfo middleware]
+        ErrorHandler[errorHandler middleware]
+        HomeRoute[GET / -> render index.njk]
+        StaticAssets["/assets -> express.static(assets)"]
+    end
+
+    subgraph LoginRouter[src/routers/loginRouter.ts]
+        LoginErr[setErrorRedirect /login]
+        LoginGet[GET /login]
+        LoginPost[POST /login]
+        LogoutPost[POST /logout]
+        LoginValidate[validateBody loginCredentialsSchema]
+        LoginController[LoginController]
+        LoginService[LoginService]
+    end
+
+    subgraph RegistrationRouter[src/routers/registrationRouter.ts]
+        RegErr[setErrorRedirect /registration]
+        RegGet[GET /]
+        RegPost[POST /]
+        RegValidate[validateBody createUserRequestSchema]
+        RegistrationController[RegistrationController]
+        ApiUserService[ApiUserService]
+        UserRequestMapper[UserRequestMapper]
+    end
+
+    subgraph JobRoleRouter[src/routers/jobRoleRouter.ts]
+        JRList[GET /]
+        JRDetail[GET /:id]
+        JRApplyGet[GET /:id/apply]
+        JRApplyPost[POST /:id/apply]
+        RoleGuard[authoriseRoles]
+        IdValidate[validateJobRoleId]
+        JobRoleController[JobRoleController]
+        ApplicationController[ApplicationController]
+        ApiJobRoleService[ApiJobRoleService]
+        JobRoleMapper[JobRoleMapper]
+        JobRoleViewMapper[JobRoleViewMapper]
+    end
+
+    Views[(Nunjucks views)]
+    Assets[(assets/)]
+    Api[(API_BASE_URL backend API)]
+
+    Browser --> App
+    App --> StaticAssets --> Assets
+    App --> UserInfo
+    App --> HomeRoute --> Views
+    App --> LoginRouter
+    App --> RegistrationRouter
+    App --> JobRoleRouter
+    App --> ErrorHandler
+
+    LoginRouter --> LoginErr
+    LoginRouter --> LoginGet --> LoginController --> Views
+    LoginRouter --> LoginPost --> LoginValidate --> LoginController --> LoginService --> Api
+    LoginRouter --> LogoutPost --> LoginController
+
+    RegistrationRouter --> RegErr
+    RegistrationRouter --> RegGet --> RegistrationController --> Views
+    RegistrationRouter --> RegPost --> RegValidate --> RegistrationController --> ApiUserService --> UserRequestMapper
+    ApiUserService --> Api
+
+    JobRoleRouter --> JRList --> RoleGuard --> JobRoleController
+    JobRoleRouter --> JRDetail --> RoleGuard --> IdValidate --> JobRoleController
+    JobRoleRouter --> JRApplyGet --> RoleGuard --> IdValidate --> ApplicationController
+    JobRoleRouter --> JRApplyPost --> RoleGuard --> IdValidate --> ApplicationController
+
+    JobRoleController --> ApiJobRoleService --> JobRoleMapper
+    JobRoleController --> JobRoleViewMapper
+    ApplicationController --> ApiJobRoleService
+    ApiJobRoleService --> Api
+    JobRoleController --> Views
+    ApplicationController --> Views
